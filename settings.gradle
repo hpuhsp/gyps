@@ -1,0 +1,3 @@
+include ':CoreSDK'
+include ':app'
+rootProject.name = "Gyps"
