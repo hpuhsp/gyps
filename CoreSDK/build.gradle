@@ -3,7 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion rootProject.ext.android["compileSdkVersion"]
@@ -19,8 +18,13 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+        }
+        release {
+            minifyEnabled true
+            buildConfigField "boolean", "LOG_DEBUG", "false"
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
@@ -53,6 +57,7 @@ dependencies {
     api 'com.google.android.material:material:1.2.1'
     api 'androidx.core:core-ktx:1.3.2'
     api 'androidx.appcompat:appcompat:1.2.0'
+    api 'androidx.recyclerview:recyclerview:1.1.0'
     api 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     api 'androidx.vectordrawable:vectordrawable:1.1.0'
@@ -129,4 +134,4 @@ dependencies {
     api 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
     api 'com.afollestad.material-dialogs:bottomsheets:3.3.0'
 }
-//apply from: '../bintray.gradle'
+apply from: '../bintray.gradle'

@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
-import com.github.lilei.coroutinepermissions.requestPermissionsForResult
 import com.google.android.material.snackbar.Snackbar
 import com.gyf.immersionbar.ImmersionBar
 import com.hnsh.core.R
@@ -235,26 +234,8 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     /**
      * ==============================权限相关===================================
      */
-    // 请求权限
-    open fun requestPermission(array: Array<String>) {
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                requestPermissionsForResult(*permsStorage, rationale = "为了更好的提供服务，需要获取存储空间权限")
-//                startActivity(
-//                    Intent(
-//                        Intent.ACTION_PICK,
-//                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-//                    )
-//                )
-            } catch (e: Exception) {
-
-            }
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        //  TODO 根据权限怎么处理？
     }
 
     override fun onRequestPermissionsResult(
@@ -268,7 +249,6 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
 
         }
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
