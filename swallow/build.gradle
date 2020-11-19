@@ -1,0 +1,137 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+        }
+        release {
+            minifyEnabled false
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+        freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
+    }
+    // 视图绑定,根据具体模块和个人的习惯可以选择使用，目前未启用，采用Kotlin扩展引入布局文件方式
+    buildFeatures {
+        viewBinding = true
+    }
+    lintOptions {
+        checkReleaseBuilds true
+        abortOnError false
+    }
+}
+
+dependencies {
+    api fileTree(dir: "libs", include: ["*.jar"])
+    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    // Test
+    testImplementation 'junit:junit:4.13.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    //===============================AndroidX基础库================================================//
+    api 'com.google.android.material:material:1.2.1'
+    api 'androidx.core:core-ktx:1.3.2'
+    api 'androidx.appcompat:appcompat:1.2.0'
+    api 'androidx.recyclerview:recyclerview:1.1.0'
+    api 'androidx.constraintlayout:constraintlayout:2.0.4'
+
+    api 'androidx.vectordrawable:vectordrawable:1.1.0'
+
+    api 'androidx.navigation:navigation-fragment-ktx:2.3.1'
+    api 'androidx.navigation:navigation-ui-ktx:2.3.1'
+    api 'androidx.navigation:navigation-fragment-ktx:2.3.1'
+    api 'androidx.navigation:navigation-ui-ktx:2.3.1'
+
+    api rootProject.ext.dependencies["legacySupport"]
+    //====================================JetPack=================================================//
+    api rootProject.ext.dependencies["lifecycleExtension"]
+    kapt rootProject.ext.dependencies["lifecycleCompiler"]
+    api rootProject.ext.dependencies["lifecycleJava8"]
+    api rootProject.ext.dependencies["lifecycleKtx"]
+
+    api rootProject.ext.dependencies["liveDataKtx"]
+    api rootProject.ext.dependencies["viewModel"]
+    api rootProject.ext.dependencies["viewModelKtx"]
+
+    api "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    api rootProject.ext.dependencies["paging"]
+    // View
+    api rootProject.ext.dependencies["viewPager"]
+    // 协程
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7"
+    //================================ 事件总线 ===================================================//
+    api rootProject.ext.dependencies["eventbus"]
+    //================================= Room数据库 ================================================//
+    api rootProject.ext.dependencies["room"]
+    api rootProject.ext.dependencies["roomKx"]
+    kapt rootProject.ext.dependencies["roomCompiler"]
+    // 添加数据库测试支持
+    api 'android.arch.persistence.room:testing:1.1.1'
+
+    //================================= Glide图片加载 =============================================//
+    api rootProject.ext.dependencies["glide"]
+    kapt rootProject.ext.dependencies["glide-compiler"]
+    //================================= Retrofit网络框架 ==========================================//
+    // retrofit
+    api rootProject.ext.dependencies["retrofit"]
+    api rootProject.ext.dependencies["retrofit-converter-gson"]
+    // okHttp
+    api rootProject.ext.dependencies["okhttp"]
+    api rootProject.ext.dependencies["okhttp-logging"]
+    //================================= Dagger Hilt 依赖注入 ======================================//
+    api rootProject.ext.dependencies["hilt-android"]
+    api rootProject.ext.dependencies["hilt-lifecycle-viewmodel"]
+    kapt rootProject.ext.dependencies["hilt-android-compiler"]
+    kapt rootProject.ext.dependencies["hilt-compiler"]
+    // multi-dex
+    api 'androidx.multidex:multidex:2.0.1'
+    //================================= ARouter路由框架 ===========================================//
+    api rootProject.ext.dependencies["arouter"]
+//    kapt rootProject.ext.dependencies["arouter-compiler"]
+    //================================= Tools 工具类库=============================================//
+    // Timber
+    api rootProject.ext.dependencies["timber"]
+    // immersionbar
+    api rootProject.ext.dependencies["immersionbar"]
+    api rootProject.ext.dependencies["immersionbar-fragment"]
+    //权限
+    api rootProject.ext.dependencies["easypermissions"]
+    // 动态切换域名支持,后期需调整为自定义实现
+    api 'me.jessyan:retrofit-url-manager:1.4.0'
+    // 工具类库
+    api 'com.blankj:utilcodex:1.29.0'
+    //=============================== Widget第三方组件库 ==========================================//
+    // BaseRecyclerViewAdapterHelper
+    api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+    api 'com.yqritc:recyclerview-flexibledivider:1.4.0'
+    //tabLayout
+    api 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
+    api 'com.afollestad.material-dialogs:bottomsheets:3.3.0'
+}
+apply from: '../bintray.gradle'

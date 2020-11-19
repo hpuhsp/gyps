@@ -12,7 +12,7 @@ def gitUrl = 'https://github.com/hpuhsp/Gyps.git'   // Git仓库的url
 def siteUrl = 'https://github.com/hpuhsp/Gyps'   // 项目的主页
 
 version = rootProject.ext.android["versionName"]
-group = "com.hsp"
+group = "com.fly"
 
 
 bintray {
@@ -77,8 +77,10 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
 }
+//打包源码doc文档
 task javadoc(type: Javadoc) {
     failOnError false
+    options.encoding = "UTF-8"
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
