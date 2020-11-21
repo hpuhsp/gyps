@@ -1,6 +1,9 @@
 package com.swallow.gyps
 
+import com.iflytek.cloud.SpeechConstant
+import com.iflytek.cloud.SpeechUtility
 import com.swallow.fly.base.BaseApplication
+import com.swallow.gyps.common.AppConfig
 import dagger.hilt.android.HiltAndroidApp
 
 /**
@@ -14,5 +17,13 @@ import dagger.hilt.android.HiltAndroidApp
 class MyApplication : BaseApplication() {
     override fun onCreate() {
         super.onCreate()
+        initMscSdk()
+    }
+
+    /**
+     * 初始化讯飞SDK
+     */
+    private fun initMscSdk() {
+        SpeechUtility.createUtility(this, "${SpeechConstant.APPID}=${AppConfig.MSC_APP_ID}")
     }
 }

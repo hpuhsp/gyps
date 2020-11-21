@@ -46,6 +46,9 @@ kapt {
 }
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     // Test
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -59,5 +62,9 @@ dependencies {
     kapt rootProject.ext.dependencies["glide-compiler"]
     kapt rootProject.ext.dependencies["hilt-android-compiler"]
     kapt rootProject.ext.dependencies["hilt-compiler"]
-    implementation project(':swallow')
+    implementation project(':msc')
+    implementation project(':base')
+
+    // 图片选择库
+    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.5.9'
 }

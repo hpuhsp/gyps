@@ -1,0 +1,23 @@
+<resources>
+    <!--字号大小-->
+    <dimen name="text_sz_extra_small">10sp</dimen>
+    <dimen name="text_sz_little_small">11sp</dimen>
+    <dimen name="text_sz_small">12sp</dimen>
+    <dimen name="text_sz_medium">14sp</dimen>
+    <dimen name="text_sz_little_medium">13sp</dimen>
+    <dimen name="text_sz_large">16sp</dimen>
+    <dimen name="text_sz_large_17">17sp</dimen>
+    <dimen name="text_sz_medium_large">18sp</dimen>
+    <dimen name="text_sz_extra_large">20sp</dimen>
+    <dimen name="text_sz_double_large">24sp</dimen>
+    <!--分割线高度-->
+    <dimen name="divide_normal">0.4dp</dimen>
+    <dimen name="divide_half">0.5dp</dimen>
+    <dimen name="divide_middle">4dp</dimen>
+    <dimen name="divide_large">8dp</dimen>
+    <dimen name="divide_card">10dp</dimen>
+    <!--Margin值-->
+    <dimen name="edge_margin">15dp</dimen>
+    <dimen name="top_margin">8dp</dimen>
+
+</resources>

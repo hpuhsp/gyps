@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--主题颜色-->
+    <color name="colorPrimary">#3B79E4</color>
+    <color name="colorPrimaryDark">#3B79E4</color>
+    <color name="colorAccent">#FF4081</color>
+    <!--基础色域-->
+    <color name="white">#FFFFFF</color>
+    <color name="white60">#99FFFFFF</color>
+    <color name="white10">#1AFFFFFF</color>
+    <color name="white15">#26FFFFFF</color>
+    <color name="white80">#CCFFFFFF</color>
+    <color name="whiteFBFC">#FBFCFEFF</color>
+
+    <color name="base_red">#EA5502</color>
+
+    <color name="base_blue">#3B79E4</color>
+    <color name="base_blue90">#E63B79E4</color>
+    <color name="toolbar_blue">#00A2FF</color>
+    Alpha
+    <color name="drawer_black">#191F26</color>
+    <color name="base_black">#333333</color>
+    <color name="base_black03">#030303</color>
+
+    <color name="gray_f3">#F3F3F3</color>
+    <color name="gray_e6">#E6E6E6</color>
+    <color name="gray_66">#666666</color>
+    <color name="gray">#C1C0C0</color>
+    <color name="gray_E0">#E0E0E0</color>
+    <color name="gray_99">#999999</color>
+    <color name="gray_e1">#e1e1e1</color>
+    <color name="gray_4D">#C74D4D4D</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="transparent38">#60000000</color>
+    <!--文字颜色-->
+    <color name="text_white">@color/white</color>
+    <color name="text_white_60">@color/white60</color>
+    <color name="text_white_normal">@color/whiteFBFC</color>
+    <color name="text_black">@color/base_black</color>
+    <color name="hint_gray">#B8B8B8</color>
+    <color name="text_hint_gray">@color/hint_gray</color>
+    <color name="text_red">@color/base_red</color>
+    <color name="text_blue">@color/base_blue</color>
+    <!--分割线-->
+    <color name="divide_gray_b8">@color/hint_gray</color>
+    <color name="divide_gray_e0">@color/gray_E0</color>
+    <!--背景色-->
+    <color name="colorLine">#666666</color>
+
+    <color name="equipment_text_green">#34CE96</color>
+
+
+</resources>

@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">CommonRes</string>
+    <string name="save">保存</string>
+    <string name="exit_app">退出</string>
+    <string name="comp_double_click_exit">再按一次退出</string>
+    <string name="comp_prompt_email">邮箱</string>
+    <string name="comp_prompt_password">密码</string>
+    <string name="comp_action_sign_in">注册</string>
+    <string name="comp_action_sign_in_short">登录</string>
+    <string name="comp_welcome">欢迎</string>
+    <string name="comp_invalid_username">用户名不可用</string>
+    <string name="comp_invalid_password">密码必须大于5个字符</string>
+    <string name="comp_login_failed">登录失败</string>
+    <string name="comp_account_login">账号登录</string>
+    <string name="comp_login_account">账号</string>
+    <string name="comp_input_your_account">请输入您的账号</string>
+    <string name="comp_login_password">密码</string>
+    <string name="comp_input_password">请输入密码</string>
+    <string name="comp_forget_password">忘记密码</string>
+    <string name="comp_login">登录</string>
+    <string name="comp_signing_in">正在登录…</string>
+    <string name="comp_login_with_accept_rule">登录注册表示同意</string>
+    <string name="comp_user_rule"><u>用户服务协议及隐私政策</u></string>
+    <string name="comp_industrial_information">双汇工业互联网</string>
+    <string name="comp_hnsh_bloc">双汇集团</string>
+    <string name="comp_sailings">班次</string>
+    <string name="comp_please_choose_sailings">请选择班次</string>
+    <string name="comp_date">日期</string>
+    <string name="comp_please_choose_date">请选择日期</string>
+    <string name="comp_setting">设置</string>
+    <string name="comp_app_version_extra">App版本：V%1$s</string>
+    <string name="comp_sync_server_date">正在同步服务器时间…</string>
+    <string name="comp_daytime_class">白班</string>
+    <string name="comp_middle_class">中班</string>
+    <string name="comp_night_class">夜班</string>
+    <string name="comp_login_success">登录成功</string>
+    <string name="account_length_tips">请您输入4位长度的账号</string>
+    <string name="comp_account_length_error">请您输入4位长度不对</string>
+    <string name="comp_password_rule">密码长度8–16位,至少包含大写字母、小写字母、数字、特殊字符两种</string>
+    <string name="comp_password_error">密码至少包含大写字母、小写字母、数字、特殊字符两种</string>
+    <string name="comp_retry_login_password">请重新输入密码</string>
+
+    <string name="equipment_network_disable">网络不可用，请检查网络设置~</string>
+    <string name="equipment_loading">正在加载</string>
+    <string name="equipment_prompt">提示</string>
+    <string name="equipment_permission_not_available">权限不可用</string>
+    <string name="change_inventory">调整库存</string>
+    <string name="input_adjust_count">请输入调整数量</string>
+    <string name="cancel">取消</string>
+    <string name="reach_min_limit_value">已达可输入最小值</string>
+    <string name="reach_max_limit_value">已达可输入最大值</string>
+    <string name="out_of_input_range">超出可输入范围</string>
+    <string name="setting">设置</string>
+
+
+</resources>

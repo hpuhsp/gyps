@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context="com.swallow.gyps.msc.SignUpActivity">
+
+    <include layout="@layout/toolbar_activity_title_layout" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="120dp">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="请正视前方进行拍照"
+                android:textColor="@color/gray_66"
+                android:textSize="@dimen/text_sz_medium_large"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guide_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <ImageView
+                android:id="@+id/iv_example"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="6dp"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/img_example_face"
+                app:layout_constraintEnd_toStartOf="@+id/guide_line"
+                app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+            <FrameLayout
+                android:id="@+id/photo_root_view"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="22dp"
+                android:background="@color/gray_f3"
+                app:layout_constraintStart_toEndOf="@+id/guide_line"
+                app:layout_constraintTop_toBottomOf="@+id/tv_title">
+
+                <ImageView
+                    android:id="@+id/iv_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:onClick="onClick"
+                    android:src="@mipmap/ic_add_face" />
+
+                <ImageView
+                    android:id="@+id/iv_face"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tv_score"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="15dp"
+                android:gravity="center_horizontal"
+                android:textColor="@color/text_black"
+                android:textSize="@dimen/text_sz_large"
+                app:layout_constraintTop_toBottomOf="@+id/photo_root_view" />
+
+            <TextView
+                android:id="@+id/btn_capture"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="45dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="45dp"
+                android:background="@drawable/shape_blue_radius_layout"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:text="选择图片或拍照"
+                android:textColor="@color/text_white"
+                android:textSize="@dimen/text_sz_large"
+                app:layout_constraintTop_toBottomOf="@+id/tv_score" />
+
+            <TextView
+                android:id="@+id/btn_sign_up"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="45dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="45dp"
+                android:background="@drawable/shape_blue_radius_layout"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:text="开始注冊"
+                android:textColor="@color/text_white"
+                android:textSize="@dimen/text_sz_large"
+                app:layout_constraintTop_toBottomOf="@+id/btn_capture" />
+
+
+            <TextView
+                android:id="@+id/btn_verify"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="45dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="45dp"
+                android:background="@drawable/shape_blue_radius_layout"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:text="验证"
+                android:textColor="@color/text_white"
+                android:textSize="@dimen/text_sz_large"
+                app:layout_constraintTop_toBottomOf="@+id/btn_sign_up" />
+
+            <TextView
+                android:id="@+id/next_person"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="45dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="45dp"
+                android:background="@drawable/shape_blue_radius_layout"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:text="清空"
+                android:textColor="@color/text_white"
+                android:textSize="@dimen/text_sz_large"
+                app:layout_constraintTop_toBottomOf="@+id/btn_verify" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+</LinearLayout>

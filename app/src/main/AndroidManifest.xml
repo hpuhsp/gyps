@@ -9,8 +9,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Gyps">
-        <activity android:name="com.swallow.gyps.MainActivity">
+        android:theme="@style/Theme.Gyps"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name="com.swallow.gyps.msc.VoiceInputActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.swallow.gyps.msc.SignUpActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.swallow.gyps.main.MainActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,4 +28,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>
