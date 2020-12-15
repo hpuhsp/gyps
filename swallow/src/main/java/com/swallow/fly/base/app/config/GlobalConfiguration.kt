@@ -9,7 +9,6 @@ import com.swallow.fly.base.app.ConfigModule
 import com.swallow.fly.http.ResponseErrorListenerImpl
 import com.swallow.fly.http.di.ClientModule
 import com.swallow.fly.http.interceptor.RequestInterceptor
-import me.jessyan.retrofiturlmanager.RetrofitUrlManager
 import okhttp3.OkHttpClient
 
 /**
@@ -24,6 +23,7 @@ class GlobalConfiguration : ConfigModule {
     override fun applyOptions(context: Context?, builder: GlobalConfigModule.Builder) {
         if (!BuildConfig.LOG_DEBUG) //Release 时,让框架不再打印 Http 请求和响应的信息
             builder.printHttpLogLevel(RequestInterceptor.Level.NONE)
+        // 配置默认域名
         builder.baseurl("https://api.github.com")
 //            .globalHttpHandler(context?.let { GlobalHttpHandlerImpl(it) })
             .responseErrorListener(context?.let { ResponseErrorListenerImpl(it) })
@@ -36,7 +36,7 @@ class GlobalConfiguration : ConfigModule {
             })
             .okhttpConfiguration(object : ClientModule.OkhttpConfiguration {
                 override fun configOkhttp(context: Context, builder: OkHttpClient.Builder) {
-                    RetrofitUrlManager.getInstance().with(builder)
+//                    RetrofitUrlManager.getInstance().with(builder)
                 }
             })
     }

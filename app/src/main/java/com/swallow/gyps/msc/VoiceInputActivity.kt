@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import com.blankj.utilcode.util.NetworkUtils
-import com.hnsh.gyps.R
-import com.hnsh.gyps.databinding.ActivityVoiceInputBinding
 import com.hsp.resource.ext.initBlueActionBar
 import com.iflytek.cloud.InitListener
 import com.iflytek.cloud.RecognizerResult
@@ -19,8 +17,13 @@ import com.iflytek.cloud.ui.RecognizerDialogListener
 import com.swallow.fly.base.view.BaseActivity
 import com.swallow.fly.ext.logd
 import com.swallow.fly.ext.txt
+import com.swallow.fly.utils.FastUtils
+import com.swallow.fly.utils.NetWorkHelper
+import com.swallow.gyps.R
+import com.swallow.gyps.databinding.ActivityVoiceInputBinding
 import com.swallow.gyps.msc.viewmodel.VoiceInputViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import pub.devrel.easypermissions.EasyPermissions
 
 
 /**
@@ -32,7 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputBinding>(),
-    View.OnClickListener {
+    View.OnClickListener, EasyPermissions.PermissionCallbacks {
     companion object {
         fun start(context: Context) {
             context.startActivity(Intent(context, VoiceInputActivity::class.java))
@@ -47,6 +50,19 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
     override fun initView(savedInstanceState: Bundle?) {
         initBlueActionBar(true, "语音听写")
         initInputUI()
+        checkCameraPermission()
+    }
+
+    private fun checkCameraPermission() {
+        if (EasyPermissions.hasPermissions(this, *RECORD_PERMISSIONS)) {
+        } else {
+            EasyPermissions.requestPermissions(
+                this,
+                "应用需要获取录音权限!",
+                1081,
+                *RECORD_PERMISSIONS
+            )
+        }
     }
 
     private fun initInputUI() {
@@ -55,6 +71,7 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
                 logd { "-----------初始化UI组件----------->" }
             }
         })
+        mIatDialog.setParameter(SpeechConstant.PARAMS, null)
         //设置语法ID和 SUBJECT 为空，以免因之前有语法调用而设置了此参数；或直接清空所有参数，具体可参考 DEMO 的示例。
         mIatDialog.setParameter(SpeechConstant.CLOUD_GRAMMAR, null)
         mIatDialog.setParameter(SpeechConstant.SUBJECT, null)
@@ -62,18 +79,19 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
 //        mIatDialog.setParameter(SpeechConstant.RESULT_TYPE, "json")
         mIatDialog.setParameter(SpeechConstant.RESULT_TYPE, "plain")
         // 设置离线（local）、在线(cloud) 语音听写
-        //设置语音输入语言，zh_cn为简体中文
-        mIatDialog.setParameter(SpeechConstant.LANGUAGE, "zh_cn")
-        //设置结果返回语言
-        mIatDialog.setParameter(SpeechConstant.ACCENT, "mandarin")
-        // 设置语音前端点:静音超时时间，单位ms，即用户多长时间不说话则当做超时处理
-        //取值范围{1000～10000}
-        mIatDialog.setParameter(SpeechConstant.VAD_BOS, "4000")
-        //设置语音后端点:后端点静音检测时间，单位ms，即用户停止说话多长时间内即认为不再输入，
-        //自动停止录音，范围{0~10000}
-        mIatDialog.setParameter(SpeechConstant.VAD_EOS, "1000")
-        //设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
-        mIatDialog.setParameter(SpeechConstant.ASR_PTT, "1")
+        mIatDialog.setParameter(SpeechConstant.ENGINE_MODE, SpeechConstant.MODE_AUTO)
+//        //设置语音输入语言，zh_cn为简体中文
+//        mIatDialog.setParameter(SpeechConstant.LANGUAGE, "zh_cn")
+//        //设置结果返回语言
+//        mIatDialog.setParameter(SpeechConstant.ACCENT, "mandarin")
+//        // 设置语音前端点:静音超时时间，单位ms，即用户多长时间不说话则当做超时处理
+//        //取值范围{1000～10000}
+//        mIatDialog.setParameter(SpeechConstant.VAD_BOS, "4000")
+//        //设置语音后端点:后端点静音检测时间，单位ms，即用户停止说话多长时间内即认为不再输入，
+//        //自动停止录音，范围{0~10000}
+//        mIatDialog.setParameter(SpeechConstant.VAD_EOS, "1000")
+//        //设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
+//        mIatDialog.setParameter(SpeechConstant.ASR_PTT, "1")
 
         //开始识别，并设置监听器
         mIatDialog.setListener(object : RecognizerDialogListener {
@@ -109,9 +127,10 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
      * 开始听写
      */
     private fun startVoiceInput() {
+
         if (!mIatDialog.isShowing) {
-            val engineType = if (NetworkUtils.isConnected()) "cloud" else "local"
-            mIatDialog.setParameter(SpeechConstant.ENGINE_TYPE, engineType);
+            val engineType = if (NetWorkHelper.isNetworkConnected(this)) "cloud" else "local"
+            mIatDialog.setParameter(SpeechConstant.ENGINE_TYPE, engineType)
             mIatDialog.show()
         }
     }
@@ -123,5 +142,12 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
 
     override fun showDarkToolBar(): Boolean {
         return false
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        FastUtils.makeText(this, "应用没有录音权限，请在手机设置中授予！")
     }
 }

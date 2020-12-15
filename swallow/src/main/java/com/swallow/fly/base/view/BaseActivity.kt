@@ -81,7 +81,11 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
-        val permsMicoraphone = arrayOf(Manifest.permission.RECORD_AUDIO)
+        val RECORD_PERMISSIONS = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.RECORD_AUDIO
+        )
         val permsSms = arrayOf(
             Manifest.permission.READ_SMS,
             Manifest.permission.RECEIVE_WAP_PUSH,
@@ -268,7 +272,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     /**
      * 显示进度框
      */
-    private fun showLoading(msg: String?) {
+    fun showLoading(msg: String?) {
         if (null == loadingDialog) {
             loadingDialog = ProgressDialog(this@BaseActivity)
         }

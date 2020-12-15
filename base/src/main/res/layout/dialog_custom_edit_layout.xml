@@ -83,7 +83,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:maxLines="1"
-            android:text="@string/confirm"
+            android:text="确认"
             android:textColor="@color/text_blue"
             android:textSize="@dimen/text_sz_large_17" />
 

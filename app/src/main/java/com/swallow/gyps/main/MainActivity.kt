@@ -2,10 +2,10 @@ package com.swallow.gyps.main
 
 import android.os.Bundle
 import android.view.View
-import com.hnsh.gyps.R
-import com.hnsh.gyps.databinding.ActivityMainBinding
 import com.hsp.resource.ext.initBlueActionBar
 import com.swallow.fly.base.view.BaseActivity
+import com.swallow.gyps.R
+import com.swallow.gyps.databinding.ActivityMainBinding
 import com.swallow.gyps.msc.SignUpActivity
 import com.swallow.gyps.msc.VoiceInputActivity
 import dagger.hilt.android.AndroidEntryPoint

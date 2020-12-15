@@ -17,10 +17,16 @@ android {
         multiDexEnabled true
     }
 
-
+    signingConfigs {
+        debug {
+        }
+        release {
+        }
+    }
     buildTypes {
         debug {
             minifyEnabled false
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
@@ -64,7 +70,23 @@ dependencies {
     kapt rootProject.ext.dependencies["hilt-compiler"]
     implementation project(':msc')
     implementation project(':base')
-
-    // 图片选择库
-    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.5.9'
+}
+/**
+ * Debug测试环境下配置签名文件//没配置
+ */
+File debugPropFile = file('debugsigning.properties')
+if (debugPropFile.exists()) {
+    Properties props = new Properties()
+    props.load(new FileInputStream(debugPropFile))
+    if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+        android.signingConfigs.debug.storeFile = file(props['STORE_FILE'])
+        android.signingConfigs.debug.storePassword = props['STORE_PASSWORD']
+        android.signingConfigs.debug.keyAlias = props['KEY_ALIAS']
+        android.signingConfigs.debug.keyPassword = props['KEY_PASSWORD']
+    } else {
+        android.buildTypes.debug.signingConfig = null
+    }
+} else {
+    android.buildTypes.debug.signingConfig = null
 }

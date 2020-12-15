@@ -2,7 +2,6 @@ package com.swallow.fly.base
 
 import android.content.Context
 import androidx.multidex.MultiDexApplication
-import com.alibaba.android.arouter.launcher.ARouter
 import com.swallow.fly.BuildConfig
 import com.swallow.fly.base.app.AppDelegate
 import com.swallow.fly.ext.initLogger
@@ -29,19 +28,16 @@ abstract class BaseApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        initLogger(BuildConfig.DEBUG)
-        initARouter()
+        initLoggerConfig()
         AppManager.getInstance().init(this)
         appDelegate?.onCreate(this)
     }
 
-    private fun initARouter() {
-        if (BuildConfig.DEBUG) {
-            ARouter.openLog() // 开启日志
-            ARouter.openDebug() // 使用InstantRun的时候，需要打开该开关，上线之后关闭，否则有安全风险
-        }
-        ARouter.printStackTrace() // 打印日志的时候打印线程堆栈
-        ARouter.init(this)
+    /**
+     *初始化日志输出工具类（可根据具体需要进行重写）
+     */
+    open fun initLoggerConfig() {
+        initLogger(BuildConfig.DEBUG)
     }
 
     /**
