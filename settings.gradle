@@ -1,6 +1,5 @@
 include ':msc'
 include ':base'
-include ':CoreSDK'
 include ':swallow'
 include ':app'
 rootProject.name = "Gyps"

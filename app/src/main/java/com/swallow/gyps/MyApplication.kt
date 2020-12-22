@@ -4,6 +4,7 @@ import com.alibaba.android.arouter.launcher.ARouter
 import com.iflytek.cloud.SpeechConstant
 import com.iflytek.cloud.SpeechUtility
 import com.swallow.fly.base.BaseApplication
+import com.swallow.fly.ext.initLogger
 import com.swallow.gyps.common.AppConfig
 import dagger.hilt.android.HiltAndroidApp
 
@@ -27,6 +28,10 @@ class MyApplication : BaseApplication() {
      */
     private fun initMscSdk() {
         SpeechUtility.createUtility(this, "${SpeechConstant.APPID}=${AppConfig.MSC_APP_ID}")
+    }
+
+    override fun initLoggerConfig() {
+        initLogger(BuildConfig.DEBUG)
     }
 
     /**

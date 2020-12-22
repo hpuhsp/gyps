@@ -8,12 +8,10 @@ import android.view.View
 import android.widget.TextView
 import com.blankj.utilcode.util.NetworkUtils
 import com.hsp.resource.ext.initBlueActionBar
-import com.iflytek.cloud.InitListener
-import com.iflytek.cloud.RecognizerResult
-import com.iflytek.cloud.SpeechConstant
-import com.iflytek.cloud.SpeechError
+import com.iflytek.cloud.*
 import com.iflytek.cloud.ui.RecognizerDialog
 import com.iflytek.cloud.ui.RecognizerDialogListener
+import com.iflytek.cloud.util.VolumeUtil
 import com.swallow.fly.base.view.BaseActivity
 import com.swallow.fly.ext.logd
 import com.swallow.fly.ext.txt
@@ -49,12 +47,69 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
 
     override fun initView(savedInstanceState: Bundle?) {
         initBlueActionBar(true, "语音听写")
-        initInputUI()
         checkCameraPermission()
+    }
+
+    private fun initNoneUiConfig() {
+        //初始化识别无UI识别对象
+        //使用SpeechRecognizer对象，可根据回调消息自定义界面
+        val mIat = SpeechRecognizer.createRecognizer(this, object : InitListener {
+            override fun onInit(p0: Int) {
+                logd { "-------------------初始化成功------------>" }
+            }
+        });
+
+        //设置语法ID和 SUBJECT 为空，以免因之前有语法调用而设置了此参数；
+        // 或直接清空所有参数，具体可参考 DEMO 的示例。
+        mIat.setParameter(SpeechConstant.CLOUD_GRAMMAR, null)
+        mIat.setParameter(SpeechConstant.SUBJECT, null)
+        //设置返回结果格式，目前支持json,xml以及plain 三种格式，其中plain为纯听写文本内容
+        mIat.setParameter(SpeechConstant.RESULT_TYPE, "json")
+        //此处engineType为“cloud”
+        mIat.setParameter(SpeechConstant.ENGINE_TYPE, "cloud")
+        //设置语音输入语言，zh_cn为简体中文
+        mIat.setParameter(SpeechConstant.LANGUAGE, "zh_cn")
+        //设置结果返回语言
+        mIat.setParameter(SpeechConstant.ACCENT, "mandarin")
+        // 设置语音前端点:静音超时时间，单位ms，即用户多长时间不说话则当做超时处理
+        //取值范围{1000～10000}
+        mIat.setParameter(SpeechConstant.VAD_BOS, "4000")
+        //设置语音后端点:后端点静音检测时间，单位ms，即用户停止说话多长时间内即认为不再输入，
+        //自动停止录音，范围{0~10000}
+        mIat.setParameter(SpeechConstant.VAD_EOS, "1000")
+        //设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
+        mIat.setParameter(SpeechConstant.ASR_PTT, "1")
+
+        //开始识别，并设置监听器
+        mIat.startListening(object : RecognizerListener {
+            override fun onVolumeChanged(p0: Int, p1: ByteArray?) {
+                val computeVolume = VolumeUtil.computeVolume(p1, p0)
+                logd { "----------------当前音量---------->${computeVolume}" }
+            }
+
+            override fun onBeginOfSpeech() {
+                logd { "------------开始听写------->" }
+            }
+
+            override fun onEndOfSpeech() {
+                logd { "------------结束听写------->" }
+            }
+
+            override fun onResult(p0: RecognizerResult?, p1: Boolean) {
+                logd { "-----------------------onResult----------->${p0?.resultString}" }
+            }
+
+            override fun onError(p0: SpeechError?) {
+            }
+
+            override fun onEvent(p0: Int, p1: Int, p2: Int, p3: Bundle?) {
+            }
+        })
     }
 
     private fun checkCameraPermission() {
         if (EasyPermissions.hasPermissions(this, *RECORD_PERMISSIONS)) {
+            initInputUI()
         } else {
             EasyPermissions.requestPermissions(
                 this,
@@ -106,11 +161,6 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
                 logd { "-------------errorDescription------>${p0?.errorDescription}" }
             }
         })
-        val tag = mIatDialog.window?.decorView?.findViewWithTag<View>("textlink")
-        if (null != tag) {
-            val txt = tag as TextView
-            txt.text = ""
-        }
     }
 
     override fun initData(savedInstanceState: Bundle?) {
@@ -118,7 +168,9 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.btn_input -> startVoiceInput()
+            R.id.btn_input -> {
+                startVoiceInput()
+            }
             R.id.btn_clear -> binding.etContent.setText("")
         }
     }
@@ -127,7 +179,6 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
      * 开始听写
      */
     private fun startVoiceInput() {
-
         if (!mIatDialog.isShowing) {
             val engineType = if (NetWorkHelper.isNetworkConnected(this)) "cloud" else "local"
             mIatDialog.setParameter(SpeechConstant.ENGINE_TYPE, engineType)
@@ -145,6 +196,7 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        initInputUI()
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {

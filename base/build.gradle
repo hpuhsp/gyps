@@ -29,8 +29,8 @@ android {
 
 dependencies {
     api fileTree(dir: "libs", include: ["*.jar"])
-    api project(':swallow')
-//    api 'com.fly:swallow:1.0.2'
+//    api project(':swallow')
+    api 'com.fly:swallow:1.0.3'
     //================================= ARouter路由框架 ===========================================//
     api rootProject.ext.dependencies["arouter"]
     // 图片选择库
