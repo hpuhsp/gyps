@@ -154,7 +154,7 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
      * 开始验证
      */
     private fun startVerify() {
-        showLoading("开始人脸验证...")
+        showLoading("开始人脸验证...", true)
         // 清空参数
         mIdVerifier.setParameter(SpeechConstant.PARAMS, null)
         // 设置会话场景
@@ -214,7 +214,7 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
             ToastUtils.showShort("请先选择图片或者拍照!")
             return
         }
-        showLoading("开始人脸注册...")
+        showLoading("开始人脸注册...", true)
 
         mIdVerifier.setParameter(SpeechConstant.PARAMS, null)
         // 设置会话场景

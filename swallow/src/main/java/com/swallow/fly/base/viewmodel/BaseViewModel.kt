@@ -26,6 +26,14 @@ open class BaseViewModel : ViewModel(), ViewBehavior, LifecycleObserver {
         _pageStateEvent.value = BaseStateEvent(event = EventArgs.SHOW_LOADING, message = msg)
     }
 
+    override fun showLoading(msg: Int, cancelEnable: Boolean) {
+        _pageStateEvent.value = BaseStateEvent(
+            event = EventArgs.SHOW_LOADING,
+            message = msg,
+            cancelEnable = cancelEnable
+        )
+    }
+
     override fun showConfirmDialog(content: String) {
         _pageStateEvent.value = BaseStateEvent(
             event = EventArgs.SHOW_CONFIRM,

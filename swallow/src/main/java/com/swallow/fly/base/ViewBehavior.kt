@@ -11,9 +11,14 @@ import androidx.annotation.Nullable
  */
 interface ViewBehavior {
     /**
-     * 正在加载
+     * 显示加载
      */
     fun showLoading(@Nullable msg: Int)
+
+    /**
+     * 显示加载，cancelEnable 进度框是否可取消
+     */
+    fun showLoading(@Nullable msg: Int, cancelEnable: Boolean)
 
     /**
      * 显示确认弹框

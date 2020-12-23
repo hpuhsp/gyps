@@ -2,7 +2,6 @@ package com.swallow.fly.base
 
 import android.content.Context
 import androidx.multidex.MultiDexApplication
-import com.swallow.fly.BuildConfig
 import com.swallow.fly.base.app.AppDelegate
 import com.swallow.fly.ext.initLogger
 import com.swallow.fly.utils.AppManager
@@ -34,10 +33,10 @@ abstract class BaseApplication : MultiDexApplication() {
     }
 
     /**
-     *初始化日志输出工具类（可根据具体需要进行重写）
+     *初始化日志输出工具类（可根据具体需要进行重写）,默认为true
      */
     open fun initLoggerConfig() {
-        initLogger(BuildConfig.DEBUG)
+        initLogger(true)
     }
 
     /**

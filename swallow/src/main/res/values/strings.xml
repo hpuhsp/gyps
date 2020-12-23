@@ -9,4 +9,5 @@
     <string name="uploading_attachment">正在上传附件…</string>
     <string name="compress_files">正在压缩文件…</string>
     <string name="app_version_extra">App版本：V%1$s</string>
+    <string name="loading_data">正在加载…</string>
 </resources>

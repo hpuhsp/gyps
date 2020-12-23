@@ -16,7 +16,8 @@ data class BaseStateEvent(
     var content: String = "",
     var errorMsg: String? = null,
     var bundle: Bundle? = null,
-    var toastMsg: String = ""
+    var toastMsg: String = "",
+    var cancelEnable: Boolean = true
 )
 
 enum class EventArgs {

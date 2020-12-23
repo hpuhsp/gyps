@@ -9,4 +9,6 @@ package com.swallow.fly.base
  */
 interface IActivity {
     fun useEventBus(): Boolean
+
+    fun showSystemProgress(): Boolean
 }

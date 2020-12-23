@@ -32,7 +32,11 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.btn_face_identify -> SignUpActivity.start(this)
+//            R.id.btn_face_identify -> SignUpActivity.start(this)
+            R.id.btn_face_identify -> {
+                showLoading("正在加载...", true)
+            }
+
             R.id.btn_voice_input -> VoiceInputActivity.start(this)
         }
     }

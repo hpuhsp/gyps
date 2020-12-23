@@ -3,6 +3,7 @@ package com.swallow.fly.base.view
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -26,6 +27,7 @@ import com.swallow.fly.R
 import com.swallow.fly.base.IActivity
 import com.swallow.fly.base.event.EventArgs
 import com.swallow.fly.base.viewmodel.BaseViewModel
+import com.swallow.fly.widget.CustomProgressDialog
 import org.greenrobot.eventbus.EventBus
 import java.lang.reflect.ParameterizedType
 
@@ -38,27 +40,31 @@ import java.lang.reflect.ParameterizedType
  */
 abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatActivity(), IActivity {
     /**
-     * 定义权限
+     * 基础动态权限分类
      */
     companion object {
-
+        // 读写
         val STORAGE_PERMISSIONS = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
 
+        // 相机访问
         val CAMERA_PERMISSIONS = arrayOf(
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
 
-        val permsContact = arrayOf(
+        // 通讯录
+        val CONTACTS_PERMISSIONS = arrayOf(
             Manifest.permission.WRITE_CONTACTS,
             Manifest.permission.GET_ACCOUNTS,
             Manifest.permission.READ_CONTACTS
         )
-        val permsPhone = arrayOf(
+
+        // 拨号
+        val PHONE_CALL_PERMISSIONS = arrayOf(
             Manifest.permission.READ_CALL_LOG,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.CALL_PHONE,
@@ -67,32 +73,36 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
             Manifest.permission.PROCESS_OUTGOING_CALLS,
             Manifest.permission.ADD_VOICEMAIL
         )
-        val permsCalendar = arrayOf(
+
+        // 日历
+        val CALENDAR_PERMISSIONS = arrayOf(
             Manifest.permission.READ_CALENDAR,
             Manifest.permission.WRITE_CALENDAR
         )
-        val permsCamera = arrayOf(Manifest.permission.CAMERA)
-        val permsSensors = arrayOf(Manifest.permission.BODY_SENSORS)
-        val permsLocation = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        val permsStorage = arrayOf(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
+
+        // 录音
         val RECORD_PERMISSIONS = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.RECORD_AUDIO
         )
-        val permsSms = arrayOf(
+
+        // 短信收发
+        val SMS_PERMISSIONS = arrayOf(
             Manifest.permission.READ_SMS,
             Manifest.permission.RECEIVE_WAP_PUSH,
             Manifest.permission.RECEIVE_MMS,
             Manifest.permission.RECEIVE_SMS,
             Manifest.permission.SEND_SMS
         )
+
+        // 位置
+        val GPS_PERMISSIONS = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_WIFI_STATE
+        )
+
 
         var mToast: Toast? = null
     }
@@ -124,7 +134,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     /**
      * 可进行扩展为自定义Dialog
      */
-    private var loadingDialog: ProgressDialog? = null
+    private lateinit var loadingDialog: Dialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,8 +162,17 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
 
         initImmersionBar()
         initBaseActionEvent()
+        initBaseDialog()
         initView(savedInstanceState)
         initData(savedInstanceState)
+    }
+
+    private fun initBaseDialog() {
+        loadingDialog = if (showSystemProgress()) {
+            ProgressDialog(this)
+        } else {
+            CustomProgressDialog(this@BaseActivity)
+        }
     }
 
     open fun beforehandInit() {
@@ -170,7 +189,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     private fun initBaseActionEvent() {
         mViewModel.pageStateEvent.observe(this, Observer {
             when (it.event) {
-                EventArgs.SHOW_LOADING -> showLoading(getString(it.message))
+                EventArgs.SHOW_LOADING -> showLoading(getString(it.message), it.cancelEnable)
                 EventArgs.DO_NOTHING, EventArgs.HIDE_DIALOG -> hideDialog()
                 EventArgs.SHOW_ERROR -> {
                     hideDialog()
@@ -272,14 +291,14 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     /**
      * 显示进度框
      */
-    fun showLoading(msg: String?) {
-        if (null == loadingDialog) {
-            loadingDialog = ProgressDialog(this@BaseActivity)
+    open fun showLoading(msg: String?, cancelEnable: Boolean) {
+        loadingDialog.setCancelable(cancelEnable)
+        if (loadingDialog is CustomProgressDialog) {
+            (loadingDialog as CustomProgressDialog).setMessage(msg)
+        } else if (loadingDialog is ProgressDialog) {
+            (loadingDialog as ProgressDialog).setMessage(msg ?: "")
         }
-        if (!msg.isNullOrEmpty()) {
-            loadingDialog?.setMessage(msg)
-        }
-        loadingDialog?.show()
+        loadingDialog.show()
     }
 
     /**
@@ -314,8 +333,8 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     /**
      * 隐藏进度框
      */
-    fun hideDialog() {
-        loadingDialog?.dismiss()
+    open fun hideDialog() {
+        loadingDialog.dismiss()
     }
 
     override fun onDestroy() {
@@ -323,10 +342,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         if (useEventBus()) {
             EventBus.getDefault().unregister(this)
         }
-        if (null != loadingDialog) {
-            loadingDialog?.dismiss()
-            loadingDialog = null
-        }
+        loadingDialog.dismiss()
     }
 
     /**
@@ -396,6 +412,10 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     }
 
     override fun useEventBus(): Boolean {
+        return false
+    }
+
+    override fun showSystemProgress(): Boolean {
         return false
     }
 }
