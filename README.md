@@ -33,6 +33,7 @@ implementation 'com.fly:swallow:1.0.3'
 ### Usage
 
 * Step1
+
 1、定义GlobalConfiguration类，并在AndroidManifest.xml清单文件中注册
 ```
 @Singleton
