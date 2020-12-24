@@ -126,6 +126,10 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
                 logd { "-----------初始化UI组件----------->" }
             }
         })
+        if (null == mIatDialog) {
+            showToast("初始化SDK失败~")
+            return
+        }
         mIatDialog.setParameter(SpeechConstant.PARAMS, null)
         //设置语法ID和 SUBJECT 为空，以免因之前有语法调用而设置了此参数；或直接清空所有参数，具体可参考 DEMO 的示例。
         mIatDialog.setParameter(SpeechConstant.CLOUD_GRAMMAR, null)
