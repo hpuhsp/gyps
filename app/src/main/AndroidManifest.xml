@@ -27,6 +27,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.swallow.gyps.app.GlobalConfiguration"
+            android:value="ConfigModule" />
     </application>
 
 </manifest>

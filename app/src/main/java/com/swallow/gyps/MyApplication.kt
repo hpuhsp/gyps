@@ -37,7 +37,7 @@ class MyApplication : BaseApplication() {
     /**
      * 初始化ARouter路由框架（可根据具体需要进行重写）
      */
-    open fun initARouterConfig() {
+    private fun initARouterConfig() {
         if (BuildConfig.DEBUG) {
             ARouter.openLog() // 开启日志
             ARouter.openDebug() // 使用InstantRun的时候，需要打开该开关，上线之后关闭，否则有安全风险

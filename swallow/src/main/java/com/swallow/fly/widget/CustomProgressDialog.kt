@@ -19,16 +19,17 @@ class CustomProgressDialog(context: Context) :
     AppCompatDialog(context) {
     private var customView: View =
         LayoutInflater.from(context).inflate(R.layout.base_loading_progress, null)
-    private var tvDesc: TextView? = null
+    private var tvDesc: TextView
+    private var showDesc = false
 
     init {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         this.setContentView(customView)
         val window = window
         if (null != window) {
-            val dialogWidth = (ScreenUtils.getScreenWidth() * 0.50f).toInt()
+            val dialogWidth = (ScreenUtils.getScreenWidth() * 0.25f).toInt()
             window.setGravity(Gravity.CENTER)
-            window.setLayout(dialogWidth, (dialogWidth * 0.75f).toInt())
+            window.setLayout(dialogWidth, dialogWidth)
             window.setDimAmount(0f)
         }
 
@@ -43,6 +44,8 @@ class CustomProgressDialog(context: Context) :
      * 设置显示文案
      */
     open fun setMessage(message: String?) {
-        tvDesc?.text = message ?: ""
+        showDesc = true
+        tvDesc.visibility = View.VISIBLE
+        tvDesc.text = message ?: "正在加载..."
     }
 }

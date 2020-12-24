@@ -189,7 +189,13 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     private fun initBaseActionEvent() {
         mViewModel.pageStateEvent.observe(this, Observer {
             when (it.event) {
-                EventArgs.SHOW_LOADING -> showLoading(getString(it.message), it.cancelEnable)
+                EventArgs.SHOW_LOADING -> {
+                    if (it.message == -1) {
+                        showLoading("", it.cancelEnable)
+                    } else {
+                        showLoading(getString(it.message), it.cancelEnable)
+                    }
+                }
                 EventArgs.DO_NOTHING, EventArgs.HIDE_DIALOG -> hideDialog()
                 EventArgs.SHOW_ERROR -> {
                     hideDialog()
@@ -293,9 +299,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
      */
     open fun showLoading(msg: String?, cancelEnable: Boolean) {
         loadingDialog.setCancelable(cancelEnable)
-        if (loadingDialog is CustomProgressDialog) {
-            (loadingDialog as CustomProgressDialog).setMessage(msg)
-        } else if (loadingDialog is ProgressDialog) {
+        if (loadingDialog is ProgressDialog) {
             (loadingDialog as ProgressDialog).setMessage(msg ?: "")
         }
         loadingDialog.show()
@@ -415,8 +419,11 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         return false
     }
 
+    /**
+     * 是否显示系统进度条控件，默认为false，显示自定义菊花转
+     */
     override fun showSystemProgress(): Boolean {
-        return false
+        return true
     }
 }
 
