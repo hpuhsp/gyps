@@ -146,6 +146,8 @@ dependencies {
 }
 ```
 
-2、@AndroidEntryPoint、 @ViewModelInject、@Inject  注解声明（不可少）
+* Step3  开始使用
+
+> @AndroidEntryPoint、 @ViewModelInject、@Inject  注解声明（不可少）
 可参考Dagger-Hilt用法及Demo中实现方式（MainActivity、MainRepository、MainViewModel）
 
