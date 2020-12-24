@@ -5,6 +5,7 @@
 >全面支持androidX
 
 ### Technology
+
 * Retrofit 网络请求
 * 协程Coroutine及1.3.2发布后新增Flow库
 * ViewBinding 视图绑定
@@ -19,6 +20,7 @@
 
 
 ### Features
+
 * 网络可动态配置，支持域名动态切换、自定义拦截处理及日志打印策略。
 * 支持组件化方案，模块化动态配置。
 * 根据kotlin语言特性，提供多种扩展函数。
@@ -32,9 +34,10 @@ implementation 'com.fly:swallow:1.0.3'
 
 ### Usage
 
-* Step1
+* Step1 创建必要的类
 
 1、定义GlobalConfiguration类，并在AndroidManifest.xml清单文件中注册
+
 ```
 @Singleton
 class GlobalConfiguration : ConfigModule {
@@ -58,7 +61,9 @@ class GlobalConfiguration : ConfigModule {
 ```
 <meta-data    android:name="com.swallow.gyps.app.GlobalConfiguration"    android:value="ConfigModule" />
 ```
+
 2、创建AppLifecycleImpl类，绑定应用生命周期。
+
 ```
 @Singleton
 class AppLifecycleImpl : AppLifecycle {
@@ -75,7 +80,9 @@ class AppLifecycleImpl : AppLifecycle {
     }
 }
 ```
+
 3、创建HttpHandleImpl类，配置网络请求参数
+
 ```
 @Singleton
 class HttpHandlerImpl : GlobalHttpHandler {
@@ -108,5 +115,37 @@ class HttpHandlerImpl : GlobalHttpHandler {
     }
 }
 ```
+
 4、继承 BaseApplication 并添加@HiltAndroidApp 注解，如示例中MyApplication实现方式。
+
+* Step2 配置build.gradle
+
+1、module下build.gradle文件配置，可参考Demo的app下build.gradle内容
+
+```
+apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'kotlin-kapt'
+...
+android {
+    ...
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    api fileTree(dir: "libs", include: ["*.jar"])
+    //================================= Dagger Hilt 依赖注入 ======================================//
+    api rootProject.ext.dependencies["hilt-android"]
+    api rootProject.ext.dependencies["hilt-lifecycle-viewmodel"]
+    kapt rootProject.ext.dependencies["hilt-android-compiler"]
+    kapt rootProject.ext.dependencies["hilt-compiler"]
+    
+    implementation 'com.fly:swallow:1.0.3'
+    ....
+}
+```
+
+2、@AndroidEntryPoint、 @ViewModelInject、@Inject  注解声明（不可少）
+可参考Dagger-Hilt用法及Demo中实现方式（MainActivity、MainRepository、MainViewModel）
 
