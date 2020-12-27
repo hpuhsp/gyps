@@ -15,6 +15,7 @@ import javax.inject.Singleton
 @Singleton
 class GlobalConfiguration : ConfigModule {
     override fun applyOptions(context: Context?, builder: GlobalConfigModule.Builder) {
+        // App域名、网络参数配置
         builder.baseurl(object : BaseUrl {
             override fun url(): HttpUrl? {
                 return "http://www.github.com/".toHttpUrlOrNull()

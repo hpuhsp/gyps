@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
+import com.blankj.utilcode.util.ToastUtils
 import com.google.android.material.snackbar.Snackbar
 import com.gyf.immersionbar.ImmersionBar
 import com.swallow.fly.R
@@ -102,9 +103,6 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_WIFI_STATE
         )
-
-
-        var mToast: Toast? = null
     }
 
     open fun getLayoutRes(): Int {
@@ -335,6 +333,18 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     }
 
     /**
+     * 显示提示Dialog
+     */
+    open fun showTipsDialog(message: String?, cancelEnable: Boolean) {
+        AlertDialog.Builder(this).setTitle(getString(R.string.default_dialog_title))
+            .setMessage(message)
+            .setCancelable(cancelEnable)
+            .setPositiveButton(
+                getString(R.string.confirm)
+            ) { dialog, _ -> dialog?.dismiss() }
+            .create().show()
+    }
+    /**
      * 隐藏进度框
      */
     open fun hideDialog() {
@@ -352,16 +362,10 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     /**
      * 显示Toast
      */
-    @SuppressLint("ShowToast")
     open fun showToast(message: CharSequence?) {
-        if (mToast == null) {
-            mToast = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG)
+        message?.let {
+            ToastUtils.showShort(it)
         }
-        if (message.isNullOrEmpty()) {
-            return
-        }
-        mToast?.setText(message)
-        mToast?.show()
     }
 
     /**

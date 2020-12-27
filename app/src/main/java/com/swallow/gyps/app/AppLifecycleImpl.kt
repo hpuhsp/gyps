@@ -8,9 +8,12 @@ import javax.inject.Singleton
 @Singleton
 class AppLifecycleImpl : AppLifecycle {
     override fun attachBaseContext(base: Context) {
+
     }
 
     override fun onCreate(application: Application) {
+        // Module下应用级初始化操作
+        // initARouter()
     }
 
     /**
