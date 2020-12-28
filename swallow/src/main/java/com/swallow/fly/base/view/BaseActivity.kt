@@ -159,8 +159,8 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         mViewModel = ViewModelProvider(this).get(modelClass)
 
         initImmersionBar()
-        initBaseActionEvent()
         initBaseDialog()
+        initBaseActionEvent()
         initView(savedInstanceState)
         initData(savedInstanceState)
     }
@@ -254,9 +254,8 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         return keyBordEnable
     }
 
-    /**
-     * ==============================权限相关===================================
-     */
+/*======================================生命周期相关===============================================*/
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -267,10 +266,6 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-
-
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -287,11 +282,15 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         return super.onOptionsItemSelected(item)
     }
 
-    //////////////////////////////////////////////////////////////////////////
-    //                                                                      //
-    //                   公用UI交互组件                                      //
-    //                                                                      //
-    //////////////////////////////////////////////////////////////////////////
+    override fun onDestroy() {
+        super.onDestroy()
+        if (useEventBus()) {
+            EventBus.getDefault().unregister(this)
+        }
+        loadingDialog.dismiss()
+    }
+
+/*======================================UI相关====================================================*/
     /**
      * 显示进度框
      */
@@ -299,6 +298,8 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         loadingDialog.setCancelable(cancelEnable)
         if (loadingDialog is ProgressDialog) {
             (loadingDialog as ProgressDialog).setMessage(msg ?: "")
+        } else if (loadingDialog is CustomProgressDialog) {
+            (loadingDialog as CustomProgressDialog).setMessage(msg)
         }
         loadingDialog.show()
     }
@@ -344,6 +345,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
             ) { dialog, _ -> dialog?.dismiss() }
             .create().show()
     }
+
     /**
      * 隐藏进度框
      */
@@ -351,13 +353,6 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         loadingDialog.dismiss()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (useEventBus()) {
-            EventBus.getDefault().unregister(this)
-        }
-        loadingDialog.dismiss()
-    }
 
     /**
      * 显示Toast
@@ -371,7 +366,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     /**
      * 显示Snackbar
      */
-    private fun makeSnackbar(view: View, message: CharSequence) {
+    private fun makeSnackBar(view: View, message: CharSequence) {
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }
 
@@ -380,7 +375,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     /**
      * 隱藏软键盘
      */
-    fun hideSoftKeyBoard() {
+    open fun hideSoftKeyBoard() {
         val localView = currentFocus
         if (mInputMethodManager == null) {
             mInputMethodManager =
@@ -390,6 +385,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
             mInputMethodManager?.hideSoftInputFromWindow(localView.windowToken, 2)
         }
     }
+/*======================================工具方法===================================================*/
 
     /**
      * 获取App版本名
@@ -427,7 +423,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
      * 是否显示系统进度条控件，默认为false，显示自定义菊花转
      */
     override fun showSystemProgress(): Boolean {
-        return true
+        return false
     }
 }
 

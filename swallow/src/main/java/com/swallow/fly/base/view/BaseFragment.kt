@@ -2,6 +2,7 @@ package com.swallow.fly.base.view
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -9,16 +10,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
+import com.blankj.utilcode.util.ToastUtils
 import com.google.android.material.snackbar.Snackbar
 import com.swallow.fly.R
-import com.swallow.fly.base.IView
+import com.swallow.fly.base.IFragment
 import com.swallow.fly.base.event.EventArgs
 import com.swallow.fly.base.viewmodel.BaseViewModel
+import com.swallow.fly.widget.CustomProgressDialog
 import org.greenrobot.eventbus.EventBus
 import java.lang.Exception
 import java.lang.reflect.ParameterizedType
@@ -30,7 +32,7 @@ import java.lang.reflect.ParameterizedType
  * @CreateTime:     2020/8/24 10:06
  * @UpdateRemark:   更新说明：
  */
-abstract class BaseFragment<VB : ViewBinding> : Fragment(), IView {
+abstract class BaseFragment<VB : ViewBinding> : Fragment(), IFragment {
 
     @Nullable
     var binding: VB? = null
@@ -40,7 +42,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IView {
     /**
      * 可进行扩展为自定义Dialog
      */
-    private var loadingDialog: ProgressDialog? = null
+    private lateinit var loadingDialog: Dialog
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -87,6 +89,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initBaseDialog()
         initBaseActionEvent()
         initView()
     }
@@ -98,7 +101,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IView {
     private fun initBaseActionEvent() {
         getViewModel()?.pageStateEvent?.observe(this, Observer {
             when (it.event) {
-                EventArgs.SHOW_LOADING -> showLoading(getString(it.message))
+                EventArgs.SHOW_LOADING -> showLoading(getString(it.message), it.cancelEnable)
                 EventArgs.DO_NOTHING, EventArgs.HIDE_DIALOG -> hideDialog()
                 EventArgs.SHOW_ERROR -> {
                     showToast(it.errorMsg)
@@ -123,10 +126,29 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IView {
         })
     }
 
+    private fun initBaseDialog() {
+        loadingDialog = if (showSystemProgress()) {
+            ProgressDialog(mContext)
+        } else {
+            CustomProgressDialog(mContext)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (useEventBus()) {
+            EventBus.getDefault().unregister(this)
+        }
+        loadingDialog.dismiss()
+    }
+
+    /*=======================================抽象方法==============================================*/
+    abstract fun getViewModel(): BaseViewModel?
+
     abstract fun getLayoutId(): Int
 
     abstract fun initView()
-
+    /*=======================================重写方法==============================================*/
     /**
      * 是否开启使用ViewBinding
      */
@@ -134,19 +156,27 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IView {
         return true
     }
 
-    abstract fun getViewModel(): BaseViewModel?
+    override fun useEventBus(): Boolean {
+        return false
+    }
+
+    /**
+     * 是否显示系统进度条控件，默认为false，显示自定义菊花转
+     */
+    override fun showSystemProgress(): Boolean {
+        return false
+    }
+    /*=======================================UI方法==============================================*/
 
     /**
      * 显示进度框
      */
-    private fun showLoading(msg: String?) {
-        if (null == loadingDialog) {
-            loadingDialog = ProgressDialog(mContext)
+    open fun showLoading(msg: String?, cancelEnable: Boolean) {
+        loadingDialog.setCancelable(cancelEnable)
+        if (loadingDialog is ProgressDialog) {
+            (loadingDialog as ProgressDialog).setMessage(msg ?: "")
         }
-        if (!msg.isNullOrEmpty()) {
-            loadingDialog?.setMessage(msg)
-        }
-        loadingDialog?.show()
+        loadingDialog.show()
     }
 
     /**
@@ -185,41 +215,21 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IView {
         loadingDialog?.dismiss()
     }
 
-    fun useEventBus(): Boolean {
-        return false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (useEventBus()) {
-            EventBus.getDefault().unregister(this)
-        }
-        if (null != loadingDialog) {
-            loadingDialog?.dismiss()
-            loadingDialog = null
-        }
-    }
 
     /**
      * 显示Toast
      */
     @SuppressLint("ShowToast")
     open fun showToast(message: CharSequence?) {
-        if (BaseActivity.mToast == null) {
-            BaseActivity.mToast =
-                Toast.makeText(activity?.applicationContext, message, Toast.LENGTH_SHORT)
+        message?.let {
+            ToastUtils.showShort(it)
         }
-        if (message.isNullOrEmpty()) {
-            return
-        }
-        BaseActivity.mToast?.setText(message)
-        BaseActivity.mToast?.show()
     }
 
     /**
      * 显示Snackbar
      */
-    private fun makeSnackbar(view: View, message: CharSequence) {
+    open fun makeSnackbar(view: View, message: CharSequence) {
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }
 }

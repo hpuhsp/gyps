@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.gyf.immersionbar.ImmersionBar
 import com.swallow.fly.R
-import com.swallow.fly.base.IView
+import com.swallow.fly.base.IActivity
 import com.swallow.fly.base.viewmodel.BaseViewModel
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -31,7 +31,7 @@ import java.lang.reflect.Type
  * @CreateTime:     2020/9/4 11:45
  * @UpdateRemark:   更新说明：
  */
-abstract class FastBaseActivity<VM : BaseViewModel> : AppCompatActivity(), IView {
+abstract class FastBaseActivity<VM : BaseViewModel> : AppCompatActivity(), IActivity {
 
     /**
      * 定义权限

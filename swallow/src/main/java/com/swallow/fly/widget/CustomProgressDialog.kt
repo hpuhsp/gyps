@@ -27,7 +27,7 @@ class CustomProgressDialog(context: Context) :
         this.setContentView(customView)
         val window = window
         if (null != window) {
-            val dialogWidth = (ScreenUtils.getScreenWidth() * 0.25f).toInt()
+            val dialogWidth = (ScreenUtils.getScreenWidth() * 0.35f).toInt()
             window.setGravity(Gravity.CENTER)
             window.setLayout(dialogWidth, dialogWidth)
             window.setDimAmount(0f)
@@ -46,6 +46,6 @@ class CustomProgressDialog(context: Context) :
     open fun setMessage(message: String?) {
         showDesc = true
         tvDesc.visibility = View.VISIBLE
-        tvDesc.text = message ?: "正在加载..."
+        tvDesc.text = if (message.isNullOrEmpty()) "正在加载..." else message
     }
 }
