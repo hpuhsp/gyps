@@ -108,7 +108,7 @@ class MyApplication : BaseApplication() {
 #### 4、MVVM模式下进行开发
 
 ![1b622821b9f386ba76924d2a3d551fe7.png](images/54432gg.png)
-基于Dagger-Hilt依赖注入实现标准化、松耦合等特性MVVM架构下进行开发。如：Activity/Fragment 需要添加@AndroidEntryPoint注解。本地化存储及注入类全局初始化策略可以参考设备项目‘包名.app/’目录下具体实现类。功能页面开发构成方式可以参见Gyps项目主页健康上报功能或者设备、屠宰（包含Room数据库模块）项目的业务功能实现方式。
+基于Dagger-Hilt依赖注入实现标准化、松耦合等特性MVVM架构下进行开发。如：Activity/Fragment 需要添加@AndroidEntryPoint注解。本地化存储及注入类全局初始化策略可以参考设备项目‘包名.app/’目录下具体实现类。功能页面开发构成方式可以参见Gyps项目主页健康上报功能实现方式。
 
 #### 5、全局文件配置（可选）
 
