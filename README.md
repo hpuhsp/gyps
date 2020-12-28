@@ -4,6 +4,9 @@
 
 >全面支持androidX
 
+[![Download](http://img.shields.io/travis/hpuhsp/Gyps.svg?branch=master)](https://github.com/hpuhsp/Gyps)
+[![Download](https://api.bintray.com/packages/beijingwahaha/maven/Gyps/images/download.svg?version=1.0.5) ](https://bintray.com/beijingwahaha/maven/Gyps/1.0.5/link)
+
 ### 主要技术实现
 
 * Retrofit 网络请求
