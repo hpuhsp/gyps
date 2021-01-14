@@ -33,6 +33,7 @@ abstract class BaseApplication : MultiDexApplication() {
     }
 
     /**
+     * can override
      *初始化日志输出工具类（可根据具体需要进行重写）,默认为true
      */
     open fun initLoggerConfig() {

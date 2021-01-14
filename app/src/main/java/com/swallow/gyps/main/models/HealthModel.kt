@@ -24,6 +24,6 @@ data class HealthModel(
     val answer9: String = "否",
     val blongSystem: String = "xxxt",
     val orgID: String = "001-005-009-005",
-    val street: String = "河南省郑东新区绿地双子塔3301",
+    val street: String = "河南省郑州市郑东新区绿地双子塔3301",
     val userID: String = "365545"
 ) : Serializable

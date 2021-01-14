@@ -38,7 +38,7 @@
 2、添加远程依赖
 
 ```
-implementation 'com.fly:swallow:1.0.5'
+implementation 'com.fly:swallow:1.0.6'
 ```
 
 #### 2、配置build.gradle文件
