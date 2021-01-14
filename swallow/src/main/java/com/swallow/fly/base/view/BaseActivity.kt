@@ -105,19 +105,24 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         )
     }
 
-    open fun getLayoutRes(): Int {
-        return 0
-    }
-
-    lateinit var binding: VB
-
     /**
+     * ViewModel
      * 考虑Kotlin的扩展支持，下面方式更为方便。也可不对ViewModel以泛型进行基类封装
      *    private val loginViewModel by viewModels<LoginViewModel>()
      */
     abstract val modelClass: Class<VM>
 
     lateinit var mViewModel: VM
+
+    /**
+     * ViewBinding
+     */
+    private var _binding: ViewBinding? = null
+    abstract val bindingInflater: (LayoutInflater) -> VB
+
+    @Suppress("UNCHECKED_CAST")
+    protected val binding: VB
+        get() = _binding as VB
 
     /**
      * 是否显示深色标题栏
@@ -140,22 +145,8 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
             EventBus.getDefault().register(this)
         }
         beforehandInit()
-        try {
-            // 采用反射
-            val type = javaClass.genericSuperclass
-            if (type is ParameterizedType) {
-                val clazz = type.actualTypeArguments[1] as Class<*>
-                val method = clazz.getMethod("inflate", LayoutInflater::class.java)
-                binding = method.invoke(null, layoutInflater) as VB
-                setContentView(binding.root)
-            } else {
-                setContentView(getLayoutRes())
-            }
-        } catch (e: Exception) {
-//            if (e is InflateException) throw e
-            e.printStackTrace()
-        }
-
+        _binding = bindingInflater.invoke(layoutInflater)
+        setContentView(requireNotNull(_binding).root)
         mViewModel = ViewModelProvider(this).get(modelClass)
 
         initImmersionBar()
@@ -173,6 +164,9 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         }
     }
 
+    /**
+     * can override
+     */
     open fun beforehandInit() {
 
     }
@@ -288,6 +282,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
             EventBus.getDefault().unregister(this)
         }
         loadingDialog.dismiss()
+        _binding = null
     }
 
 /*======================================UI相关====================================================*/

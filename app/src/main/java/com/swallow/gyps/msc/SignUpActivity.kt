@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.drawToBitmap
 import com.blankj.utilcode.util.ImageUtils
@@ -41,6 +42,10 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
 
     override val modelClass: Class<SignUpViewModel>
         get() = SignUpViewModel::class.java
+
+
+    override val bindingInflater: (LayoutInflater) -> ActivitySignUpBinding
+        get() = ActivitySignUpBinding::inflate
 
     companion object {
         fun start(context: Context) {
@@ -262,4 +267,5 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
         super.onStop()
 
     }
+
 }

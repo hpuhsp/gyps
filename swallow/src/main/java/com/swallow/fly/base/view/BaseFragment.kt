@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.blankj.utilcode.util.ToastUtils
 import com.google.android.material.snackbar.Snackbar
@@ -32,10 +33,24 @@ import java.lang.reflect.ParameterizedType
  * @CreateTime:     2020/8/24 10:06
  * @UpdateRemark:   更新说明：
  */
-abstract class BaseFragment<VB : ViewBinding> : Fragment(), IFragment {
+abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), IFragment {
 
-    @Nullable
-    var binding: VB? = null
+    /**
+     * ViewModel
+     */
+    abstract val modelClass: Class<VM>
+
+    private lateinit var mViewModel: VM
+
+    /**
+     * ViewBinding
+     */
+    private var _binding: ViewBinding? = null
+    abstract val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> VB
+
+    @Suppress("UNCHECKED_CAST")
+    protected val binding: VB
+        get() = _binding as VB
 
     lateinit var mContext: Context
 
@@ -61,30 +76,9 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IFragment {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        if (useBinding()) {
-            try {
-                val type = javaClass.genericSuperclass
-                return if (type is ParameterizedType) {
-                    val aClass = type.actualTypeArguments[0] as Class<*>
-                    val method = aClass.getDeclaredMethod(
-                        "inflate",
-                        LayoutInflater::class.java,
-                        ViewGroup::class.java,
-                        Boolean::class.java
-                    )
-                    binding = method.invoke(null, layoutInflater, container, false) as VB
-                    binding!!.root
-                } else {
-                    layoutInflater.inflate(getLayoutId(), null)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return layoutInflater.inflate(getLayoutId(), null)
-            }
-        } else {
-            return layoutInflater.inflate(getLayoutId(), null)
-        }
+        _binding = bindingInflater.invoke(inflater, container, false)
+        mViewModel = ViewModelProvider(this).get(modelClass)
+        return requireNotNull(_binding).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,7 +93,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IFragment {
      */
     @SuppressLint("FragmentLiveDataObserve")
     private fun initBaseActionEvent() {
-        getViewModel()?.pageStateEvent?.observe(this, Observer {
+        mViewModel.pageStateEvent.observe(this, Observer {
             when (it.event) {
                 EventArgs.SHOW_LOADING -> showLoading(getString(it.message), it.cancelEnable)
                 EventArgs.DO_NOTHING, EventArgs.HIDE_DIALOG -> hideDialog()
@@ -140,21 +134,12 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IFragment {
             EventBus.getDefault().unregister(this)
         }
         loadingDialog.dismiss()
+        _binding = null
     }
 
     /*=======================================抽象方法==============================================*/
-    abstract fun getViewModel(): BaseViewModel?
-
-    abstract fun getLayoutId(): Int
-
     abstract fun initView()
     /*=======================================重写方法==============================================*/
-    /**
-     * 是否开启使用ViewBinding
-     */
-    open fun useBinding(): Boolean {
-        return true
-    }
 
     override fun useEventBus(): Boolean {
         return false
@@ -212,7 +197,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IFragment {
      * 隐藏进度框
      */
     open fun hideDialog() {
-        loadingDialog?.dismiss()
+        loadingDialog.dismiss()
     }
 
 
@@ -227,9 +212,9 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), IFragment {
     }
 
     /**
-     * 显示Snackbar
+     * 显示SnackBar
      */
-    open fun makeSnackbar(view: View, message: CharSequence) {
+    open fun makeSnackBar(view: View, message: CharSequence) {
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }
 }

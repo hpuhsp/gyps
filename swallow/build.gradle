@@ -37,7 +37,11 @@ android {
         jvmTarget = '1.8'
         freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
     }
-    // 视图绑定,根据具体模块和个人的习惯可以选择使用，目前未启用，采用Kotlin扩展引入布局文件方式
+    // Available in Android Gradle Plugin 3.6.0
+//    viewBinding {
+//        enabled = true
+//    }
+    // Available in Android Gradle Plugin 4.0
     buildFeatures {
         viewBinding = true
     }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import com.blankj.utilcode.util.NetworkUtils
@@ -206,4 +207,7 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         FastUtils.makeText(this, "应用没有录音权限，请在手机设置中授予！")
     }
+
+    override val bindingInflater: (LayoutInflater) -> ActivityVoiceInputBinding
+        get() = ActivityVoiceInputBinding::inflate
 }

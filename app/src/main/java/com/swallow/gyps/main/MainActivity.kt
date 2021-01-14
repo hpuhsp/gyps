@@ -1,6 +1,7 @@
 package com.swallow.gyps.main
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import com.hsp.resource.ext.initBlueActionBar
 import com.swallow.fly.base.view.BaseActivity
@@ -14,6 +15,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.OnClickListener {
     override val modelClass: Class<MainViewModel>
         get() = MainViewModel::class.java
+    override val bindingInflater: (LayoutInflater) -> ActivityMainBinding
+        get() = ActivityMainBinding::inflate
 
     override fun initView(savedInstanceState: Bundle?) {
         initBlueActionBar(false, "Gyps")

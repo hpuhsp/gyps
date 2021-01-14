@@ -51,6 +51,7 @@ android {
         jvmTarget = '1.8'
         freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
     }
+    // Available in Android Gradle Plugin 4.0
     buildFeatures {
         viewBinding = true
     }

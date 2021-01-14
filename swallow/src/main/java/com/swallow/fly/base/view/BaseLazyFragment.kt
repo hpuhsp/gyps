@@ -1,15 +1,18 @@
 package com.swallow.fly.base.view
 
 import android.os.Bundle
+import androidx.viewbinding.ViewBinding
+import com.swallow.fly.base.viewmodel.BaseViewModel
 
 /**
- * @Description: 支持懒加载
+ * @Description: 懒加载模式
  * @Author:   Hsp
  * @Email:    1101121039@qq.com
  * @CreateTime:     2020/10/23 13:33
  * @UpdateRemark:   更新说明：
  */
-abstract class BaseLazyFragment : BaseFragment<Nothing>() {
+abstract class BaseLazyFragment<VM : BaseViewModel, VB : ViewBinding> :
+    BaseFragment<VM, VB>() {
 
     private var isFirstVisible: Boolean = true
     private var isPrepared: Boolean = false
@@ -47,10 +50,6 @@ abstract class BaseLazyFragment : BaseFragment<Nothing>() {
         } else {
             isPrepared = true
         }
-    }
-
-    override fun useBinding(): Boolean {
-        return false
     }
 
     fun isFirstVisibleToUser(): Boolean {
