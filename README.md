@@ -228,4 +228,3 @@ class MyGlideExtension private constructor() {
     }
 }
 ```
-
