@@ -2,7 +2,6 @@ package com.swallow.fly.base.app.config
 
 import android.content.Context
 import com.google.gson.GsonBuilder
-import com.swallow.fly.BuildConfig
 import com.swallow.fly.base.app.AppLifecycle
 import com.swallow.fly.base.app.AppModule
 import com.swallow.fly.base.app.ConfigModule
@@ -21,8 +20,9 @@ import okhttp3.OkHttpClient
 class GlobalConfiguration : ConfigModule {
 
     override fun applyOptions(context: Context?, builder: GlobalConfigModule.Builder) {
-        if (!BuildConfig.LOG_DEBUG) //Release 时,让框架不再打印 Http 请求和响应的信息
-            builder.printHttpLogLevel(RequestInterceptor.Level.NONE)
+//        // 实际项目实现时可以 配置Release环境,让框架不再打印 Http 请求和响应的信息
+//        if (!BuildConfig.LOG_DEBUG)
+//            builder.printHttpLogLevel(RequestInterceptor.Level.NONE)
         // 配置默认域名
         builder.baseurl("https://api.github.com")
 //            .globalHttpHandler(context?.let { GlobalHttpHandlerImpl(it) })

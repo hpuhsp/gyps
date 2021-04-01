@@ -21,11 +21,9 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            buildConfigField "boolean", "LOG_DEBUG", "true"
         }
         release {
             minifyEnabled false
-            buildConfigField "boolean", "LOG_DEBUG", "false"
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
