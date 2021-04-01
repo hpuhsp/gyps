@@ -70,7 +70,7 @@ object ClientModule {
         builder
             .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
             .readTimeout(TIME_OUT, TimeUnit.SECONDS)
-            .addInterceptor(intercept)
+        RetrofitUrlManager.getInstance().with(builder)
         if (handler != null)
             builder.addInterceptor(object : Interceptor {
                 @Throws(IOException::class)
@@ -78,7 +78,7 @@ object ClientModule {
                     return chain.proceed(handler.onHttpRequestBefore(chain, chain.request()))
                 }
             })
-
+        builder.addInterceptor(intercept)
         //如果外部提供了 Interceptor 的集合则遍历添加
 //        if (interceptors != null) {
 //            for (interceptor in interceptors) {
