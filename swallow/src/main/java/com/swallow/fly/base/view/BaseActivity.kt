@@ -141,9 +141,6 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (useEventBus()) {
-            EventBus.getDefault().register(this)
-        }
         beforehandInit()
         _binding = bindingInflater.invoke(layoutInflater)
         setContentView(requireNotNull(_binding).root)
@@ -154,6 +151,13 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         initBaseActionEvent()
         initView(savedInstanceState)
         initData(savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (useEventBus()) {
+            EventBus.getDefault().register(this)
+        }
     }
 
     private fun initBaseDialog() {
@@ -276,11 +280,15 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         if (useEventBus()) {
             EventBus.getDefault().unregister(this)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         loadingDialog.dismiss()
         _binding = null
     }
