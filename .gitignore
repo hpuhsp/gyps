@@ -8,3 +8,4 @@
 .externalNativeBuild
 .cxx
 local.properties
+nexus_upload.gradle
