@@ -9,6 +9,7 @@ import com.swallow.gyps.R
 import com.swallow.gyps.databinding.ActivityMainBinding
 import com.swallow.gyps.msc.SignUpActivity
 import com.swallow.gyps.msc.VoiceInputActivity
+import com.swallow.gyps.test.TestActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,6 +43,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
             R.id.btn_report -> {
                 mViewModel.reportHealthyStatus()
             }
+            R.id.btn_test -> TestActivity.start(this)
         }
     }
 }

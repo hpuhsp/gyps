@@ -38,9 +38,10 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), 
     /**
      * ViewModel
      */
-    abstract val modelClass: Class<VM>
+    abstract val modelClass: Class<VM>?
 
-    private lateinit var mViewModel: VM
+    @Nullable
+    var mViewModel: VM? = null
 
     /**
      * ViewBinding
@@ -77,14 +78,18 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), 
         savedInstanceState: Bundle?
     ): View {
         _binding = bindingInflater.invoke(inflater, container, false)
-        mViewModel = ViewModelProvider(this).get(modelClass)
+        modelClass?.let {
+            mViewModel = ViewModelProvider(this).get(it)
+        }
         return requireNotNull(_binding).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initBaseDialog()
-        initBaseActionEvent()
+        if (null != mViewModel) {
+            initBaseActionEvent()
+        }
         initView()
     }
 
@@ -93,7 +98,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), 
      */
     @SuppressLint("FragmentLiveDataObserve")
     private fun initBaseActionEvent() {
-        mViewModel.pageStateEvent.observe(this, Observer {
+        mViewModel!!.pageStateEvent.observe(this, Observer {
             when (it.event) {
                 EventArgs.SHOW_LOADING -> showLoading(getString(it.message), it.cancelEnable)
                 EventArgs.DO_NOTHING, EventArgs.HIDE_DIALOG -> hideDialog()
