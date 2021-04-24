@@ -1,11 +1,12 @@
-## Eve  基于Google 最新AAC架构的移动端开发框架
+## Gyps  基于Google 最新AAC架构的移动端开发框架
 
 >The MVVM architecture mobile development framework based on the Kotlin language.Contains Retrofit、Coroutine-Flow、Dagger-Hilt、ViewBinding、Glide、ROOM、ARouter And Other commonly used library of tools.
 
 >全面支持androidX
 
 [![Download](http://img.shields.io/travis/hpuhsp/Gyps.svg?branch=master)](https://github.com/hpuhsp/Gyps)
-[![Download](https://api.bintray.com/packages/beijingwahaha/maven/Gyps/images/download.svg) ](https://bintray.com/beijingwahaha/maven/Gyps/1.0.5/link)
+[![JCenter](https://api.bintray.com/packages/beijingwahaha/maven/Gyps/images/download.svg) ](https://bintray.com/beijingwahaha/maven/Gyps/1.0.5/link)
+[![Jitpack](https://jitpack.io/v/hpuhsp/gyps.svg)](https://jitpack.io/#hpuhsp/gyps)
 
 ### 主要技术实现
 
