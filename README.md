@@ -1,4 +1,4 @@
-## Gyps  基于Google 最新AAC架构的移动端开发框架
+## Eve  基于Google 最新AAC架构的移动端开发框架
 
 >The MVVM architecture mobile development framework based on the Kotlin language.Contains Retrofit、Coroutine-Flow、Dagger-Hilt、ViewBinding、Glide、ROOM、ARouter And Other commonly used library of tools.
 
@@ -36,9 +36,32 @@
 1、直接将swallow模块作为Module引入。
 
 2、添加远程依赖
-
+* 第一种：JCenter 旧方式，2022年2月份即将失效。
 ```
 implementation 'com.fly:swallow:1.0.6'
+...
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	} 
+```
+* 第二种方式
+ Add it in your root build.gradle at the end of repositories:
+```
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+ Add the dependency
+```
+dependencies {
+	        implementation 'com.github.hpuhsp:Gyps:Tag'
+	}
 ```
 
 #### 2、配置build.gradle文件
