@@ -3,8 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-kapt'
+// JitPack 配置
 apply plugin: 'com.github.dcendents.android-maven'
-
 group = 'com.github.hpuhsp'
 
 android {
@@ -130,5 +130,17 @@ dependencies {
     // 工具类库
     api 'com.blankj:utilcodex:1.29.0'
 }
-//apply from: '../bintray.gradle'
-//apply from: '../nexus_upload.gradle'
+
+//=============================构建操作=============================================================>
+// 上传Bintray(不再使用)
+//apply from: '../buildScripts/gradle/bintray.gradle'
+// 上传Nexus私服
+//apply from: '../buildScripts/gradle/nexus_upload.gradle'
+
+// 上传Maven 中央仓库
+//ext {
+//    PUBLISH_GROUP_ID = "com.shuanghui.mobile"
+//    PUBLISH_ARTIFACT_ID = 'core'
+//    PUBLISH_VERSION = '1.0.0'
+//}
+//apply from: "${rootProject.projectDir}/buildScripts/gradle/publish-mavencentral.gradle"

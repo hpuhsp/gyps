@@ -13,8 +13,8 @@ buildscript {
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.28-alpha'
         //Gradle Android Maven plugin
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-        //Gradle Bintray Plugin
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
+        //Gradle Bintray Plugin,All Bintray services will be deprecated and your accounts will be disabled on May 1st 2021
+//        classpath 'com.jfrog.bintray_upload.gradle:gradle-bintray-plugin:1.8.5'
         // JitPack
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
