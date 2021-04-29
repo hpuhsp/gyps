@@ -7,6 +7,5 @@
 /captures
 .externalNativeBuild
 .cxx
-gradle.properties
 local.properties
 buildScripts/gradle/*
