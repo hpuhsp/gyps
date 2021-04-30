@@ -138,9 +138,10 @@ dependencies {
 //apply from: '../buildScripts/gradle/nexus_upload.gradle'
 
 // 上传Maven 中央仓库
-//ext {
-//    PUBLISH_GROUP_ID = "com.eva.mobile"
-//    PUBLISH_ARTIFACT_ID = 'core'
-//    PUBLISH_VERSION = '1.0.0'
-//}
-//apply from: "${rootProject.projectDir}/buildScripts/gradle/publish-mavencentral.gradle"
+ext {
+    PUBLISH_GROUP_ID = 'io.github.hpuhsp'
+    PUBLISH_ARTIFACT_ID = 'gyps'
+    PUBLISH_VERSION = '1.0.0'
+}
+apply from: "${rootProject.projectDir}/buildScripts/gradle/publish-mavencentral.gradle"
+//apply from: "${rootProject.projectDir}/buildScripts/gradle/upload_archives.gradle"
