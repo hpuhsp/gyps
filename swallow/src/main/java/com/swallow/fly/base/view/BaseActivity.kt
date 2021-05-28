@@ -354,6 +354,9 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
      */
     open fun showToast(message: CharSequence?) {
         message?.let {
+            if (message.toString().isNullOrBlank()) {
+                return
+            }
             ToastUtils.showShort(it)
         }
     }

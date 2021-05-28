@@ -62,7 +62,7 @@ allprojects {
  Add the dependency
 ```
 dependencies {
-	        implementation 'com.github.hpuhsp:Gyps:Tag'
+	        implementation 'com.github.hpuhsp:gyps:latestVersion'
 	}
 ```
 
