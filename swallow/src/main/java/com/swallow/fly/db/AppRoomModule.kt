@@ -24,3 +24,29 @@ package com.swallow.fly.db
 //            .build()
 //    }
 //}
+
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
+import javax.inject.Singleton
+
+/**
+ * @Description:
+ * @Author:   Hsp
+ * @Email:    1101121039@qq.com
+ * @CreateTime:     2020/8/27 17:25
+ * @UpdateRemark:   更新说明：
+ */
+@Module
+@InstallIn(ApplicationComponent::class)
+object AppRoomModule {
+
+    @Provides
+    @Singleton
+    fun provideAppDataBaseManager(
+        dataBase: AppDataBase
+    ): AppDataBaseManager {
+        return AppDataBaseManager.getInstance(dataBase)
+    }
+}

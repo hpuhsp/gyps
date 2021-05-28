@@ -1,6 +1,9 @@
 package com.swallow.fly.base.app.config
 
+import android.app.Application
+import androidx.room.Room
 import com.swallow.fly.base.app.AppModule
+import com.swallow.fly.db.AppDataBase
 import com.swallow.fly.http.BaseUrl
 import com.swallow.fly.http.Preconditions
 import com.swallow.fly.http.ResponseErrorListener
@@ -35,13 +38,15 @@ object GlobalConfigModule {
     private var mHandler: GlobalHttpHandler? = null
     private var mInterceptors: List<Interceptor>? = null
     private var mErrorListener: ResponseErrorListener? = null
-    private var mCacheFile: File? = null
     private var mRetrofitConfiguration: ClientModule.RetrofitConfiguration? = null
     private var mOkhttpConfiguration: ClientModule.OkhttpConfiguration? = null
     private var mGsonConfiguration: AppModule.GsonConfiguration? = null
     private var mPrintHttpLogLevel: RequestInterceptor.Level? = null
     private var mFormatPrinter: FormatPrinter? = null
 
+    // 数据缓存
+    private var mCacheFile: File? = null
+    private var dataBase: AppDataBase? = null
 
     /**
      * 空实现，不做任何处理
@@ -72,6 +77,7 @@ object GlobalConfigModule {
         mGsonConfiguration = builder.gsonConfiguration
         mPrintHttpLogLevel = builder.printHttpLogLevel
         mFormatPrinter = builder.formatPrinter
+        dataBase = builder.dataBase
         return this
     }
 
@@ -81,12 +87,13 @@ object GlobalConfigModule {
         internal var handler: GlobalHttpHandler? = null
         internal var interceptors: MutableList<Interceptor>? = null
         internal var responseErrorListener: ResponseErrorListener? = null
-        internal var cacheFile: File? = null
         internal var retrofitConfiguration: ClientModule.RetrofitConfiguration? = null
         internal var okhttpConfiguration: ClientModule.OkhttpConfiguration? = null
         internal var gsonConfiguration: AppModule.GsonConfiguration? = null
         internal var printHttpLogLevel: RequestInterceptor.Level? = null
         internal var formatPrinter: FormatPrinter? = null
+        internal var cacheFile: File? = null
+        internal var dataBase: AppDataBase? = null
 
         fun baseurl(baseUrl: String?): Builder {
             if (baseUrl.isNullOrEmpty()) {
@@ -124,7 +131,10 @@ object GlobalConfigModule {
             this.cacheFile = cacheFile
             return this
         }
-
+        fun cacheDB(dataBase: AppDataBase): Builder {
+            this.dataBase = dataBase
+            return this
+        }
         fun retrofitConfiguration(retrofitConfiguration: ClientModule.RetrofitConfiguration): Builder {
             this.retrofitConfiguration = retrofitConfiguration
             return this
@@ -234,5 +244,22 @@ object GlobalConfigModule {
     @Provides
     fun provideFormatPrinter(): FormatPrinter? {
         return if (mFormatPrinter == null) DefaultFormatPrinter() else mFormatPrinter
+    }
+
+    @Singleton
+    @Provides
+    fun provideRoomDatabase(application: Application): AppDataBase {
+        return if (null == dataBase) getAppCacheDB(application) else dataBase!!
+    }
+
+    /**
+     * 本地缓存数据库默认配置
+     */
+    private fun getAppCacheDB(application: Application): AppDataBase {
+        return Room
+            .databaseBuilder(application, AppDataBase::class.java, "fly_cache.db")
+            .fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
+            .build()
     }
 }
