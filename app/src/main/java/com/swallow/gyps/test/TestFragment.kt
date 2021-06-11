@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.swallow.fly.base.view.BaseFragment
+import com.swallow.fly.base.view.BaseLazyFragment
 import com.swallow.gyps.R
 import com.swallow.gyps.databinding.FragmentTestBinding
 
@@ -19,7 +20,7 @@ private const val ARG_PARAM2 = "param2"
  * @CreateTime: 2021/4/22 14:19
  * @UpdateRemark:
  */
-class TestFragment : BaseFragment<Nothing, FragmentTestBinding>() {
+class TestFragment : BaseLazyFragment<TestFViewModel, FragmentTestBinding>() {
     private var param1: String? = null
     private var param2: String? = null
 
@@ -42,12 +43,22 @@ class TestFragment : BaseFragment<Nothing, FragmentTestBinding>() {
             }
     }
 
-    override val modelClass: Class<Nothing>?
-        get() = null
+    override val modelClass: Class<TestFViewModel>?
+        get() = TestFViewModel::class.java
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentTestBinding
         get() = FragmentTestBinding::inflate
 
     override fun initView() {
 
+    }
+
+    override fun onFirstVisibleToUser() {
+
+    }
+
+    override fun onVisibleToUser() {
+    }
+
+    override fun onInvisibleToUser() {
     }
 }
