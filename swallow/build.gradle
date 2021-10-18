@@ -128,7 +128,7 @@ dependencies {
     // 工具类库
     api 'com.blankj:utilcodex:1.30.6'
     // MMKV
-    api 'com.tencent:mmkv-static:1.2.9'
+    api 'com.tencent:mmkv-static:1.2.10'
 }
 
 //=============================构建操作=============================================================>
