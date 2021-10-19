@@ -5,6 +5,7 @@ import androidx.multidex.MultiDexApplication
 import com.swallow.fly.base.app.AppDelegate
 import com.swallow.fly.ext.initLogger
 import com.swallow.fly.utils.AppManager
+import com.tencent.mmkv.MMKV
 
 /**
  * @Description:
@@ -17,7 +18,7 @@ abstract class BaseApplication : MultiDexApplication() {
     /**
      * App生命周期代理类
      */
-    var appDelegate: AppDelegate? = null
+    private var appDelegate: AppDelegate? = null
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
@@ -29,7 +30,16 @@ abstract class BaseApplication : MultiDexApplication() {
         super.onCreate()
         initLoggerConfig()
         AppManager.getInstance().init(this)
+        initMMKV()
         appDelegate?.onCreate(this)
+    }
+
+    /**
+     * 初始化MMKV
+     */
+    private fun initMMKV() {
+        val rootDir: String = MMKV.initialize(this)
+        println("mmkv root: $rootDir")
     }
 
     /**
