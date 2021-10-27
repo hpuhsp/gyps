@@ -23,21 +23,21 @@ class CustomProgressDialog(context: Context) :
     private var showDesc = false
 
     init {
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
+//        supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         this.setContentView(customView)
-        val window = window
-        if (null != window) {
-            val dialogWidth = (ScreenUtils.getScreenWidth() * 0.35f).toInt()
-            window.setGravity(Gravity.CENTER)
-            window.setLayout(dialogWidth, dialogWidth)
-            window.setDimAmount(0f)
-        }
+//        val window = window
+//        if (null != window) {
+//            val dialogWidth = (ScreenUtils.getScreenWidth() * 0.35f).toInt()
+//            window.setGravity(Gravity.CENTER)
+//            window.setLayout(dialogWidth, dialogWidth)
+//            window.setDimAmount(0f)
+//        }
 
         this.setCancelable(true)
         this.setCanceledOnTouchOutside(true)
         this.setCancelable(true)
         this.window?.setBackgroundDrawable(ColorDrawable(0x000000))
-        tvDesc = customView.findViewById(R.id.tipTextView)
+        tvDesc = customView.findViewById(R.id.tv_loading_message)
     }
 
     /**
@@ -46,6 +46,6 @@ class CustomProgressDialog(context: Context) :
     open fun setMessage(message: String?) {
         showDesc = true
         tvDesc.visibility = View.VISIBLE
-        tvDesc.text = if (message.isNullOrEmpty()) "正在加载..." else message
+        tvDesc.text = if (message.isNullOrEmpty()) "加载中..." else message
     }
 }

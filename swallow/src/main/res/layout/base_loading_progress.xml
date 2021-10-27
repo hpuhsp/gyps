@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:background="@drawable/loading_bg"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:paddingLeft="21dp"
-    android:paddingTop="10dp"
-    android:paddingRight="21dp"
-    android:paddingBottom="10dp">
+    android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progressBar1"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_gravity="center_horizontal"
-        android:indeterminateBehavior="repeat"
-        android:indeterminateDrawable="@drawable/dialog_loading"
-        android:indeterminateOnly="true" />
-
-    <TextView
-        android:id="@+id/tipTextView"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="@string/loading_data"
-        android:textColor="#f0f0f0"
-        android:textSize="14sp"
-        android:visibility="gone" />
-</LinearLayout>
+        android:layout_gravity="center"
+        android:background="@drawable/shape_loading_bg"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ProgressBar
+            android:id="@+id/progress_view"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:indeterminateDrawable="@anim/anim_loading"
+            android:indeterminateDuration="1500" />
+
+        <TextView
+            android:id="@+id/tv_loading_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="加载中..."
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+</FrameLayout>

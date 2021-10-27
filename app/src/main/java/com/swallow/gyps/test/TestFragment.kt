@@ -49,7 +49,7 @@ class TestFragment : BaseLazyFragment<TestFViewModel, FragmentTestBinding>() {
         get() = FragmentTestBinding::inflate
 
     override fun initView() {
-
+        showLoading("", false)
     }
 
     override fun onFirstVisibleToUser() {
