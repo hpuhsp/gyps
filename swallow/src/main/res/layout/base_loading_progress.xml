@@ -17,7 +17,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:indeterminateDrawable="@anim/anim_loading"
-            android:indeterminateDuration="1500" />
+            android:indeterminateDuration="1000" />
 
         <TextView
             android:id="@+id/tv_loading_message"
