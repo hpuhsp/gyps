@@ -17,14 +17,11 @@ android {
         targetSdkVersion rootProject.ext.android["targetSdkVersion"]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
         multiDexEnabled true
+//        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
-        debug {
-            minifyEnabled false
-        }
         release {
             minifyEnabled false
             consumerProguardFiles 'proguard-rules.pro'
