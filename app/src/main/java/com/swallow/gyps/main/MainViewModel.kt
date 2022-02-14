@@ -1,15 +1,13 @@
 package com.swallow.gyps.main
 
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.swallow.fly.base.viewmodel.BaseViewModel
 import com.swallow.fly.ext.logd
 import com.swallow.fly.http.result.doSuccess
 import com.swallow.gyps.main.models.HealthModel
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -22,6 +20,19 @@ import kotlin.random.Random
  */
 class MainViewModel @ViewModelInject constructor(private val repository: MainRepository) :
     BaseViewModel() {
+
+    val sharedFlow = MutableSharedFlow<String>()
+
+
+    fun testShareFlow() {
+        viewModelScope.launch {
+            sharedFlow.emit("第一步")
+            sharedFlow.emit("第二步")
+        }
+
+    }
+
+
     /**
      * 健康上报
      */

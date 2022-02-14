@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.swallow.fly.base.app.AppModule
 import com.swallow.fly.http.CoroutineCallAdapterFactory
+import com.swallow.fly.http.TimeoutCallAdapterFactory
 import com.swallow.fly.http.interceptor.GlobalHttpHandler
 import dagger.Module
 import dagger.Provides
@@ -53,6 +54,7 @@ object ClientModule {
         configuration?.configRetrofit(application, builder)
         builder
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .addCallAdapterFactory(TimeoutCallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(goon))
         return builder.build()
     }
