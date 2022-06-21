@@ -31,7 +31,7 @@ dependencies {
     //================================= ARouter路由框架 ===========================================//
     api rootProject.ext.dependencies["arouter"]
     // 图片选择库
-    api 'com.github.LuckSiege.PictureSelector:picture_library:v2.5.9'
+    api 'io.github.lucksiege:pictureselector:v2.7.2'
     // BaseRecyclerViewAdapterHelper
     api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
     api 'com.yqritc:recyclerview-flexibledivider:1.4.0'

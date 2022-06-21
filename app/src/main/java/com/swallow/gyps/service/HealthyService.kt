@@ -15,4 +15,6 @@ import retrofit2.http.POST
 interface HealthyService {
     @POST("add")
     suspend fun reportHealthyStatus(@Body model: HealthModel): BaseResponse<Any>
+    
+    
 }

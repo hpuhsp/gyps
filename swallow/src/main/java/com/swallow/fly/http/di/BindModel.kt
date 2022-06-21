@@ -1,4 +1,4 @@
-package com.swallow.fly.base.app
+package com.swallow.fly.http.di
 
 import com.swallow.fly.http.interceptor.RequestInterceptor
 import dagger.Binds
@@ -17,6 +17,7 @@ import okhttp3.Interceptor
 @Module
 @InstallIn(ApplicationComponent::class)
 abstract class BindModel {
+    @HandlerRequestInterceptor
     @Binds
     abstract fun bindInterceptor(interceptor: RequestInterceptor): Interceptor
 }

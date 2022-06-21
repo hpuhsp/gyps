@@ -11,4 +11,9 @@
         android:layout_gravity="center"
         android:text="@string/hello_blank_fragment" />
 
+    <ImageView
+        android:id="@+id/iv_test"
+        android:layout_width="120dp"
+        android:layout_height="100dp" />
+
 </FrameLayout>

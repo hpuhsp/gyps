@@ -126,6 +126,7 @@ dependencies {
     api 'com.blankj:utilcodex:1.30.6'
     // MMKV
     api 'com.tencent:mmkv-static:1.2.10'
+    api "com.github.bumptech.glide:okhttp3-integration:4.11.0"
 }
 
 //=============================构建操作=============================================================>

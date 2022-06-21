@@ -37,7 +37,7 @@ import javax.inject.Singleton
 @InstallIn(ApplicationComponent::class)
 object ClientModule {
     private val TIME_OUT = 10L
-
+    
     @Singleton
     @Provides
     fun provideRetrofit(
@@ -58,14 +58,14 @@ object ClientModule {
             .addConverterFactory(GsonConverterFactory.create(goon))
         return builder.build()
     }
-
+    
     @Singleton
     @Provides
     fun provideClient(
         application: Application,
         @Nullable configuration: OkhttpConfiguration?,
         builder: OkHttpClient.Builder,
-        @Nullable intercept: Interceptor,
+        @HandlerRequestInterceptor intercept: Interceptor,
 //        @Nullable interceptors: List<Interceptor>?,
         @Nullable handler: GlobalHttpHandler?
     ): OkHttpClient {
@@ -82,32 +82,32 @@ object ClientModule {
             })
         builder.addInterceptor(intercept)
         //如果外部提供了 Interceptor 的集合则遍历添加
-//        if (interceptors != null) {
-//            for (interceptor in interceptors) {
-//                builder.addInterceptor(interceptor)
+//        if (!interceptors.isNullOrEmpty()) {
+//            for (item in interceptors) {
+//                builder.addInterceptor(item)
 //            }
 //        }
-
+        
         configuration?.configOkhttp(application, builder)
         return RetrofitUrlManager.getInstance().with(builder)
             .build()
     }
-
+    
     @Singleton
     @Provides
     fun provideRetrofitBuilder(): Retrofit.Builder {
         return Retrofit.Builder()
     }
-
+    
     @Singleton
     @Provides
     fun provideClientBuilder(): OkHttpClient.Builder {
         return OkHttpClient.Builder()
     }
-
+    
     @Singleton
     @Provides
-    open fun provideGson(
+    fun provideGson(
         application: Application,
         @Nullable configuration: AppModule.GsonConfiguration?
     ): Gson {
@@ -115,7 +115,7 @@ object ClientModule {
         configuration?.configGson(application, builder)
         return builder.create()
     }
-
+    
     /**
      * [Retrofit] 自定义配置接口
      */
@@ -125,7 +125,7 @@ object ClientModule {
             @NonNull builder: Retrofit.Builder?
         )
     }
-
+    
     /**
      * [OkHttpClient] 自定义配置接口
      */
