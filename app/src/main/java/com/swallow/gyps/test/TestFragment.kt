@@ -55,9 +55,9 @@ class TestFragment : BaseLazyFragment<TestFViewModel, FragmentTestBinding>() {
     override fun onFirstVisibleToUser() {
 //        mViewModel?.checkAppVersion(false)
         val url =
-            "https://t7.baidu.com/it/u=727460147,2222092211&fm=193&f=GIF"
+            "https://t7.baidu.com/it/u=3569419905,626536365&fm=193&f=GIF"
         val glideUrl = GlideUrl(url, LazyHeaders.Builder().addHeader("token", "xxxxxxxxxx").build())
-        GlideApp.with(mContext).load(glideUrl).into(binding.ivTest)
+        GlideApp.with(mContext).load(url).into(binding.ivTest)
     }
     
     override fun onVisibleToUser() {
