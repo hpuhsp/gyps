@@ -1,4 +1,4 @@
-package com.swallow.fly.image
+package com.swallow.gyps.glide
 
 import android.content.Context
 import com.bumptech.glide.Glide
@@ -10,18 +10,13 @@ import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory
 import com.bumptech.glide.load.engine.cache.LruResourceCache
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.AppGlideModule
-import com.swallow.fly.ext.logd
-import com.swallow.fly.ext.logi
 import com.swallow.fly.http.di.ImageLoaderInterceptor
-import com.swallow.fly.http.interceptor.GlobalHttpHandler
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ApplicationComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
-import java.io.IOException
 import java.io.InputStream
 
 
@@ -33,7 +28,7 @@ import java.io.InputStream
  * @UpdateRemark:   更新说明：
  */
 @GlideModule
-class MyGlideModule : AppGlideModule() {
+class GypsGlideModule : AppGlideModule() {
     
     @InstallIn(ApplicationComponent::class)
     @EntryPoint

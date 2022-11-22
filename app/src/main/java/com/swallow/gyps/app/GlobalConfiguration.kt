@@ -47,7 +47,7 @@ class GlobalConfiguration : ConfigModule {
                             }
                             logi {
                                 "----------------------图片请求----Header----11----->${
-                                    chain.call().request().headers
+                                    chain.call().request()
                                 }"
                             }
                             val result = chain.request().newBuilder()

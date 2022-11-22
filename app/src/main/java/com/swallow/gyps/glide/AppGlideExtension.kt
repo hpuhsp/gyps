@@ -1,7 +1,10 @@
-package com.swallow.fly.image
+package com.swallow.gyps.glide
 
+import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.annotation.GlideExtension
 import com.bumptech.glide.annotation.GlideOption
+import com.bumptech.glide.annotation.GlideType
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.BaseRequestOptions
 import com.bumptech.glide.request.RequestOptions
@@ -17,7 +20,7 @@ import com.swallow.fly.R
  * @UpdateRemark:   更新说明：
  */
 @GlideExtension
-open class BaseGlideExtension private constructor() {
+open class AppGlideExtension private constructor() {
 
     /**
      * 可基于此类进行通用模块的扩展
@@ -57,15 +60,15 @@ open class BaseGlideExtension private constructor() {
 
         private val DECODE_TYPE_GIF: RequestOptions = decodeTypeOf(GifDrawable::class.java).lock()
 
-//        /**
-//         * 可使用GlideType注解扩展对新的资源类型的支持(GIF，SVG 等等)
-//         */
-//        @JvmStatic
-//        @GlideType(GifDrawable::class)
-//        fun asGifImage(requestBuilder: RequestBuilder<GifDrawable>): RequestBuilder<GifDrawable> {
-//            return requestBuilder
-//                .transition(DrawableTransitionOptions())
-//                .apply(DECODE_TYPE_GIF)
-//        }
+        /**
+         * 可使用GlideType注解扩展对新的资源类型的支持(GIF，SVG 等等)
+         */
+        @JvmStatic
+        @GlideType(GifDrawable::class)
+        fun asGifImage(requestBuilder: RequestBuilder<GifDrawable>): RequestBuilder<GifDrawable> {
+            return requestBuilder
+                .transition(DrawableTransitionOptions())
+                .apply(DECODE_TYPE_GIF)
+        }
     }
 }

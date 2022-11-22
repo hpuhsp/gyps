@@ -21,14 +21,14 @@ import kotlin.random.Random
 class MainViewModel @ViewModelInject constructor(private val repository: MainRepository) :
     BaseViewModel() {
 
-    val sharedFlow = MutableSharedFlow<String>()
+//    val sharedFlow = MutableSharedFlow<String>()
 
 
     fun testShareFlow() {
-        viewModelScope.launch {
-            sharedFlow.emit("第一步")
-            sharedFlow.emit("第二步")
-        }
+//        viewModelScope.launch {
+//            sharedFlow.emit("第一步")
+//            sharedFlow.emit("第二步")
+//        }
 
     }
 

@@ -1,18 +1,13 @@
 package com.swallow.gyps.test
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
-import com.swallow.fly.base.view.BaseFragment
 import com.swallow.fly.base.view.BaseLazyFragment
-import com.swallow.fly.image.GlideApp
-import com.swallow.gyps.R
 import com.swallow.gyps.databinding.FragmentTestBinding
+import com.swallow.gyps.glide.GlideApp
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val ARG_PARAM1 = "param1"
@@ -60,9 +55,9 @@ class TestFragment : BaseLazyFragment<TestFViewModel, FragmentTestBinding>() {
     override fun onFirstVisibleToUser() {
 //        mViewModel?.checkAppVersion(false)
         val url =
-            "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic%2Fcd%2F05%2Fdc%2Fcd05dc90a63739a47d7b301a02205b7e.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1658393333&t=29ab5e4d07c8752242b78a0d9c7378ed"
-        val glideUrl = GlideUrl(url, LazyHeaders.Builder().addHeader("token", "haahahhaha").build())
-        GlideApp.with(mContext).load(url).into(binding.ivTest)
+            "https://t7.baidu.com/it/u=727460147,2222092211&fm=193&f=GIF"
+        val glideUrl = GlideUrl(url, LazyHeaders.Builder().addHeader("token", "xxxxxxxxxx").build())
+        GlideApp.with(mContext).load(glideUrl).into(binding.ivTest)
     }
     
     override fun onVisibleToUser() {

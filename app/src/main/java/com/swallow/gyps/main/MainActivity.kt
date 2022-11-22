@@ -31,12 +31,11 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        lifecycleScope.launch {
-            mViewModel.sharedFlow.collect {
-                logd { "-----------sharedFlow------------------->${it}" }
-            }
-        }
-        mViewModel.testShareFlow()
+//        lifecycleScope.launch {
+//            mViewModel.sharedFlow.collect {
+//            }
+//        }
+//        mViewModel.testShareFlow()
     }
 
     private fun test() {

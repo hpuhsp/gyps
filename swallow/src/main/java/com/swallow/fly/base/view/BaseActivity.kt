@@ -212,7 +212,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         })
     }
 
-    private fun initImmersionBar() {
+    open fun initImmersionBar() {
         ImmersionBar.with(this)
             .statusBarDarkFont(showDarkToolBar())
             .statusBarColor(getStatusBarColor())
@@ -233,7 +233,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         return false
     }
 
-    private fun hasActionBar(): Boolean {
+    open fun hasActionBar(): Boolean {
         return true
     }
 
