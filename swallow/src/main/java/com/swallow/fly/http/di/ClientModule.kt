@@ -10,6 +10,7 @@ import com.swallow.fly.base.app.AppModule
 import com.swallow.fly.http.CoroutineCallAdapterFactory
 import com.swallow.fly.http.TimeoutCallAdapterFactory
 import com.swallow.fly.http.interceptor.GlobalHttpHandler
+import com.swallow.fly.http.interceptor.TimeoutInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -81,6 +82,8 @@ object ClientModule {
                 }
             })
         builder.addInterceptor(intercept)
+        builder.addInterceptor(TimeoutInterceptor())
+
         //如果外部提供了 Interceptor 的集合则遍历添加
 //        if (!interceptors.isNullOrEmpty()) {
 //            for (item in interceptors) {
