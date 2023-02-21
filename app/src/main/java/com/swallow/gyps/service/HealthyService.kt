@@ -1,5 +1,6 @@
 package com.swallow.gyps.service
 
+import com.swallow.fly.http.di.DynamicTimeout
 import com.swallow.fly.http.result.BaseResponse
 import com.swallow.gyps.main.models.HealthModel
 import retrofit2.http.Body
@@ -15,6 +16,10 @@ import retrofit2.http.POST
 interface HealthyService {
     @POST("add")
     suspend fun reportHealthyStatus(@Body model: HealthModel): BaseResponse<Any>
-    
-    
+
+
+    @POST("tuzai/mobile/killpass/test")
+    @DynamicTimeout(timeout =20 )
+    suspend fun reportHealthyStatus2(@Body model: HealthModel): BaseResponse<Any>
+
 }

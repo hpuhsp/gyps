@@ -31,4 +31,18 @@ class MainRepository @Inject constructor() : BaseRepository() {
                 handleError(it)
             }
     }
+
+    /**
+     * 获取设备 待维修/正在维修列表
+     */
+    fun reportHealthyStatus2(model: HealthModel): Flow<HttpResult<BaseResponse<Any>>> {
+        return flow {
+            val response = obtainService(HealthyService::class.java).reportHealthyStatus2(model)
+            emit(HttpResult.Success(response))
+        }.retry(1)
+            .flowOn(Dispatchers.IO)
+            .catch {
+                handleError(it)
+            }
+    }
 }
