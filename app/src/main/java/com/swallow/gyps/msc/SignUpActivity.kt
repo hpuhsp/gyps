@@ -37,43 +37,43 @@ import org.json.JSONObject
 class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
     View.OnClickListener {
     private lateinit var mIdVerifier: IdentityVerifier
-
+    
     private lateinit var authorId: String
-
+    
     override val modelClass: Class<SignUpViewModel>
         get() = SignUpViewModel::class.java
-
-
+    
+    
     override val bindingInflater: (LayoutInflater) -> ActivitySignUpBinding
         get() = ActivitySignUpBinding::inflate
-
+    
     companion object {
         fun start(context: Context) {
             context.startActivity(Intent(context, SignUpActivity::class.java))
         }
     }
-
+    
     override fun initView(savedInstanceState: Bundle?) {
-        initBlueActionBar(true, "用户注册与验证")
+        initBlueActionBar(binding.includeTitle.toolbar, true, "用户注册与验证")
         mIdVerifier = IdentityVerifier.createVerifier(this) {
             logd { "------------onInit--------->" }
             ToastUtils.showShort("SDK初始化成功")
         }
         authorId = "id_${System.currentTimeMillis()}"
     }
-
+    
     override fun initData(savedInstanceState: Bundle?) {
     }
-
+    
     override fun getStatusBarColor(): Int {
         return R.color.toolbar_blue
     }
-
+    
     override fun showDarkToolBar(): Boolean {
         return false
     }
-
-
+    
+    
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
@@ -97,7 +97,7 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
             }
         }
     }
-
+    
     /**
      * 打开相册
      */
@@ -116,8 +116,8 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
             .isQuickCapture(false)
             .forResult(requestCode)
     }
-
-
+    
+    
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btn_upload1 -> {
@@ -154,7 +154,7 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
             }
         }
     }
-
+    
     /**
      * 开始验证
      */
@@ -183,14 +183,14 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
                 }
                 ToastUtils.showShort("人脸验证成功！")
             }
-
+            
             override fun onError(p0: SpeechError?) {
                 logd { "------------------onError------->${p0?.errorDescription}" }
                 logd { "------------------onError----code--->${p0?.errorCode}" }
                 hideDialog()
                 ToastUtils.showShort("人脸验证失败！")
             }
-
+            
             override fun onEvent(p0: Int, p1: Int, p2: Int, p3: Bundle?) {
                 logd { "------------------p0------->${p0}" }
                 logd { "------------------p1------->${p1}" }
@@ -209,7 +209,7 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
         // 停止写入
         mIdVerifier.stopWrite("ifr")
     }
-
+    
     /**
      * 开始注册
      */
@@ -220,7 +220,7 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
             return
         }
         showLoading("开始人脸注册...", true)
-
+        
         mIdVerifier.setParameter(SpeechConstant.PARAMS, null)
         // 设置会话场景
         mIdVerifier.setParameter(SpeechConstant.MFV_SCENES, "ifr")
@@ -236,14 +236,14 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
                 hideDialog()
                 ToastUtils.showShort("人脸注册成功！")
             }
-
+            
             override fun onError(p0: SpeechError?) {
                 logd { "------------------onError------->${p0?.errorDescription}" }
                 logd { "------------------onError----code--->${p0?.errorCode}" }
                 hideDialog()
                 ToastUtils.showShort("人脸注册失败！")
             }
-
+            
             override fun onEvent(p0: Int, p1: Int, p2: Int, p3: Bundle?) {
                 logd { "------------------p0------->${p0}" }
                 logd { "------------------p1------->${p1}" }
@@ -262,10 +262,10 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
         // 停止写入
         mIdVerifier.stopWrite("ifr")
     }
-
+    
     override fun onStop() {
         super.onStop()
-
+        
     }
-
+    
 }

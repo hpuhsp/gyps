@@ -1,17 +1,18 @@
 package com.swallow.gyps.test
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.swallow.fly.base.viewmodel.BaseViewModel
 import com.swallow.fly.http.result.doSuccess
 import com.swallow.gyps.R
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * @Description:
@@ -20,7 +21,8 @@ import kotlinx.coroutines.launch
  * @CreateTime:     2021/6/2 11:27
  * @UpdateRemark:   更新说明：
  */
-class TestFViewModel @ViewModelInject constructor(private val repository: LoginRepository) :
+@HiltViewModel
+class TestFViewModel @Inject constructor(private val repository: LoginRepository) :
     BaseViewModel() {
     
     /**

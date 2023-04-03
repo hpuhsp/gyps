@@ -6,7 +6,9 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar_activity_title_layout" />
+    <include
+        android:id="@+id/include_title"
+        layout="@layout/toolbar_activity_title_layout" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -57,7 +59,7 @@
             android:background="@drawable/shape_blue_radius_layout"
             android:gravity="center"
             android:onClick="onClick"
-            android:text="健康上报"
+            android:text="测试组件"
             android:textColor="@color/text_white"
             android:textSize="@dimen/text_sz_large"
             app:layout_constraintEnd_toEndOf="parent"

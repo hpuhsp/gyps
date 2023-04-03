@@ -8,7 +8,9 @@
     android:orientation="vertical"
     tools:context="com.swallow.gyps.msc.SignUpActivity">
 
-    <include layout="@layout/toolbar_activity_title_layout" />
+    <include
+        android:id="@+id/include_title"
+        layout="@layout/toolbar_activity_title_layout" />
 
     <ScrollView
         android:layout_width="match_parent"

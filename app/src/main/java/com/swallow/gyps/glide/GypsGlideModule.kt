@@ -14,7 +14,7 @@ import com.swallow.fly.http.di.ImageLoaderInterceptor
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import java.io.InputStream
@@ -30,7 +30,7 @@ import java.io.InputStream
 @GlideModule
 class GypsGlideModule : AppGlideModule() {
     
-    @InstallIn(ApplicationComponent::class)
+    @InstallIn(SingletonComponent::class)
     @EntryPoint
     interface ImageLoaderInterceptorEntryPoint {
         @ImageLoaderInterceptor

@@ -40,17 +40,17 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
             context.startActivity(Intent(context, VoiceInputActivity::class.java))
         }
     }
-
+    
     override val modelClass: Class<VoiceInputViewModel>
         get() = VoiceInputViewModel::class.java
-
+    
     private lateinit var mIatDialog: RecognizerDialog
-
+    
     override fun initView(savedInstanceState: Bundle?) {
-        initBlueActionBar(true, "语音听写")
+        initBlueActionBar(binding.includeTitle.toolbar, true, "语音听写")
         checkCameraPermission()
     }
-
+    
     private fun initNoneUiConfig() {
         //初始化识别无UI识别对象
         //使用SpeechRecognizer对象，可根据回调消息自定义界面
@@ -59,7 +59,7 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
                 logd { "-------------------初始化成功------------>" }
             }
         });
-
+        
         //设置语法ID和 SUBJECT 为空，以免因之前有语法调用而设置了此参数；
         // 或直接清空所有参数，具体可参考 DEMO 的示例。
         mIat.setParameter(SpeechConstant.CLOUD_GRAMMAR, null)
@@ -80,34 +80,34 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
         mIat.setParameter(SpeechConstant.VAD_EOS, "1000")
         //设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
         mIat.setParameter(SpeechConstant.ASR_PTT, "1")
-
+        
         //开始识别，并设置监听器
         mIat.startListening(object : RecognizerListener {
             override fun onVolumeChanged(p0: Int, p1: ByteArray?) {
                 val computeVolume = VolumeUtil.computeVolume(p1, p0)
                 logd { "----------------当前音量---------->${computeVolume}" }
             }
-
+            
             override fun onBeginOfSpeech() {
                 logd { "------------开始听写------->" }
             }
-
+            
             override fun onEndOfSpeech() {
                 logd { "------------结束听写------->" }
             }
-
+            
             override fun onResult(p0: RecognizerResult?, p1: Boolean) {
                 logd { "-----------------------onResult----------->${p0?.resultString}" }
             }
-
+            
             override fun onError(p0: SpeechError?) {
             }
-
+            
             override fun onEvent(p0: Int, p1: Int, p2: Int, p3: Bundle?) {
             }
         })
     }
-
+    
     private fun checkCameraPermission() {
         if (EasyPermissions.hasPermissions(this, *RECORD_PERMISSIONS)) {
             initInputUI()
@@ -120,7 +120,7 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
             )
         }
     }
-
+    
     private fun initInputUI() {
         mIatDialog = RecognizerDialog(this, object : InitListener {
             override fun onInit(p0: Int) {
@@ -152,7 +152,7 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
 //        mIatDialog.setParameter(SpeechConstant.VAD_EOS, "1000")
 //        //设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
 //        mIatDialog.setParameter(SpeechConstant.ASR_PTT, "1")
-
+        
         //开始识别，并设置监听器
         mIatDialog.setListener(object : RecognizerDialogListener {
             @SuppressLint("SetTextI18n")
@@ -160,17 +160,17 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
                 logd { "----------------onResult-------->${p0?.resultString}" }
                 binding.etContent.setText("${binding.etContent.txt() ?: ""}${p0?.resultString ?: ""}")
             }
-
+            
             override fun onError(p0: SpeechError?) {
                 logd { "-------------errorCode------>${p0?.errorCode}" }
                 logd { "-------------errorDescription------>${p0?.errorDescription}" }
             }
         })
     }
-
+    
     override fun initData(savedInstanceState: Bundle?) {
     }
-
+    
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btn_input -> {
@@ -179,7 +179,7 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
             R.id.btn_clear -> binding.etContent.setText("")
         }
     }
-
+    
     /**
      * 开始听写
      */
@@ -190,24 +190,24 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
             mIatDialog.show()
         }
     }
-
-
+    
+    
     override fun getStatusBarColor(): Int {
         return R.color.toolbar_blue
     }
-
+    
     override fun showDarkToolBar(): Boolean {
         return false
     }
-
+    
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
         initInputUI()
     }
-
+    
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         FastUtils.makeText(this, "应用没有录音权限，请在手机设置中授予！")
     }
-
+    
     override val bindingInflater: (LayoutInflater) -> ActivityVoiceInputBinding
         get() = ActivityVoiceInputBinding::inflate
 }

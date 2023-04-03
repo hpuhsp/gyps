@@ -17,7 +17,7 @@ import com.swallow.fly.http.printer.FormatPrinter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.ElementsIntoSet
 import dagger.multibindings.IntoSet
 import okhttp3.HttpUrl
@@ -34,7 +34,7 @@ import javax.inject.Singleton
  * @UpdateRemark:   更新说明：
  */
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn( SingletonComponent::class)
 object GlobalConfigModule {
     private var mApiUrl: HttpUrl? = null
     private var mBaseUrl: BaseUrl? = null

@@ -11,15 +11,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gyps"
         android:usesCleartextTraffic="true">
-        <activity android:name=".test.TestActivity"></activity>
+        <activity
+            android:name=".test.TestActivity"
+            android:exported="false"></activity>
         <activity
             android:name=".msc.VoiceInputActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".msc.SignUpActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".main.MainActivity"
+            android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>

@@ -1,14 +1,14 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
+}
 android {
-    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
-    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
+    compileSdk 33
 
     defaultConfig {
-        minSdkVersion rootProject.ext.android["minSdkVersion"]
-        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+        minSdk 21
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -23,13 +23,14 @@ android {
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 dependencies {
     api fileTree(dir: "libs", include: ["*.jar"])
     api project(':swallow')
 //    api 'com.fly:swallow:1.0.3'
-    //================================= ARouter路由框架 ===========================================//
-    api rootProject.ext.dependencies["arouter"]
     // 图片选择库
     api 'io.github.lucksiege:pictureselector:v2.7.2'
     // BaseRecyclerViewAdapterHelper

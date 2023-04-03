@@ -4,7 +4,7 @@ import com.swallow.fly.http.interceptor.RequestInterceptor
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 
 /**
@@ -15,7 +15,7 @@ import okhttp3.Interceptor
  * @UpdateRemark:   更新说明：
  */
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 abstract class BindModel {
     @HandlerRequestInterceptor
     @Binds

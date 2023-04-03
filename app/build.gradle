@@ -1,24 +1,23 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+    id 'com.google.dagger.hilt.android'
+}
 
 android {
-    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
-    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
-
+    compileSdk 33
     defaultConfig {
-        minSdkVersion rootProject.ext.android["minSdkVersion"]
-        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+        applicationId "com.swallow.gyps"
+        minSdk 21
+        targetSdk 33
 
-        versionCode rootProject.ext.android["versionCode"]
-        versionName rootProject.ext.android["versionName"]
+        versionName "2.0.0"
+        versionCode 20
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
         multiDexEnabled true
-
         ndk {
             abiFilters "armeabi-v7a"//, "arm64-v8a"//,"armeabi", "x86" , "mips", "x86"
         }
@@ -38,6 +37,7 @@ android {
         }
         release {
             minifyEnabled false
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -54,9 +54,8 @@ android {
         jvmTarget = '1.8'
         freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
     }
-    // Available in Android Gradle Plugin 4.0
     buildFeatures {
-        viewBinding = true
+        viewBinding true
     }
 }
 kapt {
@@ -66,27 +65,25 @@ kapt {
 }
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     // Test
-    testImplementation 'junit:junit:4.13'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation rootProject.ext.dependencies["hilt-android"]
-    implementation rootProject.ext.dependencies["hilt-lifecycle-viewmodel"]
-    kapt rootProject.ext.dependencies["arouter-compiler"]
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    // ARouter
+    kapt 'com.alibaba:arouter-compiler:1.2.2'
     // Room
-    kapt rootProject.ext.dependencies["roomCompiler"]
+    kapt 'androidx.room:room-compiler:2.5.1'
     // Glide
-    kapt rootProject.ext.dependencies["glide-compiler"]
-    kapt rootProject.ext.dependencies["hilt-android-compiler"]
-    kapt rootProject.ext.dependencies["hilt-compiler"]
+    implementation "com.github.bumptech.glide:okhttp3-integration:4.11.0"
+    kapt 'com.github.bumptech.glide:compiler:4.11.0'
+    // Hilt
+    implementation 'com.google.dagger:hilt-android:2.44'
+    kapt 'com.google.dagger:hilt-compiler:2.44'
+
     implementation project(':msc')
     implementation project(':base')
-    implementation "com.github.bumptech.glide:okhttp3-integration:4.11.0"
 }
+
 /**
  * Debug测试环境下配置签名文件//没配置
  */

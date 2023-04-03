@@ -13,7 +13,7 @@ import com.swallow.fly.http.interceptor.GlobalHttpHandler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import me.jessyan.retrofiturlmanager.RetrofitUrlManager
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -34,7 +34,7 @@ import javax.inject.Singleton
  * @UpdateRemark:   更新说明：
  */
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object ClientModule {
     private val TIME_OUT = 10L
     

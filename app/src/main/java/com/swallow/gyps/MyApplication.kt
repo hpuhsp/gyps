@@ -22,18 +22,18 @@ class MyApplication : BaseApplication() {
         initMscSdk()
         initARouterConfig()
     }
-
+    
     /**
      * 初始化讯飞SDK
      */
     private fun initMscSdk() {
         SpeechUtility.createUtility(this, "${SpeechConstant.APPID}=${AppConfig.MSC_APP_ID}")
     }
-
+    
     override fun initLoggerConfig() {
         initLogger(BuildConfig.DEBUG)
     }
-
+    
     /**
      * 初始化ARouter路由框架（可根据具体需要进行重写）
      */

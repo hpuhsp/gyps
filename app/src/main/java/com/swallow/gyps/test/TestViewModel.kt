@@ -1,7 +1,8 @@
 package com.swallow.gyps.test
 
-import androidx.hilt.lifecycle.ViewModelInject
 import com.swallow.fly.base.viewmodel.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 /**
  * @Description:
@@ -10,5 +11,6 @@ import com.swallow.fly.base.viewmodel.BaseViewModel
  * @CreateTime:     2021/4/22 14:20
  * @UpdateRemark:   更新说明：
  */
-class TestViewModel @ViewModelInject constructor() : BaseViewModel() {
+@HiltViewModel
+class TestViewModel @Inject constructor() : BaseViewModel() {
 }

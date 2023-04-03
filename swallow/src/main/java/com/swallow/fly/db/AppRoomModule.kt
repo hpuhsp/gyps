@@ -28,7 +28,7 @@ package com.swallow.fly.db
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /**
@@ -39,9 +39,9 @@ import javax.inject.Singleton
  * @UpdateRemark:   更新说明：
  */
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object AppRoomModule {
-
+    
     @Provides
     @Singleton
     fun provideAppDataBaseManager(

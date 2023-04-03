@@ -1,7 +1,8 @@
 package com.swallow.gyps.msc.viewmodel
 
-import androidx.hilt.lifecycle.ViewModelInject
 import com.swallow.fly.base.viewmodel.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 /**
  * @Description:
@@ -10,6 +11,7 @@ import com.swallow.fly.base.viewmodel.BaseViewModel
  * @CreateTime:     2020/11/21 9:55
  * @UpdateRemark:   更新说明：
  */
-class SignUpViewModel @ViewModelInject constructor() : BaseViewModel() {
+@HiltViewModel
+class SignUpViewModel @Inject constructor() : BaseViewModel() {
 
 }

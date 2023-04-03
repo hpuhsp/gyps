@@ -7,19 +7,19 @@ import com.swallow.fly.http.cache.LocalShareResource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object RepositoryModule {
-
+    
     @Provides
     @Singleton
     fun provideUserInfoRepository(sharedPreferences: SharedPreferences): LocalShareResource {
         return LocalShareResource.getInstance(sharedPreferences)
     }
-
+    
     @Provides
     @Singleton
     fun provideSharedPreferences(application: Application): SharedPreferences {

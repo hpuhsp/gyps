@@ -6,7 +6,7 @@ import com.swallow.fly.base.app.parse.ManifestParser
 import com.swallow.fly.base.app.config.GlobalConfigModule
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /**
@@ -50,7 +50,7 @@ class AppDelegate(val context: Context) : AppLifecycle {
     }
 
     @EntryPoint
-    @InstallIn(ApplicationComponent::class)
+    @InstallIn( SingletonComponent::class)
     interface GlobalConfigModuleEntryPoint {
         fun initGlobalConfigModule(configModule: GlobalConfigModule)
     }

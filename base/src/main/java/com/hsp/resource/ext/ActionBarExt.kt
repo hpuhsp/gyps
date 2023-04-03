@@ -2,11 +2,11 @@ package com.hsp.resource.ext
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
+import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.hsp.resource.R
-import kotlinx.android.synthetic.main.toolbar_activity_title_layout.*
 
 /**
  * 初始化新的白色风格的ActionBar
@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.toolbar_activity_title_layout.*
  * @param title         标题
  */
 @SuppressLint("UseCompatLoadingForDrawables")
-fun AppCompatActivity.initActionBar(hasBackButton: Boolean, title: String?) {
+fun AppCompatActivity.initActionBar(toolbar: Toolbar, hasBackButton: Boolean, title: String?) {
     val toolbar: Toolbar = toolbar
     toolbar.title = ""
     setSupportActionBar(toolbar)
@@ -33,15 +33,14 @@ fun AppCompatActivity.initActionBar(hasBackButton: Boolean, title: String?) {
         }
     }
     mActionBar?.setBackgroundDrawable(resources.getDrawable(R.drawable.bg_white_tool_bar))
-    tv_title.setTextColor(resources.getColor(R.color.text_black))
-    if (!title.isNullOrEmpty()) {
-        tv_title.text = title
-    }
+    val tvTitle = toolbar.findViewById<TextView>(R.id.tv_title)
+    tvTitle.setTextColor(resources.getColor(R.color.text_black))
+    tvTitle.text = title ?: ""
 }
 
 @SuppressLint("UseCompatLoadingForDrawables")
-fun AppCompatActivity.initBlueActionBar(hasBackButton: Boolean, title: String?) {
-
+fun AppCompatActivity.initBlueActionBar(toolbar: Toolbar, hasBackButton: Boolean, title: String?) {
+    
     val toolbar: Toolbar = toolbar
     toolbar.title = ""
     setSupportActionBar(toolbar)
@@ -60,9 +59,8 @@ fun AppCompatActivity.initBlueActionBar(hasBackButton: Boolean, title: String?) 
 //        }
     }
     mActionBar?.setBackgroundDrawable(resources.getDrawable(R.drawable.bg_blue_tool_bar))
-    tv_title.setTextColor(resources.getColor(R.color.white))
-    tv_finish.setTextColor(resources.getColor(R.color.white))
-    if (!title.isNullOrEmpty()) {
-        tv_title.text = title
-    }
+    val tvTitle = toolbar.findViewById<TextView>(R.id.tv_title)
+    tvTitle.setTextColor(resources.getColor(R.color.text_black))
+    tvTitle.setTextColor(resources.getColor(R.color.white))
+    tvTitle.text = title ?: ""
 }

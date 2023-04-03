@@ -7,11 +7,13 @@
     android:orientation="vertical"
     tools:context=".test.TestActivity">
 
-    <include layout="@layout/toolbar_activity_title_layout"/>
+    <include
+        android:id="@+id/include_title"
+        layout="@layout/toolbar_activity_title_layout" />
 
     <FrameLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

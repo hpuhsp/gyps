@@ -147,7 +147,7 @@
   **[] $VALUES;
   public *;
 }
-
+-keep class com.bumptech.glide.GeneratedAppGlideModuleImpl
 ############ EventBus ##############
 -keepattributes *Annotation*
 -keepclassmembers class * {
