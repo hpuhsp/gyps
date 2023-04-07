@@ -259,7 +259,9 @@ class HttpHandlerImpl : GlobalHttpHandler {
 
     推荐使用Generated API方式进行Glide的项目配置，为实现灵活性，此库已移除AppGlideModule及LibraryGlideModule实现，接入时请在app模块下进行AppGlideModule配置，需要注意两者的使用场景及区别。具体可参考
 
-    [官方文档]: https://muyangmin.github.io/glide-docs-cn/doc/configuration.html#avoid-appglidemodule-in-libraries	"官方文档"
+    [官方文档]: https://muyangmin.github.io/glide-docs-cn/doc/configuration.html#avoid-appglidemodule-in-libraries
+
+    
 
   * 扩展配置
 
