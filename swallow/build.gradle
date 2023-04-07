@@ -4,7 +4,13 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'com.google.dagger.hilt.android'
+    id 'maven-publish'
 }
+task generateSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+
 android {
     compileSdk 33
     useLibrary 'org.apache.http.legacy'
@@ -38,6 +44,13 @@ android {
     lintOptions {
         checkReleaseBuilds true
         abortOnError false
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 
@@ -124,6 +137,19 @@ dependencies {
 // Hilt`s Allow references to generated code
 kapt {
     correctErrorTypes true
+}
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.github.hpuhsp'
+            artifactId = 'gyps'
+            version = '1.5.0-snapshot'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
 }
 //=============================构建操作=============================================================>
 // 上传Bintray(不再使用)
