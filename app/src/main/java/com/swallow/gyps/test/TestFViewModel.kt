@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.swallow.fly.base.viewmodel.BaseViewModel
 import com.swallow.fly.http.result.doSuccess
-import com.swallow.gyps.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -24,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TestFViewModel @Inject constructor(private val repository: LoginRepository) :
     BaseViewModel() {
-    
+
     /**
      * 检查App版本
      */
@@ -35,7 +34,7 @@ class TestFViewModel @Inject constructor(private val repository: LoginRepository
             repository.getVersionInfo("ZC")
                 .onStart {
                     if (!autoCheck) {
-                        showLoading(R.string.loading_data)
+                        showLoading(com.swallow.fly.R.string.loading_data)
                     }
                 }
                 .catch {

@@ -24,11 +24,11 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
         get() = MainViewModel::class.java
     override val bindingInflater: (LayoutInflater) -> ActivityMainBinding
         get() = ActivityMainBinding::inflate
-    
+
     override fun initView(savedInstanceState: Bundle?) {
         initBlueActionBar(binding.includeTitle.toolbar, false, "Gyps")
     }
-    
+
     override fun initData(savedInstanceState: Bundle?) {
 //        lifecycleScope.launch {
 //            mViewModel.sharedFlow.collect {
@@ -36,7 +36,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
 //        }
 //        mViewModel.testShareFlow()
     }
-    
+
     private fun test() {
         lifecycleScope.launch(Dispatchers.IO) {
             val flow2 = (1..10).asFlow().onEach { delay(1000) }
@@ -51,24 +51,25 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
             job.cancelAndJoin()
         }
     }
-    
+
     override fun getStatusBarColor(): Int {
-        return R.color.toolbar_blue
+        return R.color.teal_200
     }
-    
+
     override fun showDarkToolBar(): Boolean {
         return false
     }
-    
+
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btn_face_identify -> SignUpActivity.start(this)
-            
+
             R.id.btn_voice_input -> VoiceInputActivity.start(this)
-            
+
             R.id.btn_report -> { // 测试支持组件
 //                mViewModel.reportHealthyStatus()
             }
+
             R.id.btn_test -> TestActivity.start(this)
         }
     }

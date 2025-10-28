@@ -1,14 +1,14 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-parcelize'
 }
 android {
-    compileSdk 33
+    namespace 'com.hsp.resource'
 
+    compileSdkVersion 35
     defaultConfig {
-        minSdk 21
-        targetSdk 33
+        minSdk 24
+        targetSdk 35
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -26,6 +26,14 @@ android {
     buildFeatures {
         viewBinding true
     }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_17
+    }
+}
+kotlin {
+    // Kotlin 工具链方式，自动选择并使用 JDK 17
+    jvmToolchain(17)
 }
 dependencies {
     api fileTree(dir: "libs", include: ["*.jar"])

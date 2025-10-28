@@ -3,6 +3,7 @@ package com.hsp.resource.widget;
 
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -136,19 +137,6 @@ public class MySegmentTabLayout extends FrameLayout implements ValueAnimator.Ani
 
         obtainAttributes(context, attrs);
 
-        //get layout_height
-        String height = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "layout_height");
-
-        //create ViewPager
-        if (height.equals(ViewGroup.LayoutParams.MATCH_PARENT + "")) {
-        } else if (height.equals(ViewGroup.LayoutParams.WRAP_CONTENT + "")) {
-        } else {
-            int[] systemAttrs = {android.R.attr.layout_height};
-            TypedArray a = context.obtainStyledAttributes(attrs, systemAttrs);
-            mHeight = a.getDimensionPixelSize(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-            a.recycle();
-        }
-
         mValueAnimator = ValueAnimator.ofObject(new MySegmentTabLayout.PointEvaluator(), mLastP, mCurrentP);
         mValueAnimator.addUpdateListener(this);
     }
@@ -186,6 +174,16 @@ public class MySegmentTabLayout extends FrameLayout implements ValueAnimator.Ani
         mBarColor = ta.getColor(R.styleable.MySegmentTabLayout_mtl_bar_color, Color.TRANSPARENT);
         mBarStrokeColor = ta.getColor(R.styleable.MySegmentTabLayout_mtl_bar_stroke_color, mIndicatorColor);
         mBarStrokeWidth = ta.getDimension(R.styleable.MySegmentTabLayout_mtl_bar_stroke_width, dp2px(1));
+
+        //get layout_height
+        String height = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "layout_height");
+
+        //create ViewPager
+        if (height.equals(ViewGroup.LayoutParams.MATCH_PARENT + "")) {
+        } else if (height.equals(ViewGroup.LayoutParams.WRAP_CONTENT + "")) {
+        } else {
+            mHeight = ta.getLayoutDimension(R.styleable.MySegmentTabLayout_android_layout_height, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
 
         ta.recycle();
     }
@@ -699,7 +697,7 @@ public class MySegmentTabLayout extends FrameLayout implements ValueAnimator.Ani
 
     public TextView getTitleView(int tab) {
         View tabView = mTabsContainer.getChildAt(tab);
-        TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
+        TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_desc);
         return tv_tab_title;
     }
 

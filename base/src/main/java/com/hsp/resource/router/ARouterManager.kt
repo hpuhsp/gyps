@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.alibaba.android.arouter.launcher.ARouter
-import com.swallow.fly.BuildConfig
 
 /**
  * @Description:
@@ -22,10 +21,10 @@ object ARouterManager {
      */
     fun init(app: Application) {
         ///初始化路由
-        if (BuildConfig.DEBUG) {
-            ARouter.openLog()
-            ARouter.openDebug()
-        }
+//        if (BuildConfig.DEBUG) {
+        ARouter.openLog()
+        ARouter.openDebug()
+//        }
         ARouter.init(app)
         app.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {

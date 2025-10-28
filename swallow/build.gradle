@@ -2,22 +2,20 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
-    id 'kotlin-parcelize'
     id 'com.google.dagger.hilt.android'
+    id 'com.google.devtools.ksp'
     id 'maven-publish'
-}
-task generateSourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier 'sources'
 }
 
 android {
-    compileSdk 33
+    namespace 'com.swallow.fly'
+
+    compileSdkVersion 35
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
-        minSdk 21
-        targetSdk 33
+        minSdk 24
+        targetSdk 35
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -30,20 +28,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = '1.8'
-        freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
-    }
     buildFeatures {
         viewBinding true
-    }
-    lintOptions {
-        checkReleaseBuilds true
-        abortOnError false
     }
 
     publishing {
@@ -52,92 +42,102 @@ android {
             withJavadocJar()
         }
     }
+    lint {
+        abortOnError false
+        checkReleaseBuilds true
+    }
 }
-
+kotlin {
+    // Kotlin 工具链方式，自动选择并使用 JDK 17
+    jvmToolchain(17)
+}
 dependencies {
     api fileTree(dir: "libs", include: ["*.jar"])
     // Test
-//    testImplementation 'junit:junit:4.13.2'
-//    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
     //===============================AndroidX基础库================================================//
-    api 'com.google.android.material:material:1.8.0'
-    api 'androidx.core:core-ktx:1.9.0'
-    api 'androidx.appcompat:appcompat:1.6.1'
-    api 'androidx.recyclerview:recyclerview:1.3.0'
-
-    api 'androidx.constraintlayout:constraintlayout:2.1.4'
-    api 'androidx.vectordrawable:vectordrawable:1.1.0'
+    api 'com.google.android.material:material:1.13.0'
+    api 'androidx.core:core-ktx:1.16.0'
+    api 'androidx.appcompat:appcompat:1.7.1'
+    api 'androidx.recyclerview:recyclerview:1.4.0'
+    api 'androidx.constraintlayout:constraintlayout:2.2.1'
+    api 'androidx.vectordrawable:vectordrawable:1.2.0'
     api "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    api 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    api 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    api "androidx.fragment:fragment-ktx:1.8.9"
+    api "androidx.hilt:hilt-navigation-fragment:1.3.0"
 
     api 'androidx.legacy:legacy-support-v4:1.0.0'
     //====================================JetPack=================================================//
+    // Hilt
+    api "com.google.dagger:hilt-android:2.57.2"
+    kapt "com.google.dagger:hilt-compiler:2.57.2"
+
+    // Lifecycle
+    def lifecycle_version = "2.9.4"
     // LiveData
-    api "androidx.lifecycle:lifecycle-livedata:2.6.1"
-    api 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
+    api "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     // ViewModel
-    api 'androidx.lifecycle:lifecycle-viewmodel:2.6.1'
-    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
-    // RunTime
-    api "androidx.lifecycle:lifecycle-runtime:2.6.1"
-    api 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
-    //noinspection LifecycleAnnotationProcessorWithJava8
-    kapt 'androidx.lifecycle:lifecycle-compiler:2.6.1'
-    api 'androidx.lifecycle:lifecycle-common-java8:2.6.1'
+    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    // Lifecycles only (without ViewModel or LiveData)
+    api "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    // Saved state module for ViewModel
+    api "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
+
     // Paging
-    api 'androidx.paging:paging-runtime:3.1.1'
-    // ViewPager
-    api 'androidx.viewpager:viewpager:1.0.0'
+    api "androidx.paging:paging-runtime-ktx:3.3.6"
+    // Navigation
+    def navigation_version = "2.9.5"
+    api "androidx.navigation:navigation-fragment-ktx:$navigation_version"
+    api "androidx.navigation:navigation-ui-ktx:$navigation_version"
+
+    // ViewPager2
+    api "androidx.viewpager2:viewpager2:1.1.0"
     // 协程
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
     //================================ 事件总线 ===================================================//
-    api 'org.greenrobot:eventbus:3.2.0'
+    api 'org.greenrobot:eventbus:3.3.1'
     //================================= Room数据库 ================================================//
-    api 'androidx.room:room-runtime:2.5.1'
-    api 'androidx.room:room-ktx:2.5.1'
-    kapt 'androidx.room:room-compiler:2.5.1'
+    def room_version = "2.8.3"
+    api "androidx.room:room-runtime:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
     // 添加数据库测试支持
     api 'android.arch.persistence.room:testing:1.1.1'
     //================================= Glide图片加载 =============================================//
-    api 'com.github.bumptech.glide:glide:4.11.0'
-    kapt 'com.github.bumptech.glide:compiler:4.11.0'
+    def glide_version = "5.0.5"
+    api "com.github.bumptech.glide:glide:$glide_version"
+    ksp "com.github.bumptech.glide:compiler:$glide_version"
     //================================= Retrofit网络框架 ==========================================//
-    // retrofit
-    api 'com.squareup.retrofit2:retrofit:2.9.0'
-    api 'com.squareup.retrofit2:converter-gson:2.9.0'
+    def retrofit_version = "3.0.0"
+    api "com.squareup.retrofit2:retrofit:$retrofit_version"
+    api "com.squareup.retrofit2:converter-gson:$retrofit_version"
     // okHttp
-    api 'com.squareup.okhttp3:okhttp:4.3.0'
-    api 'com.squareup.okhttp3:logging-interceptor:4.3.0'
+//    api 'com.squareup.okhttp3:okhttp:4.3.0'
+//    api 'com.squareup.okhttp3:logging-interceptor:4.3.0'
     // 动态切换域名支持
     api 'me.jessyan:retrofit-url-manager:1.4.0'
-    //================================= Hilt依赖注入 ======================================//
-    api 'com.google.dagger:hilt-android:2.44'
-    kapt 'com.google.dagger:hilt-compiler:2.44'
     // multi-dex
     api 'androidx.multidex:multidex:2.0.1'
     //================================= ARouter =============================================//
-    api 'com.alibaba:arouter-api:1.5.0'
+    api 'com.alibaba:arouter-api:1.5.2'
     //================================= 工具类库 =============================================//
     // Timber
-    api 'com.jakewharton.timber:timber:4.7.1'
+    api 'com.jakewharton.timber:timber:5.0.1'
     // immersionbar
     api 'com.gyf.immersionbar:immersionbar:3.0.0'
     api 'com.gyf.immersionbar:immersionbar-components:3.0.0'
     //权限
     api 'pub.devrel:easypermissions:3.0.0'
     // 工具类库
-    api 'com.blankj:utilcodex:1.31.0'
+    api 'com.blankj:utilcodex:1.31.1'
     // MMKV
-    api 'com.tencent:mmkv-static:1.2.10'
+    api 'com.tencent:mmkv-static:2.2.4'
 }
-// Hilt`s Allow references to generated code
-kapt {
-    correctErrorTypes true
-}
+
 publishing {
     publications {
         release(MavenPublication) {

@@ -1,10 +1,14 @@
 package com.swallow.fly.widget
 
+import android.app.Dialog
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import com.blankj.utilcode.util.ScreenUtils
 import com.swallow.fly.R
 
@@ -15,8 +19,7 @@ import com.swallow.fly.R
  * @CreateTime:     2020/8/26 10:10
  * @UpdateRemark:   更新说明：
  */
-class CustomProgressDialog(context: Context) :
-    AppCompatDialog(context) {
+class CustomProgressDialog(context: Context) : Dialog(context) {
     private var customView: View =
         LayoutInflater.from(context).inflate(R.layout.base_loading_progress, null)
     private var tvDesc: TextView

@@ -30,6 +30,7 @@
         <attr name="mtl_bar_color" format="color" />
         <attr name="mtl_bar_stroke_color" format="color" />
         <attr name="mtl_bar_stroke_width" format="dimension" />
+        <attr name="android:layout_height" />
     </declare-styleable>
     <declare-styleable name="SignatureView">
         <attr name="penColor" format="color" />
