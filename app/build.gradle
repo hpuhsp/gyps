@@ -79,7 +79,6 @@ dependencies {
     // Room
     ksp 'androidx.room:room-compiler:2.8.3'
     // Glide
-    implementation "com.github.bumptech.glide:okhttp3-integration:5.0.5"
     ksp 'com.github.bumptech.glide:compiler:5.0.5'
     // Hilt
     implementation 'com.google.dagger:hilt-android:2.57.2'
