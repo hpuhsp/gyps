@@ -4,7 +4,9 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
     id 'com.google.devtools.ksp'
-    id 'maven-publish'
+//    id 'maven-publish'
+    // vanniktech-publish-plugin
+    id "com.vanniktech.maven.publish" version "0.34.0"
 }
 
 android {
@@ -36,12 +38,12 @@ android {
         viewBinding true
     }
 
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
+//    publishing {
+//        singleVariant("release") {
+//            withSourcesJar()
+//            withJavadocJar()
+//        }
+//    }
     lint {
         abortOnError false
         checkReleaseBuilds true
@@ -138,19 +140,21 @@ dependencies {
     api 'com.tencent:mmkv-static:2.2.4'
 }
 
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = 'com.github.hpuhsp'
-            artifactId = 'gyps'
-            version = '1.5.0-snapshot'
+//publishing {
+//    publications {
+//        release(MavenPublication) {
+//            groupId = 'com.github.hpuhsp'
+//            artifactId = 'gyps'
+//            version = '1.5.0-snapshot'
+//
+//            afterEvaluate {
+//                from components.release
+//            }
+//        }
+//    }
+//}
 
-            afterEvaluate {
-                from components.release
-            }
-        }
-    }
-}
+
 //=============================构建操作=============================================================>
 // 上传Bintray(不再使用)
 //apply from: '../buildScripts/gradle/bintray.gradle'
