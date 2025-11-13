@@ -53,7 +53,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
     }
 
     override fun getStatusBarColor(): Int {
-        return R.color.teal_200
+        return com.hsp.resource.R.color.toolbar_blue
     }
 
     override fun showDarkToolBar(): Boolean {

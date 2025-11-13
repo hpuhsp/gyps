@@ -129,13 +129,14 @@ dependencies {
     //================================= 工具类库 =============================================//
     // Timber
     api 'com.jakewharton.timber:timber:5.0.1'
-    // immersionbar
-    api 'com.gyf.immersionbar:immersionbar:3.0.0'
-    api 'com.gyf.immersionbar:immersionbar-components:3.0.0'
+    // immersionbar support android 15、16
+    api 'com.github.OCNYang.ImmersionBar:immersionbar:3.4.0'
     //权限
     api 'pub.devrel:easypermissions:3.0.0'
     // 工具类库
-    api 'com.blankj:utilcodex:1.31.1'
+    api("com.blankj:utilcodex:1.31.1") {
+        exclude group: "org.jetbrains.kotlin", module: "kotlin-android-extensions-runtime"
+    }
     // MMKV
     api 'com.tencent:mmkv-static:2.2.4'
 }
