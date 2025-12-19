@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.activity.viewModels
 import androidx.core.view.drawToBitmap
 import com.blankj.utilcode.util.ImageUtils
 import com.blankj.utilcode.util.NetworkUtils
@@ -40,9 +41,8 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
     
     private lateinit var authorId: String
     
-    override val modelClass: Class<SignUpViewModel>
-        get() = SignUpViewModel::class.java
-    
+    // 使用 by viewModels() 委托获取 ViewModel
+    override val viewModel: SignUpViewModel by viewModels()
     
     override val bindingInflater: (LayoutInflater) -> ActivitySignUpBinding
         get() = ActivitySignUpBinding::inflate
@@ -66,7 +66,7 @@ class SignUpActivity : BaseActivity<SignUpViewModel, ActivitySignUpBinding>(),
     }
     
     override fun getStatusBarColor(): Int {
-        return R.color.toolbar_blue
+        return com.hsp.resource.R.color.toolbar_blue
     }
     
     override fun showDarkToolBar(): Boolean {

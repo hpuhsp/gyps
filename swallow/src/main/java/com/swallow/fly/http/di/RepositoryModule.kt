@@ -13,13 +13,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
-    
+
     @Provides
     @Singleton
     fun provideUserInfoRepository(sharedPreferences: SharedPreferences): LocalShareResource {
         return LocalShareResource.getInstance(sharedPreferences)
     }
-    
+
     @Provides
     @Singleton
     fun provideSharedPreferences(application: Application): SharedPreferences {

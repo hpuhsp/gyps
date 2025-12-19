@@ -32,12 +32,22 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /**
- * @Description:
- * @Author:   Hsp
- * @Email:    1101121039@qq.com
- * @CreateTime:     2020/8/27 17:25
- * @UpdateRemark:   更新说明：
+ * Room 数据库模块 - 已废弃
+ * 
+ * @Description: Room 数据库依赖注入模块（旧版本，已废弃）
+ * @Author: Hsp
+ * @Email: 1101121039@qq.com
+ * @CreateTime: 2020/8/27 17:25
+ * @UpdateRemark: 2024 - 已废弃，请使用 DatabaseModule 替代
+ * 
+ * @Deprecated("使用 DatabaseModule 替代，该模块将在未来版本中移除",
+ *             ReplaceWith("DatabaseModule", "com.swallow.fly.db.DatabaseModule"))
  */
+@Deprecated(
+    message = "使用 DatabaseModule 替代，该模块将在未来版本中移除",
+    replaceWith = ReplaceWith("DatabaseModule", "com.swallow.fly.db.DatabaseModule"),
+    level = DeprecationLevel.WARNING
+)
 @Module
 @InstallIn(SingletonComponent::class)
 object AppRoomModule {

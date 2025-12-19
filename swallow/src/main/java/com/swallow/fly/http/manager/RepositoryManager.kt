@@ -12,7 +12,8 @@ import javax.inject.Singleton
  * @Author:   Hsp
  * @Email:    1101121039@qq.com
  * @CreateTime:     2020/9/12 11:18
- * @UpdateRemark:   更新说明：
+ * @UpdateRemark:   
+ *   - 2024/12: 添加缓存支持
  */
 @Singleton
 class RepositoryManager @Inject constructor(
@@ -20,6 +21,9 @@ class RepositoryManager @Inject constructor(
     private val retrofit: Retrofit,
     private var errorListener: ResponseErrorListener
 ) : IRepositoryManager {
+
+    // 简单的内存缓存（生产环境建议使用 Room 或 MMKV）
+    private val memoryCache = mutableMapOf<String, Any>()
 
     override fun <T> obtainRetrofitService(service: Class<T>): T {
         return retrofit.create(service)
@@ -30,7 +34,7 @@ class RepositoryManager @Inject constructor(
     }
 
     override fun clearAllCache() {
-        // 暂时未做处理
+        memoryCache.clear()
     }
 
     /**
@@ -47,4 +51,27 @@ class RepositoryManager @Inject constructor(
         return application
     }
 
+    /**
+     * 获取缓存数据
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getCache(key: String): T? {
+        return memoryCache[key] as? T
+    }
+
+    /**
+     * 保存缓存数据
+     */
+    fun <T> saveCache(key: String, data: T?) {
+        if (data != null) {
+            memoryCache[key] = data as Any
+        }
+    }
+
+    /**
+     * 移除缓存数据
+     */
+    fun removeCache(key: String) {
+        memoryCache.remove(key)
+    }
 }

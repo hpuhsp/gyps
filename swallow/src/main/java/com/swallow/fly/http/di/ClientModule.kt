@@ -37,7 +37,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ClientModule {
     private val TIME_OUT = 10L
-    
+
     @Singleton
     @Provides
     fun provideRetrofit(
@@ -58,7 +58,7 @@ object ClientModule {
             .addConverterFactory(GsonConverterFactory.create(goon))
         return builder.build()
     }
-    
+
     @Singleton
     @Provides
     fun provideClient(
@@ -87,24 +87,24 @@ object ClientModule {
 //                builder.addInterceptor(item)
 //            }
 //        }
-        
+
         configuration?.configOkhttp(application, builder)
         return RetrofitUrlManager.getInstance().with(builder)
             .build()
     }
-    
+
     @Singleton
     @Provides
     fun provideRetrofitBuilder(): Retrofit.Builder {
         return Retrofit.Builder()
     }
-    
+
     @Singleton
     @Provides
     fun provideClientBuilder(): OkHttpClient.Builder {
         return OkHttpClient.Builder()
     }
-    
+
     @Singleton
     @Provides
     fun provideGson(
@@ -115,7 +115,7 @@ object ClientModule {
         configuration?.configGson(application, builder)
         return builder.create()
     }
-    
+
     /**
      * [Retrofit] 自定义配置接口
      */
@@ -125,7 +125,7 @@ object ClientModule {
             @NonNull builder: Retrofit.Builder?
         )
     }
-    
+
     /**
      * [OkHttpClient] 自定义配置接口
      */

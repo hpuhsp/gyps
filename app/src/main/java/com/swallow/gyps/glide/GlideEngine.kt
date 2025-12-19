@@ -133,7 +133,7 @@ class GlideEngine : ImageEngine {
             .override(180, 180)
             .centerCrop()
             .sizeMultiplier(0.5f)
-            .apply(RequestOptions().placeholder(R.drawable.img_default_normal_thumb))
+            .apply(RequestOptions().placeholder(com.swallow.fly.R.drawable.img_default_normal_thumb))
             .into(object : BitmapImageViewTarget(imageView) {
                 override fun setResource(resource: Bitmap?) {
                     val circularBitmapDrawable =
@@ -152,7 +152,7 @@ class GlideEngine : ImageEngine {
             .load(url)
             .override(200, 200)
             .centerCrop()
-            .apply(RequestOptions().placeholder(R.drawable.img_default_normal_thumb))
+            .apply(RequestOptions().placeholder(com.swallow.fly.R.drawable.img_default_normal_thumb))
             .into(imageView)
     }
 

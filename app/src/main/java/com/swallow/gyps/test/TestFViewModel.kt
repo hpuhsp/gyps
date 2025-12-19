@@ -35,7 +35,7 @@ class TestFViewModel @Inject constructor(private val repository: LoginRepository
             repository.getVersionInfo("ZC")
                 .onStart {
                     if (!autoCheck) {
-                        showLoading(R.string.loading_data)
+                        showLoading(com.swallow.fly.R.string.loading_data)
                     }
                 }
                 .catch {

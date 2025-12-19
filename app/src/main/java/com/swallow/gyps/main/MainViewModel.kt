@@ -42,13 +42,13 @@ class MainViewModel @Inject constructor(private val repository: MainRepository) 
         viewModelScope.launch {
             repository.reportHealthyStatus(model)
                 .onStart {
-                    showLoading(-1, true)
+                    showLoading("正在上报...")
                 }
-                .catch {
-                    showError(-1, "")
+                .catch { error ->
+                    showError(error.message ?: "上报失败")
                 }
                 .onCompletion {
-                    hideAllDialog()
+                    hideLoading()
                 }
                 .collectLatest { result ->
                     result.doSuccess {
@@ -57,7 +57,7 @@ class MainViewModel @Inject constructor(private val repository: MainRepository) 
                                 showToast(str)
                             }
                         } else {
-                            showError(it.code, it.message)
+                            showError(it.message ?: "操作失败")
                         }
                     }
                 }

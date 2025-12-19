@@ -2,9 +2,9 @@ package com.swallow.gyps.test
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
+import androidx.activity.viewModels
 import com.hsp.resource.ext.initActionBar
 import com.swallow.fly.base.view.BaseActivity
 import com.swallow.gyps.R
@@ -20,8 +20,9 @@ class TestActivity : BaseActivity<TestViewModel, ActivityTestBinding>() {
         }
     }
     
-    override val modelClass: Class<TestViewModel>
-        get() = TestViewModel::class.java
+    // 使用 by viewModels() 委托获取 ViewModel
+    override val viewModel: TestViewModel by viewModels()
+    
     override val bindingInflater: (LayoutInflater) -> ActivityTestBinding
         get() = ActivityTestBinding::inflate
     

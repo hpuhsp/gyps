@@ -3,6 +3,7 @@ package com.swallow.gyps.main
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.hsp.resource.ext.initBlueActionBar
 import com.swallow.fly.base.view.BaseActivity
@@ -20,8 +21,9 @@ import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.OnClickListener {
-    override val modelClass: Class<MainViewModel>
-        get() = MainViewModel::class.java
+    // 使用 by viewModels() 委托获取 ViewModel
+    override val viewModel: MainViewModel by viewModels()
+    
     override val bindingInflater: (LayoutInflater) -> ActivityMainBinding
         get() = ActivityMainBinding::inflate
     
@@ -30,11 +32,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
     }
     
     override fun initData(savedInstanceState: Bundle?) {
-//        lifecycleScope.launch {
-//            mViewModel.sharedFlow.collect {
-//            }
-//        }
-//        mViewModel.testShareFlow()
+        // BaseActivity 会自动调用 observeViewModel()
+        // 无需手动调用
     }
     
     private fun test() {
@@ -53,7 +52,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
     }
     
     override fun getStatusBarColor(): Int {
-        return R.color.toolbar_blue
+        return com.hsp.resource.R.color.toolbar_blue
     }
     
     override fun showDarkToolBar(): Boolean {

@@ -1,10 +1,6 @@
 package com.swallow.fly.base.view
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.app.Dialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -15,31 +11,41 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import android.widget.Toolbar
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.blankj.utilcode.util.ToastUtils
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.gyf.immersionbar.ImmersionBar
 import com.swallow.fly.R
 import com.swallow.fly.base.IActivity
-import com.swallow.fly.base.event.EventArgs
 import com.swallow.fly.base.viewmodel.BaseViewModel
+import com.swallow.fly.base.viewmodel.UiEvent
+import com.swallow.fly.base.viewmodel.UiState
 import com.swallow.fly.widget.CustomProgressDialog
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import java.lang.reflect.ParameterizedType
 
 /**
- * @Description: 普通Activity基类
+ * @Description: 现代化 Activity 基类
  * @Author:   Hsp
  * @Email:    1101121039@qq.com
  * @CreateTime:     2020/8/24 10:06
- * @UpdateRemark:   更新说明：
+ * @UpdateRemark:   
+ *   - 2024/12: 升级到现代化架构
+ *   - 使用 by viewModels() 委托
+ *   - 使用 Activity Result API
+ *   - 使用 StateFlow/SharedFlow
+ *   - 使用 repeatOnLifecycle
+ *   - 移除 ProgressDialog，使用 Material Design
  */
 abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatActivity(), IActivity {
+    
     /**
      * 基础动态权限分类
      */
@@ -106,13 +112,11 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     }
 
     /**
-     * ViewModel
-     * 考虑Kotlin的扩展支持，下面方式更为方便。也可不对ViewModel以泛型进行基类封装
-     *    private val loginViewModel by viewModels<LoginViewModel>()
+     * ViewModel - 使用委托方式
+     * 子类应该这样实现：
+     * override val viewModel: MyViewModel by viewModels()
      */
-    abstract val modelClass: Class<VM>
-
-    lateinit var mViewModel: VM
+    protected abstract val viewModel: VM
 
     /**
      * ViewBinding
@@ -135,9 +139,18 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     private var keyBordEnable: Boolean = false
 
     /**
-     * 可进行扩展为自定义Dialog
+     * Material Design 加载对话框
      */
-    private lateinit var loadingDialog: Dialog
+    private var loadingDialog: androidx.appcompat.app.AlertDialog? = null
+
+    /**
+     * Activity Result API - 权限请求
+     */
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        onPermissionsResult(permissions)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,20 +160,77 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         beforehandInit()
         _binding = bindingInflater.invoke(layoutInflater)
         setContentView(requireNotNull(_binding).root)
-        mViewModel = ViewModelProvider(this).get(modelClass)
 
         initImmersionBar()
         initBaseDialog()
-        initBaseActionEvent()
+        observeViewModel()
         initView(savedInstanceState)
         initData(savedInstanceState)
     }
 
     private fun initBaseDialog() {
-        loadingDialog = if (showSystemProgress()) {
-            ProgressDialog(this)
-        } else {
-            CustomProgressDialog(this@BaseActivity)
+        // 使用 Material Design 对话框
+        if (!showSystemProgress()) {
+            // 自定义进度对话框
+            loadingDialog = MaterialAlertDialogBuilder(this)
+                .setView(R.layout.dialog_custom_progress)
+                .setCancelable(false)
+                .create()
+        }
+    }
+
+    /**
+     * 观察 ViewModel 的状态和事件
+     */
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // 观察 UI 状态
+                launch {
+                    viewModel.uiState.collect { state ->
+                        handleUiState(state)
+                    }
+                }
+                // 观察 UI 事件
+                launch {
+                    viewModel.uiEvent.collect { event ->
+                        handleUiEvent(event)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 处理 UI 状态
+     * 子类可以重写此方法来处理自定义状态
+     */
+    protected open fun handleUiState(state: UiState) {
+        when (state) {
+            is UiState.Idle -> hideDialog()
+            is UiState.Loading -> showLoading(state.message)
+            is UiState.Success<*> -> {
+                hideDialog()
+                // 子类处理成功状态
+            }
+            is UiState.Error -> {
+                hideDialog()
+                showToast(state.message)
+            }
+        }
+    }
+
+    /**
+     * 处理 UI 事件
+     * 子类可以重写此方法来处理自定义事件
+     */
+    protected open fun handleUiEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.ShowToast -> showToast(event.message)
+            is UiEvent.ShowError -> showToast(event.message)
+            is UiEvent.Navigate -> {
+                // 子类处理导航
+            }
         }
     }
 
@@ -176,40 +246,33 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     abstract fun initData(savedInstanceState: Bundle?)
 
     /**
-     * 全局配置
+     * 请求权限 - 使用 Activity Result API
      */
-    private fun initBaseActionEvent() {
-        mViewModel.pageStateEvent.observe(this, Observer {
-            when (it.event) {
-                EventArgs.SHOW_LOADING -> {
-                    if (it.message == -1) {
-                        showLoading("", it.cancelEnable)
-                    } else {
-                        showLoading(getString(it.message), it.cancelEnable)
-                    }
-                }
-                EventArgs.DO_NOTHING, EventArgs.HIDE_DIALOG -> hideDialog()
-                EventArgs.SHOW_ERROR -> {
-                    hideDialog()
-                    showToast(it.errorMsg)
-                }
-                EventArgs.SHOW_CONFIRM -> {
-                    showConfirmDialog(it.content, true)
-                }
-                EventArgs.SHOW_TOAST -> {
-                    if (it.toastMsg.isNotEmpty()) {
-                        showToast(it.toastMsg)
-                    } else {
-                        if (it.message != 0) {
-                            showToast(getString(it.message))
-                        }
-                    }
-                }
-                else -> {
+    protected fun requestPermissions(permissions: Array<String>) {
+        permissionLauncher.launch(permissions)
+    }
 
-                }
-            }
-        })
+    /**
+     * 权限请求结果回调
+     * 子类重写此方法来处理权限结果
+     */
+    protected open fun onPermissionsResult(permissions: Map<String, Boolean>) {
+        // 子类实现
+    }
+
+    /**
+     * @Deprecated 使用 requestPermissions() 和 onPermissionsResult() 替代
+     */
+    @Deprecated(
+        message = "Use requestPermissions() and onPermissionsResult() instead",
+        replaceWith = ReplaceWith("requestPermissions(permissions)")
+    )
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     open fun initImmersionBar() {
@@ -254,14 +317,6 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             // 隐藏软键盘
@@ -281,22 +336,25 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         if (useEventBus()) {
             EventBus.getDefault().unregister(this)
         }
-        loadingDialog.dismiss()
+        loadingDialog?.dismiss()
+        loadingDialog = null
         _binding = null
     }
 
 /*======================================UI相关====================================================*/
     /**
-     * 显示进度框
+     * 显示进度框 - Material Design
      */
-    open fun showLoading(msg: String?, cancelEnable: Boolean) {
-        loadingDialog.setCancelable(cancelEnable)
-        if (loadingDialog is ProgressDialog) {
-            (loadingDialog as ProgressDialog).setMessage(msg ?: "")
-        } else if (loadingDialog is CustomProgressDialog) {
-            (loadingDialog as CustomProgressDialog).setMessage(msg)
+    open fun showLoading(msg: String? = null, cancelEnable: Boolean = false) {
+        if (loadingDialog == null) {
+            loadingDialog = MaterialAlertDialogBuilder(this)
+                .setView(R.layout.dialog_custom_progress)
+                .setCancelable(cancelEnable)
+                .create()
         }
-        loadingDialog.show()
+        loadingDialog?.setCancelable(cancelEnable)
+        // 如果需要显示消息，可以在这里设置
+        loadingDialog?.show()
     }
 
     /**
@@ -306,13 +364,14 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         if (message.isNullOrEmpty()) {
             return
         }
-        AlertDialog.Builder(this).setTitle(getString(R.string.default_dialog_title))
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.default_dialog_title))
             .setMessage(message)
             .setCancelable(cancelEnable)
-            .setPositiveButton(
-                getString(R.string.confirm)
-            ) { dialog, _ -> dialog.dismiss() }
-            .create().show()
+            .setPositiveButton(getString(R.string.confirm)) { dialog, _ -> 
+                dialog.dismiss() 
+            }
+            .show()
     }
 
     /**
@@ -322,42 +381,42 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         if (message.isNullOrEmpty()) {
             return
         }
-        AlertDialog.Builder(this).setTitle(getString(R.string.default_dialog_title))
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.default_dialog_title))
             .setMessage(message)
             .setPositiveButton(getString(R.string.confirm), listener)
-            .create().show()
+            .show()
     }
 
     /**
      * 显示提示Dialog
      */
     open fun showTipsDialog(message: String?, cancelEnable: Boolean) {
-        AlertDialog.Builder(this).setTitle(getString(R.string.default_dialog_title))
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.default_dialog_title))
             .setMessage(message)
             .setCancelable(cancelEnable)
-            .setPositiveButton(
-                getString(R.string.confirm)
-            ) { dialog, _ -> dialog?.dismiss() }
-            .create().show()
+            .setPositiveButton(getString(R.string.confirm)) { dialog, _ -> 
+                dialog?.dismiss() 
+            }
+            .show()
     }
 
     /**
      * 隐藏进度框
      */
     open fun hideDialog() {
-        loadingDialog.dismiss()
+        loadingDialog?.dismiss()
     }
-
 
     /**
      * 显示Toast
      */
     open fun showToast(message: CharSequence?) {
         message?.let {
-            if (message.toString().isNullOrBlank()) {
-                return
+            if (message.toString().isNotBlank()) {
+                ToastUtils.showShort(it)
             }
-            ToastUtils.showShort(it)
         }
     }
 
@@ -424,7 +483,3 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         return false
     }
 }
-
-
-
-

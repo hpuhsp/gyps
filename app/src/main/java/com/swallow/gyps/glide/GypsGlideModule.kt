@@ -21,11 +21,14 @@ import java.io.InputStream
 
 
 /**
- * @Description: Glide全局配置
+ * @Description: Glide 全局配置
  * @Author:   Hsp
  * @Email:    1101121039@qq.com
  * @CreateTime:     2020/8/21 16:51
- * @UpdateRemark:   更新说明：
+ * @UpdateRemark:   
+ *   - 2024/12: 升级到 Glide 5.x
+ *   - Glide 5.x 已弃用 Generated API (GlideApp)
+ *   - AppGlideModule 只应在应用模块中使用，不应在库模块中使用
  */
 @GlideModule
 class GypsGlideModule : AppGlideModule() {

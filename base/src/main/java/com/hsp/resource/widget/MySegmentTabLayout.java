@@ -699,7 +699,7 @@ public class MySegmentTabLayout extends FrameLayout implements ValueAnimator.Ani
 
     public TextView getTitleView(int tab) {
         View tabView = mTabsContainer.getChildAt(tab);
-        TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
+        TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_desc);
         return tv_tab_title;
     }
 

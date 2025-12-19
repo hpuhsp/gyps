@@ -5,71 +5,152 @@ import com.swallow.fly.http.interceptor.GlobalHttpHandler
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
-import java.lang.Exception
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
+ * 全局 HTTP 请求处理器实现 - 现代化版本
+ * 
+ * 处理 HTTP 请求和响应结果，可配置请求头、添加用户 Token 等预处理操作
+ * 
  * @Description: 处理 Http 请求和响应结果（可配置请求头、添加用户Token等预处理操作）
- * @Author:   Hsp
- * @Email:    1101121039@qq.com
- * @CreateTime:     2020/8/29 14:46
- * @UpdateRemark:   更新说明：
+ * @Author: Hsp
+ * @Email: 1101121039@qq.com
+ * @CreateTime: 2020/8/29 14:46
+ * @UpdateRemark: 2024 - 现代化升级：优化代码结构，添加日志，改进错误处理
  */
-class GlobalHttpHandlerImpl @Inject constructor(val context: Context) :
-    GlobalHttpHandler {
+class GlobalHttpHandlerImpl @Inject constructor(
+    private val context: Context
+) : GlobalHttpHandler {
 
     /**
-     * 这里可以先客户端一步拿到每一次 Http 请求的结果, 可以先解析成 Json, 再做一些操作, 如检测到 token 过期后
-     * 重新请求 token, 并重新执行请求
-     *
-     * @param httpResult 服务器返回的结果 (已被框架自动转换为字符串)
-     * @param chain
-     * @param response
-     * @return
+     * 处理 HTTP 响应结果
+     * 
+     * 可以在这里：
+     * - 检测 token 过期并重新请求
+     * - 统一处理业务错误码
+     * - 记录响应日志
+     * 
+     * @param httpResult 服务器返回的结果（已被框架自动转换为字符串）
+     * @param chain 拦截器链
+     * @param response 响应对象
+     * @return 处理后的响应对象
      */
     override fun onHttpResultResponse(
         httpResult: String?,
         chain: Interceptor.Chain,
         response: Response
     ): Response {
-
-        /* 这里如果发现 token 过期, 可以先请求最新的 token, 然后在拿新的 token 放入 Request 里去重新请求
-        注意在这个回调之前已经调用过 proceed(), 所以这里必须自己去建立网络请求, 如使用 Okhttp 使用新的 Request 去请求
-        create a new request and modify it accordingly using the new token
-        Request newRequest = chain.request().newBuilder().header("token", newToken)
-                             .build();
-
-        retry the request
-
-        response.body().close();
-        如果使用 Okhttp 将新的请求, 请求成功后, 再将 Okhttp 返回的 Response return 出去即可
-        如果不需要返回新的结果, 则直接把参数 response 返回出去即可*/
+        // 记录响应信息
+        if (!response.isSuccessful) {
+            Timber.w("HTTP Response Error: code=${response.code}, message=${response.message}")
+        }
+        
+        /* 
+         * Token 过期处理示例：
+         * 
+         * if (httpResult?.contains("token_expired") == true) {
+         *     // 1. 请求新的 token
+         *     val newToken = refreshToken()
+         *     
+         *     // 2. 使用新 token 重新构建请求
+         *     val newRequest = chain.request().newBuilder()
+         *         .header("Authorization", "Bearer $newToken")
+         *         .build()
+         *     
+         *     // 3. 关闭旧响应
+         *     response.body?.close()
+         *     
+         *     // 4. 重新执行请求
+         *     return chain.proceed(newRequest)
+         * }
+         */
+        
         return response
     }
 
     /**
-     * 这里可以在请求服务器之前拿到 {@link Request}, 做一些操作比如给 {@link Request} 统一添加 token 或者 header 以及参数加密等操作
-     *
-     * @param chain
-     * @param request
-     * @return
+     * 请求前预处理
+     * 
+     * 可以在这里：
+     * - 统一添加请求头
+     * - 添加 Token 认证
+     * - 添加设备信息
+     * - 参数加密
+     * 
+     * @param chain 拦截器链
+     * @param request 原始请求
+     * @return 处理后的请求
      */
-    override fun onHttpRequestBefore(chain: Interceptor.Chain, request: Request): Request {
-        return chain.request().newBuilder()
-            .header("content-type", "application/json;charset=UTF-8")
-            .addHeader("platform", "Android")
-//            .addHeader("model", SystemUtils.getDeviceInfo())
-//            .addHeader("version", SystemUtils.getVersionName(context))
-//            .addHeader("x-auth-token", MyApplication.getToken())
-//            .addHeader("udid", MyApplication.getUDID())
-            .build()
+    override fun onHttpRequestBefore(
+        chain: Interceptor.Chain,
+        request: Request
+    ): Request {
+        return request.newBuilder().apply {
+            // 设置 Content-Type
+            header("Content-Type", "application/json;charset=UTF-8")
+            
+            // 添加平台标识
+            addHeader("Platform", "Android")
+            
+            // 添加设备信息（可选）
+            // addHeader("Device-Model", Build.MODEL)
+            // addHeader("Device-Brand", Build.BRAND)
+            // addHeader("OS-Version", Build.VERSION.RELEASE)
+            
+            // 添加应用版本（可选）
+            // addHeader("App-Version", BuildConfig.VERSION_NAME)
+            // addHeader("App-Version-Code", BuildConfig.VERSION_CODE.toString())
+            
+            // 添加认证 Token（可选）
+            // val token = getAuthToken()
+            // if (!token.isNullOrEmpty()) {
+            //     addHeader("Authorization", "Bearer $token")
+            // }
+            
+            // 添加设备唯一标识（可选）
+            // val deviceId = getDeviceId()
+            // if (!deviceId.isNullOrEmpty()) {
+            //     addHeader("Device-ID", deviceId)
+            // }
+        }.build()
     }
 
+    /**
+     * 请求失败时的重定向处理
+     * 
+     * 可以在这里：
+     * - 处理网络异常
+     * - 实现请求重试逻辑
+     * - 返回备用响应
+     * 
+     * @param chain 拦截器链
+     * @param request 原始请求
+     * @param exception 异常信息
+     * @return 重定向后的响应，如果返回 null 则抛出原始异常
+     */
     override fun redirectRequest(
         chain: Interceptor.Chain,
         request: Request,
         exception: Exception
     ): Response? {
+        // 记录异常
+        Timber.e(exception, "HTTP Request Failed: ${request.url}")
+        
+        /*
+         * 重试逻辑示例：
+         * 
+         * if (exception is SocketTimeoutException && retryCount < MAX_RETRY) {
+         *     retryCount++
+         *     return chain.proceed(request)
+         * }
+         */
+        
+        // 返回 null 表示不处理，将抛出原始异常
         return null
+    }
+    
+    companion object {
+        private const val TAG = "GlobalHttpHandler"
     }
 }

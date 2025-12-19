@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import androidx.activity.viewModels
 import com.blankj.utilcode.util.NetworkUtils
 import com.hsp.resource.ext.initBlueActionBar
 import com.iflytek.cloud.*
@@ -41,8 +42,8 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
         }
     }
     
-    override val modelClass: Class<VoiceInputViewModel>
-        get() = VoiceInputViewModel::class.java
+    // 使用 by viewModels() 委托获取 ViewModel
+    override val viewModel: VoiceInputViewModel by viewModels()
     
     private lateinit var mIatDialog: RecognizerDialog
     
@@ -193,7 +194,7 @@ class VoiceInputActivity : BaseActivity<VoiceInputViewModel, ActivityVoiceInputB
     
     
     override fun getStatusBarColor(): Int {
-        return R.color.toolbar_blue
+        return com.hsp.resource.R.color.toolbar_blue
     }
     
     override fun showDarkToolBar(): Boolean {

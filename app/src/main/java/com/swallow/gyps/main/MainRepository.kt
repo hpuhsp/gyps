@@ -19,16 +19,23 @@ import javax.inject.Inject
 class MainRepository @Inject constructor() : BaseRepository() {
 
     /**
-     * 获取设备 待维修/正在维修列表
+     * 健康状态上报
+     * 使用新的 BaseRepository API
      */
     fun reportHealthyStatus(model: HealthModel): Flow<HttpResult<BaseResponse<Any>>> {
         return flow {
-            val response = obtainService(HealthyService::class.java).reportHealthyStatus(model)
-            emit(HttpResult.Success(response))
-        }.retry(1)
-            .flowOn(Dispatchers.IO)
-            .catch {
-                handleError(it)
+            val result = executeRequest {
+                obtainService(HealthyService::class.java).reportHealthyStatus(model)
             }
+            
+            result.fold(
+                onSuccess = { response ->
+                    emit(HttpResult.Success(response))
+                },
+                onFailure = { error ->
+                    emit(HttpResult.Failure(error))
+                }
+            )
+        }.flowOn(Dispatchers.IO)
     }
 }

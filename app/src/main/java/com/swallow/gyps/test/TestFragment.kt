@@ -3,11 +3,11 @@ package com.swallow.gyps.test
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.swallow.fly.base.view.BaseLazyFragment
 import com.swallow.gyps.databinding.FragmentTestBinding
-import com.swallow.gyps.glide.GlideApp
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val ARG_PARAM1 = "param1"
@@ -44,6 +44,7 @@ class TestFragment : BaseLazyFragment<TestFViewModel, FragmentTestBinding>() {
             }
     }
     
+    // 注意：如果 BaseLazyFragment 已更新为使用 viewModel 属性，需要更新这里
     override val modelClass: Class<TestFViewModel>?
         get() = TestFViewModel::class.java
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentTestBinding
@@ -57,7 +58,7 @@ class TestFragment : BaseLazyFragment<TestFViewModel, FragmentTestBinding>() {
         val url =
             "https://t7.baidu.com/it/u=3569419905,626536365&fm=193&f=GIF"
         val glideUrl = GlideUrl(url, LazyHeaders.Builder().addHeader("token", "xxxxxxxxxx").build())
-        GlideApp.with(mContext).load(url).into(binding.ivTest)
+        Glide.with(mContext).load(url).into(binding.ivTest)
     }
     
     override fun onVisibleToUser() {
