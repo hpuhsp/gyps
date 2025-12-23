@@ -20,6 +20,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -27,6 +30,12 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+
+    buildFeatures {
+        viewBinding = true
+        compose = true
+        buildConfig = true  // 启用 BuildConfig 生成
     }
 
     compileOptions {
@@ -41,11 +50,6 @@ android {
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-opt-in=kotlinx.coroutines.FlowPreview"
         )
-    }
-
-    buildFeatures {
-        viewBinding = true
-        compose = true
     }
 
     composeOptions {

@@ -383,27 +383,34 @@
   - 注入到 Repository 中
   - _需求: 错误处理_
 
-- [x] 19. 更新网络层配置
+- [x] 19. 更新网络层配置 ✅ **已完成 - NetworkModule 和 GlobalConfigModule 整合**
 
 
 
 
-- [x] 19.1 重构 NetworkModule
+- [x] 19.1 重构 NetworkModule（整合版）
 
 
-  - 使用 Kotlin DSL 语法
-  - 更新 OkHttpClient 配置
-  - 更新 Retrofit 配置
-  - 移除过时的配置
+  - ✅ 使用 Kotlin DSL 语法
+  - ✅ 整合 GlobalConfigModule 的网络配置部分
+  - ✅ 按职责拆分为 4 个独立模块：NetworkModule、DatabaseModule、LogModule、ImageModule
+  - ✅ 保留 RetrofitUrlManager（动态切换 BaseUrl）
+  - ✅ 保留灵活配置接口（GsonConfiguration、OkhttpConfiguration、RetrofitConfiguration）
+  - ✅ 保留 ManifestParser + meta-data 配置方式
+  - ✅ 移除旧的 Dagger 代码，统一使用 Hilt
+  - ✅ 删除冗余文件：GlobalConfigModule.kt、AppConfigModule.kt、NetworkConfigProvider.kt、AppComponent.kt
+  - ✅ 更新 app 模块的 GlobalConfiguration 适配新的配置方式
+  - ✅ 编译成功：swallow 模块和 app 模块均编译通过
   - _需求: 5.4_
 
 - [x] 19.2 优化拦截器
 
 
 
-  - 更新 GlobalHttpHandler 实现
-  - 优化日志拦截器配置
-  - 添加超时配置
+  - ✅ 更新 GlobalHttpHandler 实现
+  - ✅ 优化日志拦截器配置
+  - ✅ 添加超时配置
+  - ✅ 支持自定义拦截器配置
   - _需求: 5.5_
 
 - [x] 20. 更新数据库层配置

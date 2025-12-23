@@ -3,18 +3,14 @@ package com.swallow.fly.base.app
 import android.app.Application
 import android.content.Context
 import com.swallow.fly.base.app.parse.ManifestParser
-import com.swallow.fly.base.app.config.GlobalConfigModule
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /**
- * @Description:
+ * @Description: 应用生命周期代理
  * @Author:   Hsp
  * @Email:    1101121039@qq.com
  * @CreateTime:     2020/8/30 9:57
- * @UpdateRemark:   更新说明：
+ * @UpdateRemark:   更新说明：现代化升级 - 移除旧的 Dagger 代码，使用 Hilt
  */
 @Singleton
 class AppDelegate(val context: Context) : AppLifecycle {
@@ -36,41 +32,13 @@ class AppDelegate(val context: Context) : AppLifecycle {
     }
 
     override fun onCreate(application: Application) {
-        // 网络库全局配置
-        DaggerAppComponent
-            .builder()
-            .application(application)
-            .globalConfigModule(getGlobalConfigModule(application, mModules)) //全局配置
-            .build()
-            .inject(this)
+        // ✅ Hilt 会自动处理依赖注入，无需手动创建 Component
+        // AppConfigModule 会自动读取 ManifestParser 中的配置
+        
         // 执行所有模块的初始化步骤
         for (lifecycle in mAppLifecycleList) {
             lifecycle.onCreate(application)
         }
-    }
-
-    @EntryPoint
-    @InstallIn( SingletonComponent::class)
-    interface GlobalConfigModuleEntryPoint {
-        fun initGlobalConfigModule(configModule: GlobalConfigModule)
-    }
-
-    /**
-     * 将app的全局配置信息封装进module(使用Dagger注入到需要配置信息的地方)
-     * 需要在AndroidManifest中声明[ConfigModule]的实现类,和Glide的配置方式相似
-     *
-     * @return GlobalConfigModule
-     */
-    private fun getGlobalConfigModule(
-        context: Context,
-        modules: List<ConfigModule>
-    ): GlobalConfigModule {
-        val builder: GlobalConfigModule.Builder = GlobalConfigModule.builder()
-        //遍历 ConfigModule 集合, 给全局配置 GlobalConfigModule 添加参数
-        for (module in modules) {
-            module.applyOptions(context, builder)
-        }
-        return GlobalConfigModule.getInstance(builder)
     }
 
     override fun onTerminate(application: Application) {

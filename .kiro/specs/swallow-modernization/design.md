@@ -66,6 +66,484 @@ Data Source Layer (Retrofit/Room)
 └─────────────────────────────────────────┘
 ```
 
+## 框架初始化和配置设计
+
+### 核心设计原则
+
+1. **配置集中在 swallow 核心库** - 所有关键配置逻辑都在 swallow 模块中实现
+2. **最小化 app 模块的 Hilt 使用** - app 模块只需简单的初始化调用，无需编写大量 Hilt 模块
+3. **DSL 配置方式** - 使用 Kotlin DSL 提供优雅的配置 API
+4. **向后兼容** - 保持与现有 ManifestParser + meta-data 方式的兼容性
+
+### 框架初始化架构
+
+```
+┌─────────────────────────────────────────┐
+│  App Module (MyApplication)             │
+│  - 简单的初始化调用                      │
+│  - 无需 Hilt 模块                       │
+└─────────────────────────────────────────┘
+              ↓
+┌─────────────────────────────────────────┐
+│  SwallowFramework (swallow 核心库)      │
+│  - DSL 配置接口                         │
+│  - 框架初始化逻辑                       │
+└─────────────────────────────────────────┘
+              ↓
+┌─────────────────────────────────────────┐
+│  Internal Hilt Modules (swallow 内部)   │
+│  - FrameworkConfigModule                │
+│  - NetworkModule                        │
+│  - DatabaseModule                       │
+│  - ImageModule                          │
+└─────────────────────────────────────────┘
+```
+
+### SwallowFramework 核心类设计
+
+**位置**: `swallow/src/main/java/com/swallow/fly/SwallowFramework.kt`
+
+```kotlin
+/**
+ * Swallow 框架核心类
+ * 提供 DSL 配置和初始化功能
+ */
+object SwallowFramework {
+    
+    private var config: FrameworkConfig? = null
+    private var isInitialized = false
+    
+    /**
+     * 初始化框架（在 Application.onCreate 中调用）
+     */
+    fun init(context: Context, block: FrameworkConfigBuilder.() -> Unit) {
+        if (isInitialized) {
+            Timber.w("SwallowFramework already initialized")
+            return
+        }
+        
+        val builder = FrameworkConfigBuilder(context)
+        builder.block()
+        config = builder.build()
+        
+        // 初始化日志
+        if (config!!.logConfig.enabled) {
+            Timber.plant(Timber.DebugTree())
+        }
+        
+        // 初始化 MMKV
+        MMKV.initialize(context)
+        
+        isInitialized = true
+        Timber.d("SwallowFramework initialized successfully")
+    }
+    
+    /**
+     * 获取框架配置
+     */
+    internal fun getConfig(): FrameworkConfig {
+        checkNotNull(config) { "SwallowFramework not initialized. Call init() first." }
+        return config!!
+    }
+    
+    /**
+     * 检查是否已初始化
+     */
+    fun isInitialized(): Boolean = isInitialized
+}
+
+/**
+ * 框架配置构建器（DSL）
+ */
+class FrameworkConfigBuilder(private val context: Context) {
+    
+    // 网络配置
+    var baseUrl: String = ""
+    var connectTimeout: Long = 30L
+    var readTimeout: Long = 30L
+    var writeTimeout: Long = 30L
+    var enableLogging: Boolean = BuildConfig.DEBUG
+    var globalHttpHandler: GlobalHttpHandler? = null
+    var responseErrorListener: ResponseErrorListener? = null
+    
+    // 图片加载配置
+    var imageConfig: ImageConfig = ImageConfig()
+    
+    // 数据库配置
+    var databaseName: String = "swallow_db"
+    var enableDatabaseLogging: Boolean = BuildConfig.DEBUG
+    
+    // 日志配置
+    var logConfig: LogConfig = LogConfig()
+    
+    /**
+     * 配置网络层
+     */
+    fun network(block: NetworkConfigBuilder.() -> Unit) {
+        val builder = NetworkConfigBuilder()
+        builder.block()
+        this.baseUrl = builder.baseUrl
+        this.connectTimeout = builder.connectTimeout
+        this.readTimeout = builder.readTimeout
+        this.writeTimeout = builder.writeTimeout
+        this.enableLogging = builder.enableLogging
+        this.globalHttpHandler = builder.globalHttpHandler
+        this.responseErrorListener = builder.responseErrorListener
+    }
+    
+    /**
+     * 配置图片加载
+     */
+    fun image(block: ImageConfigBuilder.() -> Unit) {
+        val builder = ImageConfigBuilder()
+        builder.block()
+        this.imageConfig = builder.build()
+    }
+    
+    /**
+     * 配置数据库
+     */
+    fun database(block: DatabaseConfigBuilder.() -> Unit) {
+        val builder = DatabaseConfigBuilder()
+        builder.block()
+        this.databaseName = builder.databaseName
+        this.enableDatabaseLogging = builder.enableLogging
+    }
+    
+    /**
+     * 配置日志
+     */
+    fun log(block: LogConfigBuilder.() -> Unit) {
+        val builder = LogConfigBuilder()
+        builder.block()
+        this.logConfig = builder.build()
+    }
+    
+    internal fun build(): FrameworkConfig {
+        require(baseUrl.isNotEmpty()) { "baseUrl must not be empty" }
+        
+        return FrameworkConfig(
+            context = context,
+            baseUrl = baseUrl,
+            connectTimeout = connectTimeout,
+            readTimeout = readTimeout,
+            writeTimeout = writeTimeout,
+            enableNetworkLogging = enableLogging,
+            globalHttpHandler = globalHttpHandler,
+            responseErrorListener = responseErrorListener,
+            imageConfig = imageConfig,
+            databaseName = databaseName,
+            enableDatabaseLogging = enableDatabaseLogging,
+            logConfig = logConfig
+        )
+    }
+}
+
+/**
+ * 网络配置构建器
+ */
+class NetworkConfigBuilder {
+    var baseUrl: String = ""
+    var connectTimeout: Long = 30L
+    var readTimeout: Long = 30L
+    var writeTimeout: Long = 30L
+    var enableLogging: Boolean = BuildConfig.DEBUG
+    var globalHttpHandler: GlobalHttpHandler? = null
+    var responseErrorListener: ResponseErrorListener? = null
+}
+
+/**
+ * 图片配置构建器
+ */
+class ImageConfigBuilder {
+    var memoryCacheSize: Long = 1024 * 1024 * 20L // 20MB
+    var diskCacheSize: Long = 1024 * 1024 * 100L // 100MB
+    var defaultPlaceholder: Int = R.drawable.img_default_normal_thumb
+    var defaultError: Int = R.drawable.img_default_error_thumb
+    
+    fun build() = ImageConfig(
+        memoryCacheSize = memoryCacheSize,
+        diskCacheSize = diskCacheSize,
+        defaultPlaceholder = defaultPlaceholder,
+        defaultError = defaultError
+    )
+}
+
+/**
+ * 数据库配置构建器
+ */
+class DatabaseConfigBuilder {
+    var databaseName: String = "swallow_db"
+    var enableLogging: Boolean = BuildConfig.DEBUG
+}
+
+/**
+ * 日志配置构建器
+ */
+class LogConfigBuilder {
+    var enabled: Boolean = BuildConfig.DEBUG
+    var tag: String = "Swallow"
+    
+    fun build() = LogConfig(
+        enabled = enabled,
+        tag = tag
+    )
+}
+
+/**
+ * 框架配置数据类
+ */
+data class FrameworkConfig(
+    val context: Context,
+    val baseUrl: String,
+    val connectTimeout: Long,
+    val readTimeout: Long,
+    val writeTimeout: Long,
+    val enableNetworkLogging: Boolean,
+    val globalHttpHandler: GlobalHttpHandler?,
+    val responseErrorListener: ResponseErrorListener?,
+    val imageConfig: ImageConfig,
+    val databaseName: String,
+    val enableDatabaseLogging: Boolean,
+    val logConfig: LogConfig
+)
+
+data class ImageConfig(
+    val memoryCacheSize: Long = 1024 * 1024 * 20L,
+    val diskCacheSize: Long = 1024 * 1024 * 100L,
+    val defaultPlaceholder: Int = 0,
+    val defaultError: Int = 0
+)
+
+data class LogConfig(
+    val enabled: Boolean = true,
+    val tag: String = "Swallow"
+)
+```
+
+### FrameworkConfigModule 实现
+
+**位置**: `swallow/src/main/java/com/swallow/fly/di/FrameworkConfigModule.kt`
+
+```kotlin
+/**
+ * 框架配置 Hilt 模块（内部使用）
+ * 将 SwallowFramework 的配置注入到 Hilt 依赖图中
+ */
+@Module
+@InstallIn(SingletonComponent::class)
+internal object FrameworkConfigModule {
+    
+    @Provides
+    @Singleton
+    fun provideFrameworkConfig(): FrameworkConfig {
+        return SwallowFramework.getConfig()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideContext(config: FrameworkConfig): Context {
+        return config.context
+    }
+    
+    @Provides
+    @Singleton
+    fun provideBaseUrl(config: FrameworkConfig): HttpUrl {
+        return config.baseUrl.toHttpUrl()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideGlobalHttpHandler(config: FrameworkConfig): GlobalHttpHandler? {
+        return config.globalHttpHandler
+    }
+    
+    @Provides
+    @Singleton
+    fun provideResponseErrorListener(config: FrameworkConfig): ResponseErrorListener? {
+        return config.responseErrorListener
+    }
+}
+```
+
+### App 模块使用示例
+
+**位置**: `app/src/main/java/com/swallow/gyps/MyApplication.kt`
+
+```kotlin
+@HiltAndroidApp
+class MyApplication : Application() {
+    
+    override fun onCreate() {
+        super.onCreate()
+        
+        // 初始化 Swallow 框架（使用 DSL 配置）
+        SwallowFramework.init(this) {
+            // 网络配置
+            network {
+                baseUrl = "https://api.github.com/"
+                connectTimeout = 30L
+                readTimeout = 30L
+                writeTimeout = 30L
+                enableLogging = BuildConfig.DEBUG
+                
+                // 可选：自定义 HTTP 处理器
+                globalHttpHandler = object : GlobalHttpHandler {
+                    override fun onHttpRequestBefore(
+                        chain: Interceptor.Chain,
+                        request: Request
+                    ): Request {
+                        // 添加通用请求头
+                        return request.newBuilder()
+                            .addHeader("User-Agent", "Gyps-Android")
+                            .addHeader("Accept-Language", "zh-CN")
+                            .build()
+                    }
+                    
+                    override fun onHttpResultResponse(
+                        httpResult: String?,
+                        chain: Interceptor.Chain,
+                        response: Response
+                    ): Response {
+                        // 处理响应
+                        return response
+                    }
+                }
+                
+                // 可选：自定义错误监听器
+                responseErrorListener = object : ResponseErrorListener {
+                    override fun handleResponseError(context: Context?, t: Throwable) {
+                        Timber.e(t, "Network error")
+                        // 显示错误提示
+                    }
+                }
+            }
+            
+            // 图片加载配置
+            image {
+                memoryCacheSize = 1024 * 1024 * 20L // 20MB
+                diskCacheSize = 1024 * 1024 * 100L // 100MB
+                defaultPlaceholder = R.drawable.img_default_normal_thumb
+                defaultError = R.drawable.img_default_error_thumb
+            }
+            
+            // 数据库配置
+            database {
+                databaseName = "gyps_db"
+                enableLogging = BuildConfig.DEBUG
+            }
+            
+            // 日志配置
+            log {
+                enabled = BuildConfig.DEBUG
+                tag = "Gyps"
+            }
+        }
+    }
+}
+```
+
+### 向后兼容：支持 ManifestParser 方式
+
+为了保持向后兼容，swallow 仍然支持通过 AndroidManifest.xml 的 meta-data 方式配置：
+
+```kotlin
+/**
+ * 配置模块接口（向后兼容）
+ */
+interface ConfigModule {
+    fun applyOptions(context: Context?, builder: FrameworkConfigBuilder)
+}
+
+/**
+ * Manifest 解析器
+ */
+internal object ManifestParser {
+    
+    private const val MODULE_VALUE = "ConfigModule"
+    
+    fun parse(context: Context): ConfigModule? {
+        try {
+            val appInfo = context.packageManager.getApplicationInfo(
+                context.packageName,
+                PackageManager.GET_META_DATA
+            )
+            
+            val metaData = appInfo.metaData ?: return null
+            
+            for (key in metaData.keySet()) {
+                val value = metaData.get(key)
+                if (MODULE_VALUE == value) {
+                    val clazz = Class.forName(key)
+                    return clazz.newInstance() as? ConfigModule
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to parse ConfigModule from manifest")
+        }
+        
+        return null
+    }
+}
+
+/**
+ * 支持 ManifestParser 的初始化方式
+ */
+fun SwallowFramework.initWithManifest(context: Context) {
+    val configModule = ManifestParser.parse(context)
+    
+    init(context) {
+        // 应用 manifest 配置
+        configModule?.applyOptions(context, this)
+    }
+}
+```
+
+**App 模块使用 ManifestParser 方式**:
+
+```kotlin
+// AndroidManifest.xml
+<application>
+    <meta-data
+        android:name="com.swallow.gyps.app.GlobalConfiguration"
+        android:value="ConfigModule" />
+</application>
+
+// GlobalConfiguration.kt
+class GlobalConfiguration : ConfigModule {
+    override fun applyOptions(context: Context?, builder: FrameworkConfigBuilder) {
+        builder.network {
+            baseUrl = "https://api.github.com/"
+            connectTimeout = 30L
+            enableLogging = BuildConfig.DEBUG
+        }
+        
+        builder.image {
+            memoryCacheSize = 1024 * 1024 * 20L
+        }
+    }
+}
+
+// MyApplication.kt
+@HiltAndroidApp
+class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        
+        // 使用 ManifestParser 方式初始化
+        SwallowFramework.initWithManifest(this)
+    }
+}
+```
+
+### 优势总结
+
+1. **App 模块简洁** - 只需在 Application 中调用一次初始化，无需编写 Hilt 模块
+2. **配置集中** - 所有配置逻辑都在 swallow 核心库中
+3. **DSL 优雅** - 使用 Kotlin DSL 提供类型安全的配置 API
+4. **向后兼容** - 支持现有的 ManifestParser 方式
+5. **易于测试** - 配置可以在测试中轻松模拟
+
 ## 组件和接口设计
 
 ### 1. 构建配置组件
