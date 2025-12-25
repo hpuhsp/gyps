@@ -4,9 +4,9 @@ import androidx.room.Room
 import com.alibaba.android.arouter.launcher.ARouter
 import com.iflytek.cloud.SpeechConstant
 import com.iflytek.cloud.SpeechUtility
-import com.swallow.fly.base.BaseApplication
-import com.swallow.fly.base.app.config.FrameworkConfig
-import com.swallow.fly.base.app.config.frameworkConfig
+import com.swallow.fly.base.lifecycle.BaseApplication
+import com.swallow.fly.base.lifecycle.config.FrameworkConfig
+import com.swallow.fly.base.lifecycle.config.frameworkConfig
 import com.swallow.fly.db.AppDataBase
 import com.swallow.fly.ext.initLogger
 import com.swallow.gyps.app.HttpHandlerImpl

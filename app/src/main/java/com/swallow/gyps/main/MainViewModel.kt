@@ -1,7 +1,7 @@
 package com.swallow.gyps.main
 
 import androidx.lifecycle.viewModelScope
-import com.swallow.fly.base.viewmodel.BaseViewModel
+import com.swallow.fly.base.presentation.BaseViewModel
 import com.swallow.fly.http.result.doSuccess
 import com.swallow.gyps.main.models.HealthModel
 import dagger.hilt.android.lifecycle.HiltViewModel

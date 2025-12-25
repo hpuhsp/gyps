@@ -1,26 +1,27 @@
 # Product Overview
 
-**Gyps** is an Android mobile development framework built on Google's Android Architecture Components (AAC) using the MVVM pattern.
+**Gyps** is a modern Android mobile development framework built on Google's latest Android Architecture Components (AAC). It provides a comprehensive MVVM architecture foundation for building scalable Android applications.
 
-## Purpose
+## Core Purpose
 
-Provides a standardized, production-ready foundation for Android applications with modern architecture patterns, dependency injection, and commonly-used libraries pre-configured.
+Gyps serves as a reusable framework library that encapsulates common Android development patterns, reducing boilerplate and accelerating development of new Android applications.
 
 ## Key Features
 
-- MVVM architecture with ViewBinding
-- Dependency injection via Dagger Hilt
-- Coroutines and Flow for asynchronous operations
-- Network layer with Retrofit and OkHttp
-- Image loading with Glide
-- Local persistence with Room database
-- Event bus integration with EventBus
-- Immersive status bar customization
-- Permission handling utilities
+- **MVVM Architecture**: Clean separation of concerns with ViewModel, Repository, and View layers
+- **Dependency Injection**: Dagger Hilt for compile-time dependency injection
+- **Reactive Programming**: Kotlin Coroutines and Flow for asynchronous operations
+- **Modern UI**: ViewBinding and optional Jetpack Compose support
+- **Network Layer**: Retrofit with OkHttp for REST API communication
+- **Image Loading**: Glide v5 with Generated API support
+- **Local Storage**: Room database and MMKV for key-value storage
+- **Navigation**: AndroidX Navigation component support
+- **Permissions**: EasyPermissions for runtime permission handling
+- **UI Components**: Immersion bar, Material Design dialogs, and custom widgets
 
-## Target Use Cases
+## Module Structure
 
-- Enterprise Android applications requiring robust architecture
-- Projects needing standardized patterns across teams
-- Applications with complex data flows and network operations
-- Multi-module Android projects
+- **swallow**: Core framework module containing base classes, networking, database, and utilities
+- **base**: UI resource module with custom widgets, adapters, and common UI components
+- **msc**: Voice input module (iFlytek MSC SDK integration)
+- **app**: Sample application demonstrating framework usage

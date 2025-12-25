@@ -2,8 +2,8 @@ package com.swallow.gyps.app
 
 import android.content.Context
 import androidx.room.Room
-import com.swallow.fly.base.app.AppLifecycle
-import com.swallow.fly.base.app.ConfigModule
+import com.swallow.fly.base.lifecycle.AppLifecycle
+import com.swallow.fly.base.lifecycle.ConfigModule
 import com.swallow.fly.db.AppDataBase
 import com.swallow.fly.db.DatabaseConfigBuilder
 import com.swallow.fly.ext.logi

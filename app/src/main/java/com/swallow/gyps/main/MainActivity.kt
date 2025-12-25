@@ -6,7 +6,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.hsp.resource.ext.initBlueActionBar
-import com.swallow.fly.base.view.BaseActivity
+import com.swallow.fly.base.ui.activity.BaseActivity
 import com.swallow.fly.ext.logd
 import com.swallow.gyps.R
 import com.swallow.gyps.databinding.ActivityMainBinding

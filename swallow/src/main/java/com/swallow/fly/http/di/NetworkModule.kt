@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.swallow.fly.BuildConfig
-import com.swallow.fly.base.app.config.FrameworkConfigHolder
+import com.swallow.fly.base.lifecycle.config.FrameworkConfigHolder
 import com.swallow.fly.http.CoroutineCallAdapterFactory
 import com.swallow.fly.http.ResponseErrorListener
 import com.swallow.fly.http.TimeoutCallAdapterFactory

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
-import com.swallow.fly.base.view.BaseLazyFragment
+import com.swallow.fly.base.ui.fragment.BaseLazyFragment
 import com.swallow.gyps.databinding.FragmentTestBinding
 import dagger.hilt.android.AndroidEntryPoint
 

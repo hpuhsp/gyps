@@ -2,7 +2,7 @@ package com.swallow.gyps.app
 
 import android.app.Application
 import android.content.Context
-import com.swallow.fly.base.app.AppLifecycle
+import com.swallow.fly.base.lifecycle.AppLifecycle
 import javax.inject.Singleton
 
 @Singleton

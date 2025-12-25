@@ -14,7 +14,7 @@ import com.iflytek.cloud.*
 import com.iflytek.cloud.ui.RecognizerDialog
 import com.iflytek.cloud.ui.RecognizerDialogListener
 import com.iflytek.cloud.util.VolumeUtil
-import com.swallow.fly.base.view.BaseActivity
+import com.swallow.fly.base.ui.activity.BaseActivity
 import com.swallow.fly.ext.logd
 import com.swallow.fly.ext.txt
 import com.swallow.fly.utils.FastUtils

@@ -1,6 +1,6 @@
 package com.swallow.gyps.test
 
-import com.swallow.fly.base.repository.BaseRepository
+import com.swallow.fly.base.data.BaseRepository
 import com.swallow.fly.http.result.BaseResponse
 import com.swallow.fly.http.result.HttpResult
 import com.swallow.gyps.service.CommonService

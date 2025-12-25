@@ -2,118 +2,154 @@
 
 ## Build System
 
-- **Gradle**: 7.3.0
-- **Android Gradle Plugin**: 7.3.0
-- **Kotlin**: 1.8.10
+- **Gradle**: Version Catalog (TOML) for centralized dependency management
+- **Gradle Version**: 8.7.3 (AGP)
+- **Kotlin**: 2.0.21
+- **JDK**: 17 (toolchain)
 
 ## SDK Versions
 
-- **compileSdk**: 33
-- **minSdk**: 21
-- **targetSdk**: 33
-- **Java Version**: 1.8
+- **compileSdk**: 35
+- **targetSdk**: 35
+- **minSdk**: 24
 
-## Core Libraries
+## Core Technologies
+
+### Language & Runtime
+- **Kotlin**: Primary language with coroutines support
+- **Java**: 17 compatibility
+- **Kotlin Compiler Options**: `-Xopt-in=kotlin.RequiresOptIn`
 
 ### Architecture Components
-- **Lifecycle**: 2.6.1 (LiveData, ViewModel, Runtime)
-- **Paging**: 3.1.1
-- **Room**: 2.5.1
-- **Navigation**: 2.5.3
+- **Lifecycle**: 2.8.7 (ViewModel, LiveData, Runtime KTX)
+- **Navigation**: 2.8.5 (Fragment, UI, Compose)
+- **Room**: 2.6.1 (Database ORM)
+- **Paging**: 3.3.5 (Pagination support)
+- **ViewBinding**: Enabled across all modules
 
 ### Dependency Injection
-- **Dagger Hilt**: 2.44
+- **Dagger Hilt**: 2.57.2
+- **Annotation Processing**: kapt (Hilt does not support KSP)
+
+### Reactive Programming
+- **Kotlin Coroutines**: 1.9.0
+- **Flow**: For reactive streams
+- **StateFlow/SharedFlow**: For UI state management
 
 ### Networking
-- **Retrofit**: 2.9.0
-- **OkHttp**: 4.3.0
-- **Gson Converter**: 2.9.0
-- **Retrofit URL Manager**: 1.4.0 (dynamic base URL switching)
+- **Retrofit**: 2.11.0 (REST client)
+- **OkHttp**: 4.12.0 (HTTP client)
+- **Gson**: 2.11.0 (JSON serialization)
+- **Retrofit URL Manager**: 1.4.0 (Dynamic base URL switching)
 
-### Asynchronous Programming
-- **Kotlin Coroutines**: 1.6.4
-- **Coroutines Android**: 1.6.4
+### Image Loading
+- **Glide**: 5.0.5
+- **Annotation Processing**: KSP (not kapt)
+- **OkHttp Integration**: For network image loading
 
-### UI & Image Loading
-- **Glide**: 4.11.0
-- **Material Components**: 1.8.0
-- **ViewBinding**: Enabled
-- **ConstraintLayout**: 2.1.4
+### UI Framework
+- **Jetpack Compose**: 2024.12.01 BOM (optional support)
+- **Compose Compiler**: 1.5.15
+- **Material Design**: 1.12.0
+- **ConstraintLayout**: 2.2.0
+- **RecyclerView**: 1.3.2
+
+### Local Storage
+- **Room**: SQLite database abstraction
+- **MMKV**: 2.2.4 (Key-value storage)
+- **SharedPreferences**: Via custom wrappers
 
 ### Utilities
-- **Timber**: 4.7.1 (logging)
-- **ImmersionBar**: 3.0.0 (status bar)
-- **EasyPermissions**: 3.0.0
-- **UtilCodeX**: 1.31.0
-- **MMKV**: 1.2.10 (key-value storage)
-- **EventBus**: 3.2.0
+- **Timber**: 5.0.1 (Logging)
+- **UtilCodeX**: 1.31.0 (Android utilities)
+- **EventBus**: 3.3.1 (Event communication)
+- **ImmersionBar**: 3.0.0 (Status bar customization)
+- **EasyPermissions**: 3.0.0 (Runtime permissions)
 
-### Routing
-- **ARouter**: 1.5.0 (optional, removed in 1.0.3+)
-
-### Third-Party Integrations
-- **PictureSelector**: v2.7.2 (image picker)
+### Third-Party UI
+- **PictureSelector**: v2.7.2 (Image picker)
 - **BaseRecyclerViewAdapterHelper**: 3.0.4
 - **FlycoTabLayout**: 2.1.2
+- **Material Dialogs**: 3.3.0
+
+### Routing
+- **ARouter**: 1.5.2 (Optional, removed from core in v1.0.3+)
+
+### Testing
+- **JUnit**: 4.13.2
+- **Mockk**: 1.13.13
+- **Espresso**: 3.6.1
+- **Turbine**: 1.2.0 (Flow testing)
+- **Coroutines Test**: 1.9.0
+
+## Annotation Processing Strategy
+
+- **KSP**: Room, Glide (faster compilation)
+- **kapt**: Hilt, ARouter (required by these libraries)
 
 ## Common Commands
 
-### Build
+### Build & Run
 ```bash
 # Clean build
-gradlew clean
+./gradlew clean
 
 # Build debug APK
-gradlew assembleDebug
+./gradlew assembleDebug
 
 # Build release APK
-gradlew assembleRelease
+./gradlew assembleRelease
 
-# Build all variants
-gradlew build
+# Install debug on device
+./gradlew installDebug
+
+# Run app module
+./gradlew :app:run
 ```
 
 ### Testing
 ```bash
 # Run unit tests
-gradlew test
+./gradlew test
 
 # Run instrumented tests
-gradlew connectedAndroidTest
+./gradlew connectedAndroidTest
+
+# Run tests for specific module
+./gradlew :swallow:test
 ```
 
 ### Code Quality
 ```bash
 # Run lint checks
-gradlew lint
+./gradlew lint
 
 # Generate lint report
-gradlew lintDebug
+./gradlew lintDebug
 ```
 
 ### Dependencies
 ```bash
-# View dependency tree
-gradlew dependencies
+# Show dependency tree
+./gradlew :app:dependencies
 
 # Check for dependency updates
-gradlew dependencyUpdates
+./gradlew dependencyUpdates
 ```
 
-## Annotation Processing
+### Module-Specific
+```bash
+# Build swallow library
+./gradlew :swallow:assembleRelease
 
-The project uses `kapt` for annotation processing:
-- Hilt compiler
-- Room compiler
-- Glide compiler
-- ARouter compiler (if used)
+# Build base library
+./gradlew :base:assembleRelease
+```
 
-## ProGuard
+## Build Configuration Notes
 
-- **Debug**: minifyEnabled = false
-- **Release**: minifyEnabled = true (configurable per module)
-- ProGuard rules defined in `proguard-rules.pro` files
-
-## Multi-Dex
-
-Enabled for applications with method count exceeding 64K limit.
+- **ProGuard**: Disabled in debug, optional in release
+- **MultiDex**: Enabled for app module
+- **NDK**: arm64-v8a, armeabi-v7a filters
+- **BuildConfig**: Enabled for modules requiring it
+- **Signing**: Debug keystore configured via `debugsigning.properties`

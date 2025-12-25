@@ -1,8 +1,8 @@
 package com.swallow.fly.log
 
 import android.content.Context
-import com.swallow.fly.base.app.config.FrameworkConfigHolder
-import com.swallow.fly.base.app.parse.ManifestParser
+import com.swallow.fly.base.lifecycle.config.FrameworkConfigHolder
+import com.swallow.fly.base.lifecycle.parse.ManifestParser
 import com.swallow.fly.http.interceptor.RequestInterceptor
 import com.swallow.fly.http.printer.DefaultFormatPrinter
 import com.swallow.fly.http.printer.FormatPrinter

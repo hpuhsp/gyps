@@ -1,8 +1,8 @@
 package com.swallow.fly.image
 
 import android.content.Context
-import com.swallow.fly.base.app.config.FrameworkConfigHolder
-import com.swallow.fly.base.app.parse.ManifestParser
+import com.swallow.fly.base.lifecycle.config.FrameworkConfigHolder
+import com.swallow.fly.base.lifecycle.parse.ManifestParser
 import com.swallow.fly.http.di.ImageLoaderInterceptor
 import dagger.Module
 import dagger.Provides

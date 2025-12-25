@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import com.hsp.resource.ext.initActionBar
-import com.swallow.fly.base.view.BaseActivity
+import com.swallow.fly.base.ui.activity.BaseActivity
 import com.swallow.gyps.R
 import com.swallow.gyps.databinding.ActivityTestBinding
 import dagger.hilt.android.AndroidEntryPoint

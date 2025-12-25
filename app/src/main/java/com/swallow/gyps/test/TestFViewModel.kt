@@ -3,7 +3,7 @@ package com.swallow.gyps.test
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.swallow.fly.base.viewmodel.BaseViewModel
+import com.swallow.fly.base.presentation.BaseViewModel
 import com.swallow.fly.http.result.doSuccess
 import com.swallow.gyps.R
 import dagger.hilt.android.lifecycle.HiltViewModel

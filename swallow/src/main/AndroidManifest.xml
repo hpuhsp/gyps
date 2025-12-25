@@ -11,7 +11,7 @@
     <application>
 
         <meta-data
-            android:name="com.swallow.fly.base.app.config.GlobalConfiguration"
+            android:name="com.swallow.fly.base.lifecycle.config.GlobalConfiguration"
             android:value="ConfigModule" />
     </application>
 

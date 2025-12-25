@@ -1,6 +1,6 @@
 package com.swallow.gyps.msc.viewmodel
 
-import com.swallow.fly.base.viewmodel.BaseViewModel
+import com.swallow.fly.base.presentation.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

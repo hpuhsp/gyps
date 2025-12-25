@@ -17,7 +17,7 @@ import com.hsp.resource.ext.initBlueActionBar
 import com.iflytek.cloud.*
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureMimeType
-import com.swallow.fly.base.view.BaseActivity
+import com.swallow.fly.base.ui.activity.BaseActivity
 import com.swallow.fly.ext.logd
 import com.swallow.fly.utils.FileUtils
 import com.swallow.gyps.R

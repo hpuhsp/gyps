@@ -2,8 +2,8 @@ package com.swallow.fly.db
 
 import android.content.Context
 import androidx.room.Room
-import com.swallow.fly.base.app.config.FrameworkConfigHolder
-import com.swallow.fly.base.app.parse.ManifestParser
+import com.swallow.fly.base.lifecycle.config.FrameworkConfigHolder
+import com.swallow.fly.base.lifecycle.parse.ManifestParser
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
