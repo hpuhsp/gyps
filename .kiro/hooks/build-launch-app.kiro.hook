@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Build and Launch App",
+  "description": "Runs ./gradlew installDebug and then launches the app using adb shell am start to build and start the application on a connected device",
+  "version": "1",
+  "when": {
+    "type": "promptSubmit"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "gradlew.bat installDebug && adb shell am start -n com.swallow.gyps/.main.MainActivity"
+  }
+}

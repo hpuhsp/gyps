@@ -136,6 +136,9 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
+    // Coroutines
+    implementation(libs.bundles.coroutines)
+
     // 项目模块
     implementation(project(":msc"))
     implementation(project(":base"))

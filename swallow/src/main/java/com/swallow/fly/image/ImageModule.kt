@@ -28,17 +28,14 @@ object ImageModule {
     /**
      * 提供图片加载拦截器
      * 用于 Glide 使用 OkHttp 方式加载图片时的自定义拦截
-     * 支持优先级控制
+     * ✅ 使用合并后的配置
      */
     @Singleton
     @Provides
     @ImageLoaderInterceptor
     fun provideImageLoaderInterceptor(@ApplicationContext context: Context): Interceptor? {
         val builder = ImageConfigBuilder()
-        val config = FrameworkConfigHolder.getConfig()
-        config.imageConfig(context, builder)
-
-        // 返回配置的拦截器或 null
+        FrameworkConfigHolder.applyImageConfig(context, builder)
         return builder.imageLoaderInterceptor
     }
 }

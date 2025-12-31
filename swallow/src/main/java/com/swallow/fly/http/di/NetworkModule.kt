@@ -48,14 +48,13 @@ object NetworkModule {
 
     /**
      * 提供 BaseUrl
-     * ✅ 优雅的实现：通过 FrameworkConfigHolder 获取配置
+     * ✅ 优雅的实现：通过 FrameworkConfigHolder 合并所有模块配置
      */
     @Singleton
     @Provides
     fun provideBaseUrl(@ApplicationContext context: Context): HttpUrl {
         val builder = NetworkConfigBuilder()
-        val config = FrameworkConfigHolder.getConfig()
-        config.networkConfig(context, builder)
+        FrameworkConfigHolder.applyNetworkConfig(context, builder)
         return builder.baseUrl ?: DEFAULT_BASE_URL.toHttpUrlOrNull()!!
     }
 
@@ -66,8 +65,7 @@ object NetworkModule {
     @Provides
     fun provideGlobalHttpHandler(@ApplicationContext context: Context): GlobalHttpHandler? {
         val builder = NetworkConfigBuilder()
-        val config = FrameworkConfigHolder.getConfig()
-        config.networkConfig(context, builder)
+        FrameworkConfigHolder.applyNetworkConfig(context, builder)
         return builder.handler
     }
 
@@ -78,8 +76,7 @@ object NetworkModule {
     @Provides
     fun provideResponseErrorListener(@ApplicationContext context: Context): ResponseErrorListener {
         val builder = NetworkConfigBuilder()
-        val config = FrameworkConfigHolder.getConfig()
-        config.networkConfig(context, builder)
+        FrameworkConfigHolder.applyNetworkConfig(context, builder)
 
         return builder.responseErrorListener ?: object : ResponseErrorListener {
             override fun handleResponseError(t: Throwable?): Throwable {
@@ -97,8 +94,7 @@ object NetworkModule {
         val gsonBuilder = GsonBuilder()
         val configBuilder = NetworkConfigBuilder()
 
-        val config = FrameworkConfigHolder.getConfig()
-        config.networkConfig(context, configBuilder)
+        FrameworkConfigHolder.applyNetworkConfig(context, configBuilder)
         configBuilder.gsonConfiguration?.configGson(context, gsonBuilder)
 
         return gsonBuilder.create()
@@ -145,8 +141,7 @@ object NetworkModule {
 
         // ✅ 应用自定义配置
         val configBuilder = NetworkConfigBuilder()
-        val config = FrameworkConfigHolder.getConfig()
-        config.networkConfig(context, configBuilder)
+        FrameworkConfigHolder.applyNetworkConfig(context, configBuilder)
         configBuilder.okhttpConfiguration?.configOkhttp(context, builder)
 
         return builder.build()
@@ -169,8 +164,7 @@ object NetworkModule {
 
         // ✅ 应用自定义配置
         val configBuilder = NetworkConfigBuilder()
-        val config = FrameworkConfigHolder.getConfig()
-        config.networkConfig(context, configBuilder)
+        FrameworkConfigHolder.applyNetworkConfig(context, configBuilder)
         configBuilder.retrofitConfiguration?.configRetrofit(context, builder)
 
         // 添加转换器和适配器

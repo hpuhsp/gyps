@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Auto Format on Save",
+  "description": "Automatically formats code when a file is saved",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.kt",
+      "*.java",
+      "*.xml"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Format the code in the file that was just saved according to Kotlin/Java/XML coding standards. Apply proper indentation, spacing, and organize imports if needed."
+  }
+}

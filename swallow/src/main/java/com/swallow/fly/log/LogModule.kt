@@ -28,32 +28,25 @@ object LogModule {
 
     /**
      * 提供 HTTP 日志打印级别
-     * 支持优先级控制
+     * ✅ 使用合并后的配置
      */
     @Singleton
     @Provides
     fun providePrintHttpLogLevel(@ApplicationContext context: Context): RequestInterceptor.Level {
-
         val builder = LogConfigBuilder()
-        val config = FrameworkConfigHolder.getConfig()
-        config.logConfig(context, builder)
-
-        // 返回配置的日志级别或默认值
+        FrameworkConfigHolder.applyLogConfig(context, builder)
         return builder.printHttpLogLevel ?: RequestInterceptor.Level.ALL
     }
 
     /**
      * 提供格式化打印器
-     * 支持优先级控制
+     * ✅ 使用合并后的配置
      */
     @Singleton
     @Provides
     fun provideFormatPrinter(@ApplicationContext context: Context): FormatPrinter {
         val builder = LogConfigBuilder()
-        val config = FrameworkConfigHolder.getConfig()
-        config.logConfig(context, builder)
-
-        // 返回配置的打印器或默认实现
+        FrameworkConfigHolder.applyLogConfig(context, builder)
         return builder.formatPrinter ?: DefaultFormatPrinter()
     }
 }

@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Spec Mode Debug Prompt",
+  "description": "When all tasks are completed in Spec mode, prompts the user if they want to run debug build, then compiles and deploys the latest code to the connected Android device via ADB Pro plugin",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": ""
+  }
+}

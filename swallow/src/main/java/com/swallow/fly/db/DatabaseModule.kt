@@ -28,13 +28,13 @@ object DatabaseModule {
 
     /**
      * 提供 Room 数据库
+     * ✅ 使用合并后的配置
      */
     @Singleton
     @Provides
     fun provideDatabase(@ApplicationContext context: Context): AppDataBase {
         val builder = DatabaseConfigBuilder()
-        val config = FrameworkConfigHolder.getConfig()
-        config.databaseConfig(context, builder)
+        FrameworkConfigHolder.applyDatabaseConfig(context, builder)
 
         return builder.database ?: Room.databaseBuilder(
             context,

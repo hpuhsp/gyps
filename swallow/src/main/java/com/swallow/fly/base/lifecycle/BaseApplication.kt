@@ -4,9 +4,12 @@ import android.content.Context
 import androidx.multidex.MultiDexApplication
 import com.swallow.fly.base.lifecycle.config.FrameworkConfigHolder
 import com.swallow.fly.base.lifecycle.config.FrameworkConfigProvider
+import com.swallow.fly.base.lifecycle.config.ModuleConfig
+import com.swallow.fly.base.lifecycle.config.ModuleConfigProvider
 import com.swallow.fly.ext.initLogger
 import com.swallow.fly.utils.AppManager
 import com.tencent.mmkv.MMKV
+import javax.inject.Inject
 
 /**
  * @Description: 基础 Application
@@ -39,6 +42,15 @@ abstract class BaseApplication : MultiDexApplication(), FrameworkConfigProvider 
      * App生命周期代理类
      */
     private var appDelegate: AppDelegate? = null
+    
+    /**
+     * 模块配置提供者（通过 Hilt 注入）
+     * 
+     * 各业务模块通过 @Binds @IntoSet @ModuleConfig 注册配置
+     */
+    @Inject
+    @ModuleConfig
+    lateinit var moduleConfigProviders: Set<@JvmSuppressWildcards ModuleConfigProvider>
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
@@ -48,8 +60,8 @@ abstract class BaseApplication : MultiDexApplication(), FrameworkConfigProvider 
 
     override fun onCreate() {
         super.onCreate()
-        // ✅ 自动初始化配置
-        FrameworkConfigHolder.initialize(this)
+        // ✅ 初始化配置（传入模块配置提供者）
+        FrameworkConfigHolder.initialize(this, moduleConfigProviders)
 
         // 执行配置的生命周期回调
         onFrameworkInitialized()
