@@ -2,50 +2,73 @@ package com.swallow.fly.widget
 
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
-import android.view.*
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatDialog
-import com.blankj.utilcode.util.ScreenUtils
+import androidx.appcompat.app.AlertDialog
 import com.swallow.fly.R
+import com.swallow.fly.base.ui.activity.IActivity
+import com.swallow.fly.ext.logd
 
 /**
- * @Description:
- * @Author:   Hsp
- * @Email:    1101121039@qq.com
- * @CreateTime:     2020/8/26 10:10
- * @UpdateRemark:   更新说明：
+ * @Description: 支持自定义与原生风格的 Loading Dialog
+ * @Author: Hsp
  */
-class CustomProgressDialog(context: Context) :
-    AppCompatDialog(context) {
+class CustomProgressDialog(private val originContext: Context) : AlertDialog(originContext) {
+
     private var customView: View =
-        LayoutInflater.from(context).inflate(R.layout.base_loading_progress, null)
-    private var tvDesc: TextView
-    private var showDesc = false
+        LayoutInflater.from(originContext).inflate(R.layout.base_loading_progress, null)
+
+    // Views
+    private var llCustomStyle: View? = null
+    private var tvCustomMsg: TextView? = null
+
+    private var cvSystemStyle: View? = null
+    private var tvSystemMsg: TextView? = null
 
     init {
-//        supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
-        this.setContentView(customView)
-//        val window = window
-//        if (null != window) {
-//            val dialogWidth = (ScreenUtils.getScreenWidth() * 0.35f).toInt()
-//            window.setGravity(Gravity.CENTER)
-//            window.setLayout(dialogWidth, dialogWidth)
-//            window.setDimAmount(0f)
-//        }
+        // 虽然继承自 AlertDialog，但我们通过 setView 来使用自定义布局
+        // 注意：AlertDialog 的构造通常需要 theme，这里依赖默认 theme 或者 manifest 设置
+        setView(customView)
 
-        this.setCancelable(true)
-        this.setCanceledOnTouchOutside(true)
-        this.setCancelable(true)
-        this.window?.setBackgroundDrawable(ColorDrawable(0x000000))
-        tvDesc = customView.findViewById(R.id.tv_loading_message)
+        // 透明背景，去除默认框
+        window?.setBackgroundDrawable(ColorDrawable(0))
+
+        initViews()
+        checkStyle()
+    }
+
+    private fun initViews() {
+        llCustomStyle = customView.findViewById(R.id.ll_custom_style)
+        tvCustomMsg = customView.findViewById(R.id.tv_loading_message_custom)
+
+        cvSystemStyle = customView.findViewById(R.id.cv_system_style)
+        tvSystemMsg = customView.findViewById(R.id.tv_loading_message_system)
+    }
+
+    /**
+     * 根据 Context 配置决定显示哪种风格
+     */
+    private fun checkStyle() {
+        val useSystem = (originContext as? IActivity)?.showSystemProgress() ?: false
+        if (useSystem) {
+            // 系统风格
+            llCustomStyle?.visibility = View.GONE
+            cvSystemStyle?.visibility = View.VISIBLE
+        } else {
+            // 自定义风格
+            llCustomStyle?.visibility = View.VISIBLE
+            cvSystemStyle?.visibility = View.GONE
+        }
     }
 
     /**
      * 设置显示文案
      */
-    open fun setMessage(message: String?) {
-        showDesc = true
-        tvDesc.visibility = View.VISIBLE
-        tvDesc.text = if (message.isNullOrEmpty()) "加载中..." else message
+    override fun setMessage(message: CharSequence?) {
+        val msg = if (message.isNullOrEmpty()) "加载中..." else message
+        tvCustomMsg?.text = msg
+        tvSystemMsg?.text = msg
     }
 }

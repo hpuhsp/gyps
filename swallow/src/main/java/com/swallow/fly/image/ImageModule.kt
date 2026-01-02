@@ -1,8 +1,7 @@
 package com.swallow.fly.image
 
 import android.content.Context
-import com.swallow.fly.base.lifecycle.config.FrameworkConfigHolder
-import com.swallow.fly.base.lifecycle.parse.ManifestParser
+import com.swallow.fly.base.lifecycle.config.SwallowConfig
 import com.swallow.fly.http.di.ImageLoaderInterceptor
 import dagger.Module
 import dagger.Provides
@@ -33,9 +32,7 @@ object ImageModule {
     @Singleton
     @Provides
     @ImageLoaderInterceptor
-    fun provideImageLoaderInterceptor(@ApplicationContext context: Context): Interceptor? {
-        val builder = ImageConfigBuilder()
-        FrameworkConfigHolder.applyImageConfig(context, builder)
-        return builder.imageLoaderInterceptor
+    fun provideImageLoaderInterceptor(config: SwallowConfig): Interceptor? {
+        return config.image.imageLoaderInterceptor
     }
 }

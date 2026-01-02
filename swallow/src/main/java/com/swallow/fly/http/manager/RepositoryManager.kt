@@ -3,7 +3,7 @@ package com.swallow.fly.http.manager
 import android.app.Application
 import android.content.Context
 import com.swallow.fly.http.ResponseErrorListener
-import retrofit2.Retrofit
+import com.swallow.fly.http.engine.HttpEngine
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,21 +12,36 @@ import javax.inject.Singleton
  * @Author:   Hsp
  * @Email:    1101121039@qq.com
  * @CreateTime:     2020/9/12 11:18
- * @UpdateRemark:   
+ * @UpdateRemark:
  *   - 2024/12: 添加缓存支持
+ *   - 2026/01: 重构为依赖 HttpEngine 抽象，支持多种网络库
  */
 @Singleton
 class RepositoryManager @Inject constructor(
     private val application: Application,
-    private val retrofit: Retrofit,
+    private val httpEngine: HttpEngine,  // 依赖抽象而非具体实现
     private var errorListener: ResponseErrorListener
 ) : IRepositoryManager {
 
     // 简单的内存缓存（生产环境建议使用 Room 或 MMKV）
     private val memoryCache = mutableMapOf<String, Any>()
 
+    /**
+     * 获取网络服务接口实例
+     * 
+     * 委托给 HttpEngine，而不是直接使用 Retrofit
+     * 这样未来可以切换到 Ktor 或其他网络库而无需修改此处代码
+     */
+    override fun <T> obtainService(service: Class<T>): T {
+        return httpEngine.createService(service)
+    }
+    
+    /**
+     * @deprecated 请使用 obtainService 替代
+     */
+    @Deprecated("Use obtainService instead")
     override fun <T> obtainRetrofitService(service: Class<T>): T {
-        return retrofit.create(service)
+        return obtainService(service)
     }
 
     override fun <T> obtainCacheService(cache: Class<T>): T {
@@ -73,5 +88,19 @@ class RepositoryManager @Inject constructor(
      */
     fun removeCache(key: String) {
         memoryCache.remove(key)
+    }
+    
+    /**
+     * 取消指定标签的请求
+     */
+    fun cancelRequest(tag: String) {
+        httpEngine.cancelRequest(tag)
+    }
+    
+    /**
+     * 取消所有请求
+     */
+    fun cancelAllRequests() {
+        httpEngine.cancelAllRequests()
     }
 }

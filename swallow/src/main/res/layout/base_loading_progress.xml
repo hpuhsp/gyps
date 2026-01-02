@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
 
+    <!-- 自定义风格：深色背景，居中菊花 -->
     <LinearLayout
+        android:id="@+id/ll_custom_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@drawable/shape_loading_bg"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:visibility="gone">
 
         <ProgressBar
-            android:id="@+id/progress_view"
+            android:id="@+id/pb_custom"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:indeterminateDrawable="@anim/anim_loading"
             android:indeterminateDuration="1000" />
 
         <TextView
-            android:id="@+id/tv_loading_message"
+            android:id="@+id/tv_loading_message_custom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -28,5 +32,40 @@
             android:textColor="@color/white"
             android:textSize="14sp" />
     </LinearLayout>
+
+    <!-- 系统风格：白色卡片，横向布局 (模拟原生 ProgressDialog) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_system_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="24dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="16dp">
+
+            <!-- 原生 ProgressBar -->
+            <ProgressBar
+                android:id="@+id/pb_system"
+                android:layout_width="40dp"
+                android:layout_height="40dp" />
+
+            <TextView
+                android:id="@+id/tv_loading_message_system"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="加载中..."
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </FrameLayout>

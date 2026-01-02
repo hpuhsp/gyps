@@ -1,9 +1,6 @@
 package com.swallow.fly.base.ui.fragment
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.app.Dialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
@@ -12,39 +9,46 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.blankj.utilcode.util.ToastUtils
 import com.google.android.material.snackbar.Snackbar
-import com.swallow.fly.R
-import com.swallow.fly.base.presentation.state.EventArgs
 import com.swallow.fly.base.presentation.BaseViewModel
-import com.swallow.fly.widget.CustomProgressDialog
+import com.swallow.fly.base.presentation.state.EventArgs
+import com.swallow.fly.base.presentation.state.UiEvent
+import com.swallow.fly.base.presentation.state.UiState
+import com.swallow.fly.base.ui.delegate.PermissionDelegate
+import com.swallow.fly.base.ui.delegate.PermissionDelegateImpl
+import com.swallow.fly.base.ui.delegate.ProgressDelegate
+import com.swallow.fly.base.ui.delegate.ProgressDelegateImpl
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import java.lang.Exception
-import java.lang.reflect.ParameterizedType
 
 /**
  * @Description: Fragment基类
- * @Author:   Hsp
- * @Email:    1101121039@qq.com
- * @CreateTime:     2020/8/24 10:06
- * @UpdateRemark:   更新说明：
+ * @Author: Hsp
+ * @Email: 1101121039@qq.com
+ * @CreateTime: 2020/8/24 10:06
+ * @UpdateRemark: 更新说明：
+ * - 2024/12: 采用 Delegate 模式重构，支持 ActivityResult API
+ * - 引入 UiState/UiEvent 观察机制
  */
-abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), IFragment {
+abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> :
+        Fragment(),
+        IFragment,
+        ProgressDelegate by ProgressDelegateImpl(),
+        PermissionDelegate by PermissionDelegateImpl() {
 
-    /**
-     * ViewModel
-     */
+    /** ViewModel */
     abstract val modelClass: Class<VM>?
 
-    @Nullable
-    var mViewModel: VM? = null
+    @Nullable var mViewModel: VM? = null
 
-    /**
-     * ViewBinding
-     */
+    /** ViewBinding */
     private var _binding: ViewBinding? = null
     abstract val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> VB
 
@@ -53,11 +57,6 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), 
         get() = _binding as VB
 
     lateinit var mContext: Context
-
-    /**
-     * 可进行扩展为自定义Dialog
-     */
-    private lateinit var loadingDialog: Dialog
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -69,66 +68,104 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), 
         if (useEventBus()) {
             EventBus.getDefault().register(this)
         }
+        // 初始化权限请求
+        initPermissionLauncher(this) { onPermissionsResult(it) }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = bindingInflater.invoke(inflater, container, false)
-        modelClass?.let {
-            mViewModel = ViewModelProvider(this).get(it)
-        }
+        modelClass?.let { mViewModel = ViewModelProvider(this).get(it) }
         return requireNotNull(_binding).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initBaseDialog()
         if (null != mViewModel) {
             initBaseActionEvent()
+            observeViewModel()
         }
         initView()
     }
 
-    /**
-     * 全局配置
-     */
+    /** 全局配置 */
     @SuppressLint("FragmentLiveDataObserve")
     private fun initBaseActionEvent() {
-        mViewModel!!.pageStateEvent.observe(this, Observer {
-            when (it.event) {
-                EventArgs.SHOW_LOADING -> showLoading(getString(it.message), it.cancelEnable)
-                EventArgs.DO_NOTHING, EventArgs.HIDE_DIALOG -> hideDialog()
-                EventArgs.SHOW_ERROR -> {
-                    showToast(it.errorMsg)
-                }
-                EventArgs.SHOW_CONFIRM -> {
-                    hideDialog()
-                    showConfirmDialog(it.content, true)
-                }
-                EventArgs.SHOW_TOAST -> {
-                    if (it.toastMsg.isNotEmpty()) {
-                        showToast(it.toastMsg)
-                    } else {
-                        if (it.message != 0) {
-                            showToast(getString(it.message))
+        mViewModel!!.pageStateEvent.observe(
+                this,
+                Observer {
+                    when (it.event) {
+                        EventArgs.SHOW_LOADING ->
+                                showLoading(mContext, getString(it.message), it.cancelEnable)
+                        EventArgs.DO_NOTHING, EventArgs.HIDE_DIALOG -> hideDialog()
+                        EventArgs.SHOW_ERROR -> {
+                            showToast(it.errorMsg)
                         }
+                        EventArgs.SHOW_CONFIRM -> {
+                            hideDialog()
+                            showConfirmDialog(mContext, it.content, true)
+                        }
+                        EventArgs.SHOW_TOAST -> {
+                            if (it.toastMsg.isNotEmpty()) {
+                                showToast(it.toastMsg)
+                            } else {
+                                if (it.message != 0) {
+                                    showToast(getString(it.message))
+                                }
+                            }
+                        }
+                        else -> {}
                     }
                 }
-                else -> {
-
-                }
-            }
-        })
+        )
     }
 
-    private fun initBaseDialog() {
-        loadingDialog = if (showSystemProgress()) {
-            ProgressDialog(mContext)
-        } else {
-            CustomProgressDialog(mContext)
+    /** 观察 ViewModel 的状态和事件 */
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { mViewModel?.uiState?.collect { state -> handleUiState(state) } }
+                launch { mViewModel?.uiEvent?.collect { event -> handleUiEvent(event) } }
+            }
+        }
+    }
+
+    /** 处理 UI 状态 */
+    protected open fun handleUiState(state: UiState) {
+        when (state) {
+            is UiState.Init -> {} // Do nothing
+            is UiState.Idle -> hideDialog()
+            is UiState.Loading -> onStateLoading(state.message)
+            is UiState.Success<*> -> onStateSuccess(state.data)
+            is UiState.Error -> onStateError(state.message)
+        }
+    }
+
+    /** 处理加载状态 子类可重写此方法实现自定义加载 UI (如缺省页) */
+    protected open fun onStateLoading(message: String?) {
+        showLoading(mContext, message, false)
+    }
+
+    /** 处理成功状态 */
+    protected open fun onStateSuccess(data: Any?) {
+        hideDialog()
+    }
+
+    /** 处理错误状态 子类可重写此方法实现自定义错误 UI (如缺省页) */
+    protected open fun onStateError(message: String) {
+        hideDialog()
+        showToast(message)
+    }
+
+    /** 处理 UI 事件 子类可以重写此方法来处理自定义事件 */
+    protected open fun handleUiEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.ShowToast -> showToast(event.message)
+            is UiEvent.ShowError -> showToast(event.message)
+            is UiEvent.Navigate -> {}
         }
     }
 
@@ -137,7 +174,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), 
         if (useEventBus()) {
             EventBus.getDefault().unregister(this)
         }
-        loadingDialog.dismiss()
+        hideDialog()
         _binding = null
     }
 
@@ -149,75 +186,31 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), 
         return false
     }
 
-    /**
-     * 是否显示系统进度条控件，默认为false，显示自定义菊花转
-     */
-    override fun showSystemProgress(): Boolean {
-        return false
-    }
-    /*=======================================UI方法==============================================*/
+    /** 权限请求结果 */
+    open fun onPermissionsResult(permissions: Map<String, Boolean>) {}
 
-    /**
-     * 显示进度框
-     */
+    /** 显示进度框 (兼容旧 API) */
     open fun showLoading(msg: String?, cancelEnable: Boolean) {
-        loadingDialog.setCancelable(cancelEnable)
-        if (loadingDialog is ProgressDialog) {
-            (loadingDialog as ProgressDialog).setMessage(msg ?: "")
-        }
-        loadingDialog.show()
+        showLoading(mContext, msg, cancelEnable)
     }
 
-    /**
-     * 显示确认弹框
-     */
+    /** 显示确认弹框 (兼容旧 API) */
     open fun showConfirmDialog(message: String?, cancelEnable: Boolean) {
-        if (message.isNullOrEmpty()) {
-            return
-        }
-        AlertDialog.Builder(mContext).setTitle(getString(R.string.default_dialog_title))
-            .setMessage(message)
-            .setCancelable(cancelEnable)
-            .setPositiveButton(
-                getString(R.string.confirm)
-            ) { dialog, _ -> dialog.dismiss() }
-            .create().show()
+        showConfirmDialog(mContext, message, cancelEnable)
     }
 
-    /**
-     * 显示确认弹框
-     */
+    /** 显示确认弹框 (兼容旧 API) */
     open fun showConfirmDialog(message: String?, listener: DialogInterface.OnClickListener) {
-        if (message.isNullOrEmpty()) {
-            return
-        }
-        AlertDialog.Builder(mContext).setTitle(getString(R.string.default_dialog_title))
-            .setMessage(message)
-            .setPositiveButton(getString(R.string.confirm), listener)
-            .create().show()
+        showConfirmDialog(mContext, message, listener)
     }
 
-    /**
-     * 隐藏进度框
-     */
-    open fun hideDialog() {
-        loadingDialog.dismiss()
-    }
-
-
-    /**
-     * 显示Toast
-     */
+    /** 显示Toast */
     @SuppressLint("ShowToast")
     open fun showToast(message: CharSequence?) {
-        message?.let {
-            ToastUtils.showShort(it)
-        }
+        message?.let { ToastUtils.showShort(it) }
     }
 
-    /**
-     * 显示SnackBar
-     */
+    /** 显示SnackBar */
     open fun makeSnackBar(view: View, message: CharSequence) {
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }

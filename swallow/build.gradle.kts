@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     kotlin("kapt")
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
 }
 
 android {
@@ -34,7 +33,6 @@ android {
 
     buildFeatures {
         viewBinding = true
-        compose = true
         buildConfig = true  // 启用 BuildConfig 生成
     }
 
@@ -50,10 +48,6 @@ android {
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-opt-in=kotlinx.coroutines.FlowPreview"
         )
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     lint {
@@ -123,16 +117,6 @@ dependencies {
 
     // UtilCodeX
     api(libs.utilcodex)
-
-    // Compose (optional support)
-    api(platform(libs.compose.bom))
-    api(libs.bundles.compose)
-    debugApi(libs.bundles.compose.debug)
-
-    // Compose Integration
-    api(libs.androidx.lifecycle.viewmodel.compose)
-    api(libs.androidx.navigation.compose)
-    api(libs.hilt.navigation.compose)
 
     // Legacy support
     api("androidx.legacy:legacy-support-v4:1.0.0")

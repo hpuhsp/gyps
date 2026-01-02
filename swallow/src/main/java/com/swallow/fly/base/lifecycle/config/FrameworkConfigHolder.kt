@@ -29,6 +29,9 @@ object FrameworkConfigHolder {
     
     @Volatile
     private var moduleConfigs: Set<ModuleConfigProvider> = emptySet()
+
+    @Volatile
+    private var cachedConfig: SwallowConfig? = null
     
     /**
      * 初始化配置
@@ -56,76 +59,47 @@ object FrameworkConfigHolder {
                     // 2. 保存模块配置
                     moduleConfigs = providers
                     
-                    // 3. 日志输出配置信息
+                    // 3. 构建并缓存最终配置
+                    cachedConfig = buildConfig(application)
+                    
+                    // 4. 日志输出配置信息
                     logConfigInfo()
                 }
             }
         }
     }
-    
+
     /**
-     * 应用网络配置（合并所有模块）
-     * 
-     * 配置应用顺序：
-     * 1. 按优先级从低到高应用模块配置
-     * 2. 最后应用 app 主配置（优先级最高）
-     * 
-     * @param context 上下文
-     * @param builder 网络配置构建器
+     * 构建合并后的配置
      */
-    fun applyNetworkConfig(context: Context, builder: NetworkConfigBuilder) {
+    private fun buildConfig(context: Context): SwallowConfig {
+        val config = SwallowConfig()
+        
         // 1. 按优先级从低到高应用模块配置
-        moduleConfigs
-            .sortedBy { it.priority }
-            .forEach { provider ->
-                val config = provider.provideConfig()
-                config.networkConfig(context, builder)
-            }
+        moduleConfigs.sortedBy { it.priority }.forEach { provider ->
+            val moduleConfig = provider.provideConfig()
+            moduleConfig.networkConfig.invoke(context, config.network)
+            moduleConfig.databaseConfig.invoke(context, config.database)
+            moduleConfig.imageConfig.invoke(context, config.image)
+            moduleConfig.logConfig.invoke(context, config.log)
+        }
         
         // 2. 最后应用 app 主配置（优先级最高）
-        appConfig?.networkConfig?.invoke(context, builder)
-    }
-    
-    /**
-     * 应用数据库配置
-     */
-    fun applyDatabaseConfig(context: Context, builder: DatabaseConfigBuilder) {
-        moduleConfigs
-            .sortedBy { it.priority }
-            .forEach { provider ->
-                val config = provider.provideConfig()
-                config.databaseConfig(context, builder)
-            }
+        appConfig?.let {
+            it.networkConfig.invoke(context, config.network)
+            it.databaseConfig.invoke(context, config.database)
+            it.imageConfig.invoke(context, config.image)
+            it.logConfig.invoke(context, config.log)
+        }
         
-        appConfig?.databaseConfig?.invoke(context, builder)
+        return config
     }
-    
+
     /**
-     * 应用图片加载配置
+     * 获取合并后的配置快照
      */
-    fun applyImageConfig(context: Context, builder: ImageConfigBuilder) {
-        moduleConfigs
-            .sortedBy { it.priority }
-            .forEach { provider ->
-                val config = provider.provideConfig()
-                config.imageConfig(context, builder)
-            }
-        
-        appConfig?.imageConfig?.invoke(context, builder)
-    }
-    
-    /**
-     * 应用日志配置
-     */
-    fun applyLogConfig(context: Context, builder: LogConfigBuilder) {
-        moduleConfigs
-            .sortedBy { it.priority }
-            .forEach { provider ->
-                val config = provider.provideConfig()
-                config.logConfig(context, builder)
-            }
-        
-        appConfig?.logConfig?.invoke(context, builder)
+    fun provideConfig(): SwallowConfig {
+        return cachedConfig ?: throw IllegalStateException("FrameworkConfigHolder not initialized")
     }
     
     /**

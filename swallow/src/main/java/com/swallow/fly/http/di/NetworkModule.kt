@@ -4,8 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.swallow.fly.BuildConfig
-import com.swallow.fly.base.lifecycle.config.FrameworkConfigHolder
-import com.swallow.fly.http.CoroutineCallAdapterFactory
+import com.swallow.fly.base.lifecycle.config.SwallowConfig
 import com.swallow.fly.http.ResponseErrorListener
 import com.swallow.fly.http.TimeoutCallAdapterFactory
 import com.swallow.fly.http.interceptor.GlobalHttpHandler
@@ -37,7 +36,7 @@ import javax.inject.Singleton
  * 职责：
  * 1. 提供 Retrofit、OkHttpClient、Gson 实例
  * 2. 支持 RetrofitUrlManager（动态切换 BaseUrl）
- * 3. 通过 FrameworkConfigHolder 获取配置（app 模块无需 Hilt 注解）
+ * 3. 通过注入 SwallowConfig 获取配置
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -52,10 +51,8 @@ object NetworkModule {
      */
     @Singleton
     @Provides
-    fun provideBaseUrl(@ApplicationContext context: Context): HttpUrl {
-        val builder = NetworkConfigBuilder()
-        FrameworkConfigHolder.applyNetworkConfig(context, builder)
-        return builder.baseUrl ?: DEFAULT_BASE_URL.toHttpUrlOrNull()!!
+    fun provideBaseUrl(config: SwallowConfig): HttpUrl {
+        return config.network.baseUrl ?: DEFAULT_BASE_URL.toHttpUrlOrNull()!!
     }
 
     /**
@@ -63,10 +60,8 @@ object NetworkModule {
      */
     @Singleton
     @Provides
-    fun provideGlobalHttpHandler(@ApplicationContext context: Context): GlobalHttpHandler? {
-        val builder = NetworkConfigBuilder()
-        FrameworkConfigHolder.applyNetworkConfig(context, builder)
-        return builder.handler
+    fun provideGlobalHttpHandler(config: SwallowConfig): GlobalHttpHandler? {
+        return config.network.handler
     }
 
     /**
@@ -74,11 +69,8 @@ object NetworkModule {
      */
     @Singleton
     @Provides
-    fun provideResponseErrorListener(@ApplicationContext context: Context): ResponseErrorListener {
-        val builder = NetworkConfigBuilder()
-        FrameworkConfigHolder.applyNetworkConfig(context, builder)
-
-        return builder.responseErrorListener ?: object : ResponseErrorListener {
+    fun provideResponseErrorListener(config: SwallowConfig): ResponseErrorListener {
+        return config.network.responseErrorListener ?: object : ResponseErrorListener {
             override fun handleResponseError(t: Throwable?): Throwable {
                 return RuntimeException(t)
             }
@@ -90,13 +82,9 @@ object NetworkModule {
      */
     @Singleton
     @Provides
-    fun provideGson(@ApplicationContext context: Context): Gson {
+    fun provideGson(@ApplicationContext context: Context, config: SwallowConfig): Gson {
         val gsonBuilder = GsonBuilder()
-        val configBuilder = NetworkConfigBuilder()
-
-        FrameworkConfigHolder.applyNetworkConfig(context, configBuilder)
-        configBuilder.gsonConfiguration?.configGson(context, gsonBuilder)
-
+        config.network.gsonConfiguration?.configGson(context, gsonBuilder)
         return gsonBuilder.create()
     }
 
@@ -108,7 +96,8 @@ object NetworkModule {
     fun provideOkHttpClient(
         @ApplicationContext context: Context,
         @HandlerRequestInterceptor intercept: Interceptor,
-        handler: GlobalHttpHandler?
+        handler: GlobalHttpHandler?,
+        config: SwallowConfig
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
             .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
@@ -140,9 +129,7 @@ object NetworkModule {
         }
 
         // ✅ 应用自定义配置
-        val configBuilder = NetworkConfigBuilder()
-        FrameworkConfigHolder.applyNetworkConfig(context, configBuilder)
-        configBuilder.okhttpConfiguration?.configOkhttp(context, builder)
+        config.network.okhttpConfiguration?.configOkhttp(context, builder)
 
         return builder.build()
     }
@@ -156,22 +143,20 @@ object NetworkModule {
         @ApplicationContext context: Context,
         okHttpClient: OkHttpClient,
         baseUrl: HttpUrl,
-        gson: Gson
+        gson: Gson,
+        config: SwallowConfig
     ): Retrofit {
         val builder = Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)
 
         // ✅ 应用自定义配置
-        val configBuilder = NetworkConfigBuilder()
-        FrameworkConfigHolder.applyNetworkConfig(context, configBuilder)
-        configBuilder.retrofitConfiguration?.configRetrofit(context, builder)
+        config.network.retrofitConfiguration?.configRetrofit(context, builder)
 
         // 添加转换器和适配器
         builder
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .addCallAdapterFactory(TimeoutCallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
+            .addCallAdapterFactory(TimeoutCallAdapterFactory.create())
 
         return builder.build()
     }

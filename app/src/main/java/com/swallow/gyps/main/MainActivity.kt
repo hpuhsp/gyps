@@ -38,8 +38,9 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
     override fun initData(savedInstanceState: Bundle?) {
         // BaseActivity 会自动调用 observeViewModel()
         // 无需手动调用
+        showLoading("测试。。。。。", true)
     }
-    
+
     private fun test() {
         lifecycleScope.launch(Dispatchers.IO) {
             val flow2 = (1..10).asFlow().onEach { delay(1000) }
@@ -71,6 +72,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
                 // 测试支持组件
                 // mViewModel.reportHealthyStatus()
             }
+
             R.id.btn_test -> TestActivity.start(this)
         }
     }

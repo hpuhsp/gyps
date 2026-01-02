@@ -1,8 +1,7 @@
 package com.swallow.fly.log
 
 import android.content.Context
-import com.swallow.fly.base.lifecycle.config.FrameworkConfigHolder
-import com.swallow.fly.base.lifecycle.parse.ManifestParser
+import com.swallow.fly.base.lifecycle.config.SwallowConfig
 import com.swallow.fly.http.interceptor.RequestInterceptor
 import com.swallow.fly.http.printer.DefaultFormatPrinter
 import com.swallow.fly.http.printer.FormatPrinter
@@ -32,10 +31,8 @@ object LogModule {
      */
     @Singleton
     @Provides
-    fun providePrintHttpLogLevel(@ApplicationContext context: Context): RequestInterceptor.Level {
-        val builder = LogConfigBuilder()
-        FrameworkConfigHolder.applyLogConfig(context, builder)
-        return builder.printHttpLogLevel ?: RequestInterceptor.Level.ALL
+    fun providePrintHttpLogLevel(config: SwallowConfig): RequestInterceptor.Level {
+        return config.log.printHttpLogLevel ?: RequestInterceptor.Level.ALL
     }
 
     /**
@@ -44,9 +41,7 @@ object LogModule {
      */
     @Singleton
     @Provides
-    fun provideFormatPrinter(@ApplicationContext context: Context): FormatPrinter {
-        val builder = LogConfigBuilder()
-        FrameworkConfigHolder.applyLogConfig(context, builder)
-        return builder.formatPrinter ?: DefaultFormatPrinter()
+    fun provideFormatPrinter(config: SwallowConfig): FormatPrinter {
+        return config.log.formatPrinter ?: DefaultFormatPrinter()
     }
 }

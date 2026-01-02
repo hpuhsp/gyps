@@ -25,7 +25,7 @@ open class BaseViewModel : ViewModel(), ViewBehavior, LifecycleObserver {
     /**
      * UI 状态 - 使用 StateFlow
      */
-    private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
+    private val _uiState = MutableStateFlow<UiState>(UiState.Init)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     
     /**

@@ -9,3 +9,5 @@
 .cxx
 local.properties
 buildScripts/gradle/*
+*.log
+*.txt

@@ -2,8 +2,7 @@ package com.swallow.fly.db
 
 import android.content.Context
 import androidx.room.Room
-import com.swallow.fly.base.lifecycle.config.FrameworkConfigHolder
-import com.swallow.fly.base.lifecycle.parse.ManifestParser
+import com.swallow.fly.base.lifecycle.config.SwallowConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,10 +31,8 @@ object DatabaseModule {
      */
     @Singleton
     @Provides
-    fun provideDatabase(@ApplicationContext context: Context): AppDataBase {
-        val builder = DatabaseConfigBuilder()
-        FrameworkConfigHolder.applyDatabaseConfig(context, builder)
-
+    fun provideDatabase(@ApplicationContext context: Context, config: SwallowConfig): AppDataBase {
+        val builder = config.database
         return builder.database ?: Room.databaseBuilder(
             context,
             AppDataBase::class.java,

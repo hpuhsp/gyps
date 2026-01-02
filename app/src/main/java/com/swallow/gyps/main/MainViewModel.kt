@@ -2,7 +2,8 @@ package com.swallow.gyps.main
 
 import androidx.lifecycle.viewModelScope
 import com.swallow.fly.base.presentation.BaseViewModel
-import com.swallow.fly.http.result.doSuccess
+import com.swallow.fly.http.result.onFailure
+import com.swallow.fly.http.result.onSuccess
 import com.swallow.gyps.main.models.HealthModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -51,7 +52,7 @@ class MainViewModel @Inject constructor(private val repository: MainRepository) 
                     hideLoading()
                 }
                 .collectLatest { result ->
-                    result.doSuccess {
+                    result.onSuccess {
                         if (it.isSuccessful()) {
                             it.message?.let { str ->
                                 showToast(str)
@@ -59,6 +60,8 @@ class MainViewModel @Inject constructor(private val repository: MainRepository) 
                         } else {
                             showError(it.message ?: "操作失败")
                         }
+                    }.onFailure {
+                        showError(it?.message ?: "请求失败")
                     }
                 }
         }

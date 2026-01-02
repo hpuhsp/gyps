@@ -9,7 +9,14 @@ package com.swallow.fly.base.presentation.state
  */
 sealed class UiState {
     /**
+     * 初始状态
+     * 用于 StateFlow 初始化，不产生任何副作用
+     */
+    object Init : UiState()
+
+    /**
      * 空闲状态
+     * 通常表示操作完成或重置，会触发隐藏 Loading
      */
     object Idle : UiState()
     
