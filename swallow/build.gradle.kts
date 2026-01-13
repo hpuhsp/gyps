@@ -83,7 +83,9 @@ dependencies {
     api(libs.bundles.coroutines)
 
     // EventBus
-    api(libs.eventbus)
+    api(libs.eventbus) {
+        exclude(group = "org.jetbrains.kotlin")
+    }
 
     // Room Bundle
     api(libs.bundles.room)
@@ -95,16 +97,21 @@ dependencies {
 
     // Network Bundle
     api(libs.bundles.network)
-    api(libs.retrofit.url.manager)
+    api(libs.retrofit.url.manager) {
+        exclude(group = "com.squareup.okhttp3")
+        exclude(group = "com.squareup.okio")
+    }
 
-    // Hilt（使用 kapt，Hilt 不支持 KSP）
+    // Hilt
     api(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // Multi-dex
     api("androidx.multidex:multidex:2.0.1")
 
-    api(libs.arouter.api)
+    api(libs.arouter.api) {
+        exclude(group = "org.jetbrains.kotlin")
+    }
 
     // Utilities Bundle
     api(libs.bundles.utilities)
@@ -116,7 +123,9 @@ dependencies {
     api(libs.easypermissions)
 
     // UtilCodeX
-    api(libs.utilcodex)
+    api(libs.utilcodex) {
+        exclude(group = "com.android.support")
+    }
 
     // Legacy support
     api("androidx.legacy:legacy-support-v4:1.0.0")

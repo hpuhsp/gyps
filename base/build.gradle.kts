@@ -54,17 +54,31 @@ dependencies {
     api(project(":swallow"))
 
     // 图片选择库
-    api(libs.pictureselector)
+    api(libs.pictureselector) {
+        exclude(group = "com.squareup.okhttp3")
+        exclude(group = "com.android.support")
+        exclude(group = "androidx.exifinterface")
+    }
 
     // RecyclerView 相关
-    api(libs.baserecyclerviewadapterhelper)
-    api(libs.recyclerview.flexibledivider)
+    api(libs.baserecyclerviewadapterhelper) {
+        exclude(group = "com.android.support")
+        exclude(group = "androidx.recyclerview")
+    }
+    api(libs.recyclerview.flexibledivider) {
+        exclude(group = "com.android.support")
+        exclude(group = "androidx.recyclerview")
+    }
 
     // TabLayout
-    api(libs.flyco.tablayout)
+    api(libs.flyco.tablayout) {
+        exclude(group = "com.android.support")
+    }
 
     // Material Dialogs
-    api(libs.material.dialogs.bottomsheets)
+    api(libs.material.dialogs.bottomsheets) {
+        exclude(group = "org.jetbrains.kotlin")
+    }
 
     // 测试依赖
     testImplementation(libs.junit)

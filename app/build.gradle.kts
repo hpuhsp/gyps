@@ -132,9 +132,9 @@ dependencies {
 //    implementation(libs.glide.okhttp3.integration)
     ksp(libs.glide.ksp)
 
-    // Hilt（使用 kapt，Hilt 不支持 KSP）
+    // Hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // Coroutines
     implementation(libs.bundles.coroutines)
