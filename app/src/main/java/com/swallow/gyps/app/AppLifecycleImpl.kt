@@ -13,7 +13,6 @@ class AppLifecycleImpl : AppLifecycle {
 
     override fun onCreate(application: Application) {
         // Module下应用级初始化操作
-        // initARouter()
     }
 
     /**

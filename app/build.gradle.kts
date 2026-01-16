@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    kotlin("kapt")
+    alias(libs.plugins.therouter.plugin)
 }
 
 // 加载签名配置
@@ -107,11 +107,6 @@ kotlin {
 hilt {
     enableAggregatingTask = false
 }
-kapt {
-    arguments {
-        arg("AROUTER_MODULE_NAME", project.getName())
-    }
-}
 dependencies {
     // 本地 JAR 文件
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
@@ -121,15 +116,11 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 
-    // ARouter（使用 kapt）
-//    implementation(libs.arouter.api)
-    kapt(libs.arouter.compiler)
-
     // Room（使用 KSP）
     ksp(libs.androidx.room.compiler)
 
     // Glide（使用 KSP）
-//    implementation(libs.glide.okhttp3.integration)
+    implementation(libs.glide.okhttp3.integration)
     ksp(libs.glide.ksp)
 
     // Hilt
@@ -139,7 +130,15 @@ dependencies {
     // Coroutines
     implementation(libs.bundles.coroutines)
 
+    // TheRouter
+    ksp(libs.therouter.apt)
+
     // 项目模块
-    implementation(project(":msc"))
     implementation(project(":base"))
+
+    // Legacy support - 内部兼容性支持
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    implementation("androidx.vectordrawable:vectordrawable:1.1.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("androidx.viewpager:viewpager:1.0.0")
 }

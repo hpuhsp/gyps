@@ -6,7 +6,19 @@ plugins {
     alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.therouter.classpath) apply false
 }
+
+//buildscript {
+//    repositories {
+//        google()
+//        mavenCentral()
+//    }
+//    dependencies {
+//        // Legacy Gradle plugin (no plugin marker)
+//        classpath(libs.therouter.classpath)
+//    }
+//}
 
 tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)

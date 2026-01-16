@@ -1,5 +1,6 @@
 package com.swallow.gyps.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +11,10 @@ import com.swallow.fly.base.ui.activity.BaseActivity
 import com.swallow.fly.ext.logd
 import com.swallow.gyps.R
 import com.swallow.gyps.databinding.ActivityMainBinding
-import com.swallow.gyps.msc.SignUpActivity
-import com.swallow.gyps.msc.VoiceInputActivity
-import com.swallow.gyps.test.TestActivity
+import com.therouter.TheRouter
+import com.therouter.router.RouteItem
+import com.therouter.router.action.interceptor.ActionInterceptor
+import com.therouter.router.interceptor.RouterReplaceInterceptor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.OnClickListener {
@@ -37,8 +40,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
 
     override fun initData(savedInstanceState: Bundle?) {
         // BaseActivity 会自动调用 observeViewModel()
-        // 无需手动调用
-        showLoading("测试。。。。。", true)
+        TheRouter.isDebug = true
+
     }
 
     private fun test() {
@@ -66,14 +69,71 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.On
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.btn_face_identify -> SignUpActivity.start(this)
-            R.id.btn_voice_input -> VoiceInputActivity.start(this)
-            R.id.btn_report -> {
-                // 测试支持组件
-                // mViewModel.reportHealthyStatus()
+            R.id.btn_test -> {
+                TheRouter.build("/test/TestActivity").withString("title", "测试页面").navigation()
             }
 
-            R.id.btn_test -> TestActivity.start(this)
+            binding.btnBrower.id -> {
+                openBrowserTestPage()
+            }
+
+            else -> {
+
+            }
         }
     }
+
+    private fun openBrowserTestPage() {
+        try {
+            // 1. 在应用的缓存目录中创建一个临时文件
+            //    我们使用 "route_test.html"作为文件名
+            val tempFile = File(cacheDir, "route_test.html")
+
+            // 2. 调用 createTestHtml() 获取HTML内容，并将其写入临时文件
+            //    use {} 块可以确保文件流在使用后自动关闭
+            tempFile.writer().use {
+                it.write(createTestHtml())
+            }
+
+            // 3. 使用 FileProvider 为创建的临时文件生成一个安全的 Uri
+            val uri = androidx.core.content.FileProvider.getUriForFile(
+                this,
+                "$packageName.fileprovider", // 确保这个 authority 与你的 Manifest 文件中定义的一致
+                tempFile
+            )
+
+            // 4. 创建 Intent，用于在浏览器或其他能处理HTML的应用中打开
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "text/html")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                // FLAG_ACTIVITY_NEW_TASK 不是必须的，但如果从非 Activity 的 Context 启动，则需要
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            startActivity(intent)
+        } catch (e: Exception) {
+            // 打印详细的错误日志，方便调试
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * 从 assets 加载并创建测试 HTML 页面
+     * 这个方法保持不变，它的逻辑是正确的。
+     */
+    private fun createTestHtml(): String {
+        val scheme = "gyps"
+        val host = "test.com"
+
+        // 从 assets 读取 HTML 模板文件
+        val template = assets.open("route_test_template.html").bufferedReader().use {
+            it.readText()
+        }
+
+        // 替换模板中的占位符并返回最终的 HTML 字符串
+        return template
+            .replace("{scheme}", scheme)
+            .replace("{host}", host)
+    }
+
 }

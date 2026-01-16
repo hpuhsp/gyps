@@ -322,7 +322,6 @@ class MyApplication : BaseApplication() {
         
         // 框架初始化完成后的自定义逻辑
         initMscSdk()
-        initARouterConfig()
     }
 }
 ```

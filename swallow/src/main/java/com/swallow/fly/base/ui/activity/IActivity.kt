@@ -11,4 +11,6 @@ interface IActivity {
     fun useEventBus(): Boolean
 
     fun showSystemProgress(): Boolean
+
+    fun shouldInject(): Boolean
 }

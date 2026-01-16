@@ -1,12 +1,10 @@
 package com.swallow.fly.image
 
-import android.content.Context
 import com.swallow.fly.base.lifecycle.config.SwallowConfig
 import com.swallow.fly.http.di.ImageLoaderInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import javax.inject.Singleton

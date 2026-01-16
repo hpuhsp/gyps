@@ -26,9 +26,11 @@ import com.swallow.fly.base.ui.delegate.PermissionDelegate
 import com.swallow.fly.base.ui.delegate.PermissionDelegateImpl
 import com.swallow.fly.base.ui.delegate.ProgressDelegate
 import com.swallow.fly.base.ui.delegate.ProgressDelegateImpl
-import com.swallow.fly.ext.logd
+import com.therouter.TheRouter
+import com.therouter.TheRouter.inject
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
+
 
 /**
  * @Description: 现代化 Activity 基类
@@ -71,6 +73,11 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> :
         if (useEventBus()) {
             EventBus.getDefault().register(this)
         }
+
+        if (shouldInject()) {
+            performInject()
+        }
+
         beforehandInit()
         _binding = bindingInflater.invoke(layoutInflater)
         setContentView(requireNotNull(_binding).root)
@@ -277,7 +284,15 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> :
         return pi
     }
 
+    fun performInject() {
+        TheRouter.inject(this)
+    }
+
     override fun useEventBus(): Boolean {
+        return false
+    }
+
+    override fun shouldInject(): Boolean {
         return false
     }
 

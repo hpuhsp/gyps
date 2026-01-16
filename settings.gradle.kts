@@ -18,6 +18,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Gyps"
 include(":app")
-include(":msc")
 include(":base")
 include(":swallow")

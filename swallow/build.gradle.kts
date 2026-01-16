@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    kotlin("kapt")
 }
 
 android {
@@ -62,74 +61,73 @@ kotlin {
 }
 
 dependencies {
-    // Test dependencies
+    // ============================================================
+    // Test Dependencies
+    // ============================================================
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 
-    // AndroidX Core Bundle
+    // ============================================================
+    // API Dependencies - 暴露给依赖方（base/app 模块需要直接使用）
+    // ============================================================
+
+    // AndroidX Core
     api(libs.bundles.androidx.core)
 
-    // Lifecycle Bundle
+    // Lifecycle
     api(libs.bundles.lifecycle)
 
-    // Navigation Bundle
+    // Navigation
     api(libs.bundles.navigation)
 
     // Paging
     api(libs.bundles.paging)
 
-    // Coroutines Bundle
+    // Coroutines
     api(libs.bundles.coroutines)
 
-    // EventBus
+    // Hilt
+    api(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
     api(libs.eventbus) {
         exclude(group = "org.jetbrains.kotlin")
     }
 
-    // Room Bundle
+    // Room
     api(libs.bundles.room)
     ksp(libs.androidx.room.compiler)
 
-    // Glide Bundle
-    api(libs.bundles.glide)
+    // Glide - 图片加载实现，通过 ImageLoader 工具类封装
+    api(libs.glide)
     ksp(libs.glide.ksp)
 
-    // Network Bundle
+    // Network - 网络层实现，通过 Repository 和 BaseRepository 封装
     api(libs.bundles.network)
     api(libs.retrofit.url.manager) {
         exclude(group = "com.squareup.okhttp3")
         exclude(group = "com.squareup.okio")
     }
 
-    // Hilt
-    api(libs.hilt.android)
-    ksp(libs.hilt.compiler)
+    // TheRouter - 路由实现，通过路由工具类封装
+    api(libs.therouter.router)
+    ksp(libs.therouter.apt)
 
-    // Multi-dex
+    // Multi-dex - 内部配置，应用层不需要直接访问
     api("androidx.multidex:multidex:2.0.1")
 
-    api(libs.arouter.api) {
-        exclude(group = "org.jetbrains.kotlin")
-    }
-
-    // Utilities Bundle
+    // Utilities - 工具类（Timber、MMKV），通过封装使用
     api(libs.bundles.utilities)
 
-    // Immersion Bar Bundle
+    // Immersion Bar - 状态栏工具，通过 BaseActivity 封装
     api(libs.bundles.immersionbar)
 
-    // Permissions
+    // Permissions - 权限工具，通过 BaseActivity/BaseFragment 封装
     api(libs.easypermissions)
 
-    // UtilCodeX
+    // UtilCodeX - Android 工具类，内部使用
     api(libs.utilcodex) {
         exclude(group = "com.android.support")
     }
-
-    // Legacy support
-    api("androidx.legacy:legacy-support-v4:1.0.0")
-    api("androidx.vectordrawable:vectordrawable:1.1.0")
-    api("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    api("androidx.viewpager:viewpager:1.0.0")
 }
