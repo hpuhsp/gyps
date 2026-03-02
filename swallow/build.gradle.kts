@@ -61,16 +61,15 @@ kotlin {
 }
 
 dependencies {
-    // ============================================================
-    // Test Dependencies
-    // ============================================================
+    // Unit Testing
     testImplementation(libs.junit)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation("app.cash.turbine:turbine:1.2.0")
+    testImplementation("io.mockk:mockk:1.13.13")
+    
+    // Android Testing
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
-
-    // ============================================================
-    // API Dependencies - 暴露给依赖方（base/app 模块需要直接使用）
-    // ============================================================
 
     // AndroidX Core
     api(libs.bundles.androidx.core)
@@ -99,34 +98,34 @@ dependencies {
     api(libs.bundles.room)
     ksp(libs.androidx.room.compiler)
 
-    // Glide - 图片加载实现，通过 ImageLoader 工具类封装
+    // Glide
     api(libs.glide)
     ksp(libs.glide.ksp)
 
-    // Network - 网络层实现，通过 Repository 和 BaseRepository 封装
+    // Network
     api(libs.bundles.network)
     api(libs.retrofit.url.manager) {
         exclude(group = "com.squareup.okhttp3")
         exclude(group = "com.squareup.okio")
     }
 
-    // TheRouter - 路由实现，通过路由工具类封装
+    // TheRouter
     api(libs.therouter.router)
     ksp(libs.therouter.apt)
 
-    // Multi-dex - 内部配置，应用层不需要直接访问
+    // Multi-dex
     api("androidx.multidex:multidex:2.0.1")
 
-    // Utilities - 工具类（Timber、MMKV），通过封装使用
+    // Utilities
     api(libs.bundles.utilities)
 
-    // Immersion Bar - 状态栏工具，通过 BaseActivity 封装
+    // Immersion Bar
     api(libs.bundles.immersionbar)
 
-    // Permissions - 权限工具，通过 BaseActivity/BaseFragment 封装
+    // Permissions
     api(libs.easypermissions)
 
-    // UtilCodeX - Android 工具类，内部使用
+    // UtilCodeX
     api(libs.utilcodex) {
         exclude(group = "com.android.support")
     }

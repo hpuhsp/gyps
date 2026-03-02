@@ -1,5 +1,6 @@
 package com.swallow.fly.base.data
 
+import com.swallow.fly.annotations.Stable
 import com.swallow.fly.http.result.HttpResult
 import com.swallow.fly.http.manager.RepositoryManager
 import kotlinx.coroutines.Dispatchers
@@ -9,22 +10,75 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 /**
- * @Description: 现代化 Repository 基类
+ * Repository 基类，提供数据访问层的通用功能
+ *
+ * 核心特性：
+ * - **统一错误处理**：通过 [executeRequest] 自动捕获异常并转换为 [HttpResult]
+ * - **Flow 支持**：提供 [flowRequest] 和 [cachedFlowRequest] 用于响应式数据流
+ * - **缓存策略**：支持 Stale-While-Revalidate (SWR) 模式，提供极致的"秒开"体验
+ * - **服务获取**：通过 [obtainService] 获取网络服务接口
  *
  * 关于缓存策略的说明：
  * 虽然 Retrofit/OkHttp 支持 HTTP 协议级缓存 (Cache-Control)，但它主要用于节省带宽。
  * 而 BaseRepository 中的 [cachedFlowRequest] 实现了 "Stale-While-Revalidate" (SWR) 策略：
- * 1. 立即发射本地缓存 (如果是 App 级持久化数据)，让 UI 瞬间显示。
- * 2. 也是发起网络请求，获取最新数据。
- * 3. 更新缓存并发射最新数据。
- * 这种 "双发射" 模式能提供比单纯 HTTP 缓存更极致的 "秒开" 体验。
+ * 1. 立即发射本地缓存（如果是 App 级持久化数据），让 UI 瞬间显示
+ * 2. 同时发起网络请求，获取最新数据
+ * 3. 更新缓存并发射最新数据
  *
- * @Author:   Hsp
- * @Email:    1101121039@qq.com
- * @CreateTime:     2020/8/24 12:00
- * @UpdateRemark:
- *   - 2024/12: 升级到现代化架构，使用 HttpResult
+ * 这种"双发射"模式能提供比单纯 HTTP 缓存更极致的"秒开"体验。
+ *
+ * 使用示例：
+ * ```kotlin
+ * @Singleton
+ * class UserRepository @Inject constructor() : BaseRepository() {
+ *
+ *     // 简单的网络请求
+ *     fun getUserInfo(userId: String): Flow<HttpResult<User>> {
+ *         return flowRequest {
+ *             obtainService(UserService::class.java).getUserInfo(userId)
+ *         }
+ *     }
+ *
+ *     // 带缓存的网络请求（SWR 模式）
+ *     fun getUserInfoCached(userId: String): Flow<HttpResult<User>> {
+ *         return cachedFlowRequest("user_$userId") {
+ *             obtainService(UserService::class.java).getUserInfo(userId)
+ *         }
+ *     }
+ * }
+ * ```
+ *
+ * 在 ViewModel 中使用：
+ * ```kotlin
+ * class UserViewModel @Inject constructor(
+ *     private val repository: UserRepository
+ * ) : BaseViewModel() {
+ *
+ *     fun loadUser(userId: String) {
+ *         launchOnUI {
+ *             repository.getUserInfo(userId).collect { result ->
+ *                 result.onSuccess { user ->
+ *                     _uiState.value = UiState.Success(user)
+ *                 }.onFailure { error ->
+ *                     _uiState.value = UiState.Error(error?.message ?: "Unknown error")
+ *                 }
+ *             }
+ *         }
+ *     }
+ * }
+ * ```
+ *
+ * @see IRepository
+ * @see HttpResult
+ * @see BaseRepositoryBoth
+ * @see BaseRepositoryLocal
+ * @see BaseRepositoryRemote
+ * @see BaseRepositoryNothing
+ *
+ * @since 1.0.0
+ * @author Hsp
  */
+@Stable
 abstract class BaseRepository : IRepository {
     /**
      * 全局数据请求处理

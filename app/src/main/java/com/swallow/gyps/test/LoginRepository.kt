@@ -16,9 +16,7 @@ import javax.inject.Inject
  * @UpdateRemark:   更新说明：
  */
 class LoginRepository @Inject constructor() : BaseRepository() {
-    
-    
-    
+
     /**
      *根据code或id获取APP版本信息
      */

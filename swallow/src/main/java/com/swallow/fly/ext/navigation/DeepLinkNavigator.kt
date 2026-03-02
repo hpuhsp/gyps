@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import com.swallow.fly.ext.overrideOpenTransition
 
 /**
  * Deep Link 导航器
@@ -84,7 +85,7 @@ object DeepLinkNavigator {
             
             // 应用动画
             if (context is Activity && enterAnim != 0 && exitAnim != 0) {
-                context.overridePendingTransition(enterAnim, exitAnim)
+                context.overrideOpenTransition(enterAnim, exitAnim)
             }
         } catch (e: Exception) {
             e.printStackTrace()

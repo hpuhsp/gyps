@@ -24,7 +24,7 @@ private const val ARG_PARAM2 = "param2"
 class TestFragment : BaseLazyFragment<TestFViewModel, FragmentTestBinding>() {
     private var param1: String? = null
     private var param2: String? = null
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -32,7 +32,7 @@ class TestFragment : BaseLazyFragment<TestFViewModel, FragmentTestBinding>() {
             param2 = it.getString(ARG_PARAM2)
         }
     }
-    
+
     companion object {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
@@ -43,27 +43,27 @@ class TestFragment : BaseLazyFragment<TestFViewModel, FragmentTestBinding>() {
                 }
             }
     }
-    
+
     // 注意：如果 BaseLazyFragment 已更新为使用 viewModel 属性，需要更新这里
     override val modelClass: Class<TestFViewModel>?
         get() = TestFViewModel::class.java
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentTestBinding
         get() = FragmentTestBinding::inflate
-    
+
     override fun initView() {
     }
-    
+
     override fun onFirstVisibleToUser() {
-//        mViewModel?.checkAppVersion(false)
+        mViewModel?.checkAppVersion(false)
         val url =
             "https://t7.baidu.com/it/u=3569419905,626536365&fm=193&f=GIF"
         val glideUrl = GlideUrl(url, LazyHeaders.Builder().addHeader("token", "xxxxxxxxxx").build())
         Glide.with(mContext).load(url).into(binding.ivTest)
     }
-    
+
     override fun onVisibleToUser() {
     }
-    
+
     override fun onInvisibleToUser() {
     }
 }

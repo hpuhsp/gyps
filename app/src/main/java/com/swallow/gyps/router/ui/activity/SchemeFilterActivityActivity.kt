@@ -2,8 +2,6 @@ package com.swallow.gyps.router.ui.activity
 
 import android.app.Activity
 import android.os.Bundle
-import com.blankj.utilcode.util.GsonUtils
-import com.swallow.fly.ext.logd
 import com.therouter.TheRouter
 
 /**

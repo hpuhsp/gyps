@@ -29,10 +29,10 @@ import java.io.File
 @AndroidEntryPoint
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), View.OnClickListener {
 
-    override val viewModel: MainViewModel by viewModels()
-
     override val bindingInflater: (LayoutInflater) -> ActivityMainBinding
         get() = ActivityMainBinding::inflate
+    override val modelClass: Class<MainViewModel>
+        get() = MainViewModel::class.java
 
     override fun initView(savedInstanceState: Bundle?) {
         initBlueActionBar(binding.includeTitle.toolbar, false, "Gyps")

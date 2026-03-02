@@ -19,48 +19,63 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-# 基础及通用混淆配置以宿主程序混淆文件中规则为准
-#=====================================App框架混淆配置================================================#
--keep public class * implements com.swallow.fly.base.app.ConfigModule
-#基类中反射用到的类
-# keep the class and specified members from being removed or renamed
--keep class com.swallow.fly.base.view.BaseActivity { *; }
+# Swallow Framework ProGuard Rules
+# Version: 2.0.0
+# Last Updated: 2024-12
 
-# keep the specified class members from being removed or renamed
-# only if the class is preserved
--keepclassmembers class com.swallow.fly.base.view.BaseActivity { *; }
+#=====================================核心框架混淆配置================================================#
 
-# keep the class and specified members from being renamed only
--keepnames class com.swallow.fly.base.view.BaseActivity { *; }
-
-# keep the specified class members from being renamed only
--keepclassmembernames class com.swallow.fly.base.view.BaseActivity { *; }
-# 保留核心网络库
--keep class com.swallow.fly.http.** {
-    *;
+# 保留所有公开 API（标记为 @Stable 的类和方法）
+-keep @com.swallow.fly.annotations.Stable class * { *; }
+-keep class * {
+    @com.swallow.fly.annotations.Stable *;
 }
 
-# 基类包
--keep class com.swallow.fly.base.** { *; }
-#自定义控件不参与混淆
--keep class com.swallow.fly.widget.** { *; }
-#保留一个完整的包
--keep  class **.bean.* {
-    *;
-}
+# 保留配置接口实现
+-keep class * implements com.swallow.fly.base.lifecycle.config.FrameworkConfigProvider { *; }
+-keep class * implements com.swallow.fly.base.lifecycle.config.ModuleConfigProvider { *; }
 
-#保留一个完整的包
--keep  class **.model.* {
-    *;
-}
--keep  class **.models.* {
-    *;
-}
+# 保留 Activity/Fragment 基类（反射和继承使用）
+-keep public class * extends com.swallow.fly.base.ui.activity.BaseActivity { *; }
+-keep public class * extends com.swallow.fly.base.ui.fragment.BaseFragment { *; }
+-keep public class * extends com.swallow.fly.base.ui.fragment.BaseLazyFragment { *; }
 
-#保留一个完整的包
--keep  class **.entitys.* {
-    *;
-}
+# 保留 ViewModel 基类
+-keep public class * extends com.swallow.fly.base.presentation.BaseViewModel { *; }
+
+# 保留 Repository 基类
+-keep public class * extends com.swallow.fly.base.data.BaseRepository { *; }
+-keep public class * extends com.swallow.fly.base.data.BaseRepositoryBoth { *; }
+-keep public class * extends com.swallow.fly.base.data.BaseRepositoryLocal { *; }
+-keep public class * extends com.swallow.fly.base.data.BaseRepositoryRemote { *; }
+-keep public class * extends com.swallow.fly.base.data.BaseRepositoryNothing { *; }
+
+# 保留 UseCase 接口实现
+-keep class * implements com.swallow.fly.domain.usecase.UseCase { *; }
+-keep class * implements com.swallow.fly.domain.usecase.FlowUseCase { *; }
+
+# 保留数据模型（用于序列化）
+-keep class com.swallow.fly.domain.model.** { *; }
+-keep class com.swallow.fly.http.result.** { *; }
+-keep class com.swallow.fly.db.bean.** { *; }
+
+# 保留 HTTP 相关接口和类
+-keep interface com.swallow.fly.http.** { *; }
+-keep class com.swallow.fly.http.manager.** { *; }
+-keep class com.swallow.fly.http.engine.** { *; }
+
+# 保留自定义 View
+-keep public class com.swallow.fly.widget.** { *; }
+
+# 保留扩展函数（可能被反射调用）
+-keep class com.swallow.fly.ext.**Kt { *; }
+
+# 保留数据类（通用规则）
+-keep class **.bean.** { *; }
+-keep class **.model.** { *; }
+-keep class **.models.** { *; }
+-keep class **.entity.** { *; }
+-keep class **.entities.** { *; }
 
 #=======================================三方库混淆配置================================================#
 ############ ViewBinding混淆 ##############
@@ -172,3 +187,50 @@
 -keepclassmembers class * {
     @pub.devrel.easypermissions.AfterPermissionGranted <methods>;
 }
+
+
+#=====================================Hilt 混淆配置================================================#
+
+# 保留 Hilt 生成的代码
+-keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
+-keep class **_HiltModules { *; }
+-keep class **_HiltModules$* { *; }
+-keep class **_HiltComponents { *; }
+-keep class **_HiltComponents$* { *; }
+-keep class * extends dagger.hilt.internal.GeneratedComponent { *; }
+
+# 保留 @HiltViewModel 注解的类
+-keep @dagger.hilt.android.lifecycle.HiltViewModel class * { *; }
+
+# 保留 Hilt 注入的构造函数
+-keepclassmembers class * {
+    @javax.inject.Inject <init>(...);
+}
+
+#=====================================Room 混淆配置================================================#
+
+# 保留 Room 数据库
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keep @androidx.room.Database class * { *; }
+
+# 保留 Room 实体
+-keep @androidx.room.Entity class * { *; }
+-keepclassmembers class * {
+    @androidx.room.* *;
+}
+
+# 保留 Room DAO
+-keep @androidx.room.Dao interface * { *; }
+-keep @androidx.room.Dao class * { *; }
+
+#=====================================Kotlin 协程混淆配置================================================#
+
+# 保留协程相关类
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# 保留 Flow 相关
+-keep class kotlinx.coroutines.flow.** { *; }

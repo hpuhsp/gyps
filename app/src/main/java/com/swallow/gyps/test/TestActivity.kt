@@ -29,11 +29,10 @@ class TestActivity : BaseActivity<TestViewModel, ActivityTestBinding>() {
         }
     }
 
-    // 使用 by viewModels() 委托获取 ViewModel
-    override val viewModel: TestViewModel by viewModels()
-
     override val bindingInflater: (LayoutInflater) -> ActivityTestBinding
         get() = ActivityTestBinding::inflate
+    override val modelClass: Class<TestViewModel>
+        get() = TestViewModel::class.java
 
     override fun initView(savedInstanceState: Bundle?) {
         initActionBar(binding.includeTitle.toolbar, true, "测试页面")
