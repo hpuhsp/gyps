@@ -3,12 +3,17 @@ package com.swallow.fly.http;
 import androidx.annotation.Nullable;
 
 /**
- * @Description:
+ * @Description: 参数验证工具类（已废弃）
  * @Author: Hsp
  * @Email: 1101121039@qq.com
  * @CreateTime: 2020/9/16 16:22
- * @UpdateRemark: 更新说明：
+ * @UpdateRemark: 2026/03/13 - 已废弃，请使用 Kotlin 标准库或 PreconditionsExt.kt
+ * 
+ * @deprecated 此类功能已被 Kotlin 标准库替代
+ *             请使用 requireNotNull(), require(), check() 等标准函数
+ *             或使用 {@link PreconditionsExt} 中的扩展函数
  */
+@Deprecated
 public final class Preconditions {
     private Preconditions() {
         throw new IllegalStateException("you can't instantiate me!");

@@ -1,11 +1,15 @@
 package com.swallow.fly.utils
 
 import com.swallow.fly.ext.logd
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.InputStream
+import java.util.concurrent.TimeUnit
 
 /**
  * @Description: 文件下载
@@ -16,34 +20,44 @@ import java.io.InputStream
  */
 object DownloadFileManager {
 
+    private val client by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .build()
+    }
+
     /**
      * 指定Url下载文件
      */
     fun download(url: String, saveFile: File, callBack: StateCallBack) {
-        val mOkHttpClient = OkHttpClient()
-        val request: Request = Request.Builder().url(url).build()
-        // 异步线程
-        mOkHttpClient.newCall(request)
-            .enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    logd { "------------下载失败！-------->" }
-                    callBack.downloadFailure()
-                }
+        val request = Request.Builder().url(url).build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                logd { "------------下载失败！-------->" }
+                callBack.downloadFailure()
+            }
 
-                override fun onResponse(call: Call, response: Response) {
-                    val inputStream: InputStream = response.body?.byteStream() ?: return
-                    var fileOutputStream: FileOutputStream? = null
-                    fileOutputStream = FileOutputStream(saveFile)
-                    FileUtils
-                    val buffer = ByteArray(2048)
-                    var len = 0
-                    while (inputStream.read(buffer).also { len = it } != -1) {
-                        fileOutputStream.write(buffer, 0, len)
+            override fun onResponse(call: Call, response: Response) {
+                val inputStream = response.body?.byteStream() ?: return
+                try {
+                    FileOutputStream(saveFile).use { fos ->
+                        val buffer = ByteArray(8192)
+                        var len: Int
+                        while (inputStream.read(buffer).also { len = it } != -1) {
+                            fos.write(buffer, 0, len)
+                        }
+                        fos.flush()
                     }
-                    fileOutputStream.flush()
                     callBack.downloadSuccess(saveFile)
+                } catch (e: IOException) {
+                    logd { "------------写入文件失败！-------->" }
+                    callBack.downloadFailure()
+                } finally {
+                    inputStream.close()
                 }
-            })
+            }
+        })
     }
 
     /**

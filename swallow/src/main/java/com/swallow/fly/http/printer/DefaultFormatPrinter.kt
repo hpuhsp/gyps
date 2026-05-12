@@ -2,7 +2,6 @@ package com.swallow.fly.http.printer
 
 import android.text.TextUtils
 import android.util.Log
-import androidx.annotation.NonNull
 import com.swallow.fly.http.interceptor.RequestInterceptor
 import okhttp3.MediaType
 import okhttp3.Request
@@ -19,7 +18,7 @@ class DefaultFormatPrinter : FormatPrinter {
 
     companion object {
         private const val TAG = "HttpLog"
-        private val LINE_SEPARATOR = System.getProperty("line.separator")
+        private val LINE_SEPARATOR = System.getProperty("line.separator") ?: "\n"
         private val DOUBLE_SEPARATOR = LINE_SEPARATOR + LINE_SEPARATOR
 
         private val OMITTED_RESPONSE =
@@ -86,11 +85,11 @@ class DefaultFormatPrinter : FormatPrinter {
             arrayOf("-A-", "-R-", "-M-", "-S-")
 
         private fun computeKey(): String {
-            if (last.get() >= 4) {
+            if ((last.get() ?: 0) >= 4) {
                 last.set(0)
             }
-            val s = ARMS[last.get()]
-            last.set(last.get() + 1)
+            val s = ARMS[last.get() ?: 0]
+            last.set((last.get() ?: 0) + 1)
             return s
         }
 
@@ -189,8 +188,8 @@ class DefaultFormatPrinter : FormatPrinter {
      * @param bodyString
      */
     override fun printJsonRequest(
-        @NonNull request: Request,
-        @NonNull bodyString: String
+        request: Request,
+        bodyString: String
     ) {
         val requestBody = LINE_SEPARATOR + BODY_TAG + LINE_SEPARATOR + bodyString
         val tag = getTag(true)
@@ -206,7 +205,7 @@ class DefaultFormatPrinter : FormatPrinter {
      *
      * @param request
      */
-    override fun printFileRequest(@NonNull request: Request) {
+    override fun printFileRequest(request: Request) {
         val tag = getTag(true)
         Log.d(tag, REQUEST_UP_LINE)
         logLines(tag, arrayOf(URL_TAG + request.url), false)
@@ -229,13 +228,12 @@ class DefaultFormatPrinter : FormatPrinter {
         message: String,
         responseUrl: String
     ) {
-        var bodyString = bodyString
-        bodyString =
-            if (RequestInterceptor.isJson(contentType)) CharacterHandler.jsonFormat(bodyString) else if (RequestInterceptor.isXml(
-                    contentType
-                )
-            ) CharacterHandler.xmlFormat(bodyString) else bodyString
-        val responseBody = LINE_SEPARATOR + BODY_TAG + LINE_SEPARATOR + bodyString
+        val formattedBody = when {
+            RequestInterceptor.isJson(contentType) -> CharacterHandler.jsonFormat(bodyString)
+            RequestInterceptor.isXml(contentType) -> CharacterHandler.xmlFormat(bodyString)
+            else -> bodyString ?: ""
+        }
+        val responseBody = LINE_SEPARATOR + BODY_TAG + LINE_SEPARATOR + formattedBody
         val tag = getTag(false)
         val urlLine = arrayOf(URL_TAG + responseUrl, N)
         Log.d(tag, RESPONSE_UP_LINE)

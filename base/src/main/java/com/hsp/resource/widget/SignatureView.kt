@@ -102,20 +102,19 @@ class SignatureView @JvmOverloads constructor(
             if (clearBlank) {
                 bitmap = clearBlank(bitmap, blank)
             }
-            val bos = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, bos)
-            val buffer = bos.toByteArray()
-            if (buffer != null) {
+            
+            ByteArrayOutputStream().use { bos ->
+                bitmap?.compress(Bitmap.CompressFormat.PNG, 100, bos)
+                val buffer = bos.toByteArray()
                 val file = File(path)
                 if (file.exists()) {
                     file.delete()
                 }
-                val os: OutputStream = FileOutputStream(file)
-                os.write(buffer)
-                os.close()
-                bos.close()
+                FileOutputStream(file).use { os ->
+                    os.write(buffer)
+                }
             }
-            return savePath ?: ""
+            return savePath.orEmpty()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -128,7 +127,7 @@ class SignatureView @JvmOverloads constructor(
      * @param blank 边界留多少个像素
      */
     private fun clearBlank(bmp: Bitmap?, blank: Int): Bitmap {
-        var blank = blank
+        var blankValue = blank
         val height = bmp!!.height
         val width = bmp.width
         var top = 0
@@ -137,7 +136,8 @@ class SignatureView @JvmOverloads constructor(
         var bottom = 0
         var pixs = IntArray(width)
         var isStop: Boolean
-        //扫描上边距不等于背景颜色的第一个点
+        
+        // 扫描上边距不等于背景颜色的第一个点
         for (i in 0 until height) {
             bmp.getPixels(pixs, 0, width, 0, i, width, 1)
             isStop = false
@@ -152,7 +152,8 @@ class SignatureView @JvmOverloads constructor(
                 break
             }
         }
-        //扫描下边距不等于背景颜色的第一个点
+        
+        // 扫描下边距不等于背景颜色的第一个点
         for (i in height - 1 downTo 0) {
             bmp.getPixels(pixs, 0, width, 0, i, width, 1)
             isStop = false
@@ -167,8 +168,10 @@ class SignatureView @JvmOverloads constructor(
                 break
             }
         }
+        
         pixs = IntArray(height)
-        //扫描左边距不等于背景颜色的第一个点
+        
+        // 扫描左边距不等于背景颜色的第一个点
         for (x in 0 until width) {
             bmp.getPixels(pixs, 0, 1, x, 0, 1, height)
             isStop = false
@@ -183,7 +186,8 @@ class SignatureView @JvmOverloads constructor(
                 break
             }
         }
-        //扫描右边距不等于背景颜色的第一个点
+        
+        // 扫描右边距不等于背景颜色的第一个点
         for (x in width - 1 downTo 1) {
             bmp.getPixels(pixs, 0, 1, x, 0, 1, height)
             isStop = false
@@ -198,14 +202,17 @@ class SignatureView @JvmOverloads constructor(
                 break
             }
         }
-        if (blank < 0) {
-            blank = 0
+        
+        if (blankValue < 0) {
+            blankValue = 0
         }
-        //计算加上保留空白距离之后的图像大小
-        left = if (left - blank > 0) left - blank else 0
-        top = if (top - blank > 0) top - blank else 0
-        right = if (right + blank > width - 1) width - 1 else right + blank
-        bottom = if (bottom + blank > height - 1) height - 1 else bottom + blank
+        
+        // 计算加上保留空白距离之后的图像大小
+        left = if (left - blankValue > 0) left - blankValue else 0
+        top = if (top - blankValue > 0) top - blankValue else 0
+        right = if (right + blankValue > width - 1) width - 1 else right + blankValue
+        bottom = if (bottom + blankValue > height - 1) height - 1 else bottom + blankValue
+        
         return Bitmap.createBitmap(bmp, left, top, right - left, bottom - top)
     }
 
@@ -213,13 +220,15 @@ class SignatureView @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
         cacheBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         mCanvas = Canvas(cacheBitmap!!)
-        mCanvas!!.drawColor(mBackColor)
+        mCanvas?.drawColor(mBackColor)
         touched = false
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawBitmap(cacheBitmap!!, 0f, 0f, mPaint)
+        cacheBitmap?.let {
+            canvas.drawBitmap(it, 0f, 0f, mPaint)
+        }
         canvas.drawPath(mPath, mPaint)
     }
 
@@ -249,7 +258,7 @@ class SignatureView @JvmOverloads constructor(
                 invalidate()
             }
             MotionEvent.ACTION_UP -> {
-                mCanvas!!.drawPath(mPath, mPaint)
+                mCanvas?.drawPath(mPath, mPaint)
                 mPath.reset()
             }
             else -> {

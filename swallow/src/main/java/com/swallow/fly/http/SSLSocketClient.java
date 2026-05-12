@@ -26,15 +26,23 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * @Description:
+ * @Description: SSL Socket 客户端配置（已废弃）
  * @Author: Hsp
  * @Email: 1101121039@qq.com
  * @CreateTime: 2020/9/16 17:43
- * @UpdateRemark:
+ * @UpdateRemark: 2026/03/13 - 已废弃，请使用 SSLConfig.kt
+ *
+ * @deprecated 此类存在安全漏洞（信任所有证书），已被 {@link SSLConfig} 替代
+ *             请使用 SSLConfig.getSSLSocketFactory() 和 SSLConfig.getTrustManager()
  */
+@Deprecated
 public class SSLSocketClient {
 
-    //获取这个SSLSocketFactory
+    private SSLSocketClient() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /** 获取 SSLSocketFactory */
     public static javax.net.ssl.SSLSocketFactory getSSLSocketFactory() {
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
@@ -45,23 +53,22 @@ public class SSLSocketClient {
         }
     }
 
-    //获取TrustManager
+    /** 获取 TrustManager 数组 */
     private static TrustManager[] getTrustManagers() {
-        TrustManager[] trustAllCerts = new TrustManager[]{getTrustManager()};
-        return trustAllCerts;
+        return new TrustManager[]{getTrustManager()};
     }
 
-    //获取HostnameVerifier
+    /** 获取 HostnameVerifier */
     public static HostnameVerifier getHostnameVerifier() {
-        HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+        return new HostnameVerifier() {
             @Override
-            public boolean verify(String s, SSLSession sslSession) {
+            public boolean verify(String hostname, SSLSession session) {
                 return true;
             }
         };
-        return hostnameVerifier;
     }
 
+    /** 获取 X509TrustManager */
     public static X509TrustManager getTrustManager() {
         return new MyTrustManager();
     }
@@ -69,13 +76,15 @@ public class SSLSocketClient {
     private static final class MyTrustManager implements X509TrustManager {
 
         @Override
-        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-
+        public void checkClientTrusted(X509Certificate[] chain, String authType)
+                throws CertificateException {
+            // 信任所有客户端证书（仅用于开发/调试，生产环境请勿使用）
         }
 
         @Override
-        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-
+        public void checkServerTrusted(X509Certificate[] chain, String authType)
+                throws CertificateException {
+            // 信任所有服务端证书（仅用于开发/调试，生产环境请勿使用）
         }
 
         @Override

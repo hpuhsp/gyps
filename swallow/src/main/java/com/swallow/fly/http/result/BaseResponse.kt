@@ -15,6 +15,11 @@ class BaseResponse<T>(
     var token: String? = ""
 ) {
     fun isSuccessful(): Boolean {
-        return code == 0 || status == "success"
+        val checker = ResponseConfig.successChecker
+        return if (checker != null) {
+            checker(code, status)
+        } else {
+            code == 0 || status == "success"
+        }
     }
 }

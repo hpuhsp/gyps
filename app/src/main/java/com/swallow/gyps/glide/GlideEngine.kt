@@ -123,7 +123,6 @@ class GlideEngine : ImageEngine {
                     }
                 }
             })
-
     }
 
     override fun loadFolderImage(context: Context, url: String, imageView: ImageView) {
@@ -144,6 +143,10 @@ class GlideEngine : ImageEngine {
             })
     }
 
+    @Deprecated(
+        "This method is deprecated in PictureSelector library",
+        ReplaceWith("loadImage(context, url, imageView)")
+    )
     override fun loadAsGifImage(context: Context, url: String, imageView: ImageView) {
     }
 

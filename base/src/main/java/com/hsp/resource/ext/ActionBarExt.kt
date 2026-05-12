@@ -1,11 +1,11 @@
 package com.hsp.resource.ext
 
-import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.res.ResourcesCompat
 import com.hsp.resource.R
 
 /**
@@ -13,9 +13,7 @@ import com.hsp.resource.R
  * @param hasBackButton 是否显示的返回按钮
  * @param title         标题
  */
-@SuppressLint("UseCompatLoadingForDrawables")
 fun AppCompatActivity.initActionBar(toolbar: Toolbar, hasBackButton: Boolean, title: String?) {
-    val toolbar: Toolbar = toolbar
     toolbar.title = ""
     setSupportActionBar(toolbar)
     val mActionBar = supportActionBar
@@ -32,16 +30,13 @@ fun AppCompatActivity.initActionBar(toolbar: Toolbar, hasBackButton: Boolean, ti
 //            mActionBar?.setTitle(resources.getString(R.string.app_name))
         }
     }
-    mActionBar?.setBackgroundDrawable(resources.getDrawable(R.drawable.bg_white_tool_bar))
+    mActionBar?.setBackgroundDrawable(ResourcesCompat.getDrawable(resources, R.drawable.bg_white_tool_bar, theme))
     val tvTitle = toolbar.findViewById<TextView>(R.id.tv_title)
-    tvTitle.setTextColor(resources.getColor(R.color.text_black))
+    tvTitle.setTextColor(ResourcesCompat.getColor(resources, R.color.text_black, theme))
     tvTitle.text = title ?: ""
 }
 
-@SuppressLint("UseCompatLoadingForDrawables")
 fun AppCompatActivity.initBlueActionBar(toolbar: Toolbar, hasBackButton: Boolean, title: String?) {
-    
-    val toolbar: Toolbar = toolbar
     toolbar.title = ""
     setSupportActionBar(toolbar)
     val mActionBar = supportActionBar
@@ -58,9 +53,8 @@ fun AppCompatActivity.initBlueActionBar(toolbar: Toolbar, hasBackButton: Boolean
 ////            mActionBar?.setTitle(resources.getString(R.string.app_name))
 //        }
     }
-    mActionBar?.setBackgroundDrawable(resources.getDrawable(R.drawable.bg_blue_tool_bar))
+    mActionBar?.setBackgroundDrawable(ResourcesCompat.getDrawable(resources, R.drawable.bg_blue_tool_bar, theme))
     val tvTitle = toolbar.findViewById<TextView>(R.id.tv_title)
-    tvTitle.setTextColor(resources.getColor(R.color.text_black))
-    tvTitle.setTextColor(resources.getColor(R.color.white))
+    tvTitle.setTextColor(ResourcesCompat.getColor(resources, R.color.white, theme))
     tvTitle.text = title ?: ""
 }

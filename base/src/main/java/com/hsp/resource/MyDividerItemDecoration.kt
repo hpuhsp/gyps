@@ -26,8 +26,8 @@ class MyDividerItemDecoration constructor(builder: Builder) :
         child: View
     ): Rect {
         val bounds = Rect(0, 0, 0, 0)
-        val transitionX = ViewCompat.getTranslationX(child).toInt()
-        val transitionY = ViewCompat.getTranslationY(child).toInt()
+        val transitionX = child.translationX.toInt()
+        val transitionY = child.translationY.toInt()
         val params = child.layoutParams as RecyclerView.LayoutParams
         bounds.left = parent.paddingLeft + mMarginProvider.dividerLeftMargin(
             position,

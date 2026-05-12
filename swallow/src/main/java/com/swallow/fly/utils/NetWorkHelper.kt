@@ -2,15 +2,17 @@ package com.swallow.fly.utils
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.telephony.TelephonyManager
 
 /**
- * @Description:
+ * @Description: 网络工具类
  * @Author:   Hsp
  * @Email:    1101121039@qq.com
  * @CreateTime:     2020/9/3 10:00
- * @UpdateRemark:   更新说明：
+ * @UpdateRemark:   更新说明：使用新的网络 API
  */
 class NetWorkHelper {
 
@@ -23,23 +25,8 @@ class NetWorkHelper {
          * @param context ApplicationContext
          */
         fun isNetworkRoaming(context: Context): Boolean {
-            val connectivity = context
-                .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            if (connectivity == null) {
-            } else {
-                val info = connectivity.activeNetworkInfo
-                if (info != null && info.type == ConnectivityManager.TYPE_MOBILE) {
-                    val tm = context.getSystemService(
-                        Context.TELEPHONY_SERVICE
-                    ) as TelephonyManager
-                    if (tm != null && tm.isNetworkRoaming) {
-                        return true
-                    } else {
-                    }
-                } else {
-                }
-            }
-            return false
+            val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
+            return tm?.isNetworkRoaming ?: false
         }
 
         /**
@@ -49,28 +36,27 @@ class NetWorkHelper {
          * @return
          */
         fun isWifi(context: Context): Boolean {
-            val cm =
-                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val networkInfo = cm.activeNetworkInfo
-            if (networkInfo != null && networkInfo.isConnected) {
-                if (networkInfo.type == ConnectivityManager.TYPE_WIFI) {
-                    return true
-                }
-            }
-            return false
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return false
+            val network = cm.activeNetwork ?: return false
+            val capabilities = cm.getNetworkCapabilities(network) ?: return false
+            
+            return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
         }
 
-        // 网络状态
+        /**
+         * 网络状态检查
+         */
         fun isNetworkConnected(context: Context?): Boolean {
-            if (context != null) {
-                val mConnectivityManager = context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                val mNetworkInfo = mConnectivityManager.activeNetworkInfo
-                if (mNetworkInfo != null) {
-                    return mNetworkInfo.isAvailable
-                }
-            }
-            return false
+            if (context == null) return false
+            
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return false
+            val network = cm.activeNetwork ?: return false
+            val capabilities = cm.getNetworkCapabilities(network) ?: return false
+            
+            return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                   capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
         }
     }
 }

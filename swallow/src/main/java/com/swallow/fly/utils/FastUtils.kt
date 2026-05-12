@@ -6,10 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.SpannedString
 import android.text.style.AbsoluteSizeSpan
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -17,219 +19,104 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.NonNull
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
-import okhttp3.internal.and
+import com.swallow.fly.ext.dp2px
+import com.swallow.fly.ext.enterImmersiveFullscreen
+import com.swallow.fly.ext.getColorRes
+import com.swallow.fly.ext.getDrawableRes
+import com.swallow.fly.ext.hideKeyboard
+import com.swallow.fly.ext.px2dp
+import com.swallow.fly.ext.px2sp
+import com.swallow.fly.ext.setup
+import com.swallow.fly.ext.sp2px
+import com.swallow.fly.ext.toMD5
 import java.security.MessageDigest
 
 /**
- * @Description:
+ * @Description: 通用工具类
  * @Author:   Hsp
  * @Email:    1101121039@qq.com
  * @CreateTime:     2020/8/26 10:30
- * @UpdateRemark:   更新说明：
+ * @UpdateRemark:   已拆分为独立扩展文件，本类方法均已废弃，请迁移到对应扩展函数
+ *
+ * 迁移指南：
+ * - 单位换算  → com.swallow.fly.ext.DensityExt
+ * - View 操作 → com.swallow.fly.ext.ViewExt
+ * - Activity  → com.swallow.fly.ext.ActivityExt
+ * - 字符串    → com.swallow.fly.ext.StringExt
  */
+@Deprecated("FastUtils 已拆分为独立扩展文件，请迁移到 com.swallow.fly.ext 包下的对应扩展函数")
 object FastUtils {
     var mToast: Toast? = null
 
-    /**
-     * 设置hint大小
-     *
-     * @param size
-     * @param v
-     * @param res
-     */
-    fun setViewHintSize(
-        context: Context,
-        size: Int,
-        v: TextView,
-        res: Int
-    ) {
-        val ss = SpannableString(
-            getResources(context).getString(
-                res
-            )
-        )
-        // 新建一个属性对象,设置文字的大小
+    @Deprecated("Use TextView.setHintSize()", ReplaceWith("v.setHintSize(context, size, res)", "com.swallow.fly.ext.setHintSize"))
+    fun setViewHintSize(context: Context, size: Int, v: TextView, res: Int) {
+        val ss = SpannableString(context.resources.getString(res))
         val ass = AbsoluteSizeSpan(size, true)
-        // 附加属性到文本
         ss.setSpan(ass, 0, ss.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-        // 设置hint
-        v.hint = SpannedString(ss) // 一定要进行转换,否则属性会消失
+        v.hint = SpannedString(ss)
     }
 
-    /**
-     * dp 转 px
-     * @param context [Context]
-     * @param dpValue `dpValue`
-     * @return `pxValue`
-     */
-    fun dip2px(@NonNull context: Context, dpValue: Float): Int {
-        val scale = getResources(context).displayMetrics.density
-        return (dpValue * scale + 0.5f).toInt()
-    }
+    @Deprecated("Use Context.dp2px()", ReplaceWith("context.dp2px(dpValue)", "com.swallow.fly.ext.dp2px"))
+    fun dip2px(@NonNull context: Context, dpValue: Float): Int = context.dp2px(dpValue)
 
-    /**
-     * px 转 dp
-     *
-     * @param context [Context]
-     * @param pxValue `pxValue`
-     * @return `dpValue`
-     */
-    fun pix2dip(@NonNull context: Context, pxValue: Int): Int {
-        val scale = getResources(context).displayMetrics.density
-        return (pxValue / scale + 0.5f).toInt()
-    }
+    @Deprecated("Use Context.px2dp()", ReplaceWith("context.px2dp(pxValue.toFloat())", "com.swallow.fly.ext.px2dp"))
+    fun pix2dip(@NonNull context: Context, pxValue: Int): Int = context.px2dp(pxValue.toFloat())
 
-    /**
-     * sp 转 px
-     *
-     * @param context [Context]
-     * @param spValue `spValue`
-     * @return `pxValue`
-     */
-    fun sp2px(@NonNull context: Context, spValue: Float): Int {
-        val fontScale = getResources(context).displayMetrics.scaledDensity
-        return (spValue * fontScale + 0.5f).toInt()
-    }
+    @Deprecated("Use Context.sp2px()", ReplaceWith("context.sp2px(spValue)", "com.swallow.fly.ext.sp2px"))
+    fun sp2px(@NonNull context: Context, spValue: Float): Int = context.sp2px(spValue)
 
-    /**
-     * px 转 sp
-     *
-     * @param context [Context]
-     * @param pxValue `pxValue`
-     * @return `spValue`
-     */
-    fun px2sp(@NonNull context: Context, pxValue: Float): Int {
-        val fontScale = getResources(context).displayMetrics.scaledDensity
-        return (pxValue / fontScale + 0.5f).toInt()
-    }
+    @Deprecated("Use Context.px2sp()", ReplaceWith("context.px2sp(pxValue)", "com.swallow.fly.ext.px2sp"))
+    fun px2sp(@NonNull context: Context, pxValue: Float): Int = context.px2sp(pxValue)
 
-    /**
-     * 获得资源
-     */
-    private fun getResources(context: Context): Resources {
-        return context.resources
-    }
+    private fun getResources(context: Context): Resources = context.resources
 
-    /**
-     * 得到字符数组
-     */
-    fun getStringArray(
-        context: Context,
-        id: Int
-    ): Array<String?>? {
-        return getResources(context).getStringArray(id)
-    }
+    @Deprecated("Use Context.getStringArrayRes()", ReplaceWith("context.getStringArrayRes(id)", "com.swallow.fly.ext.getStringArrayRes"))
+    fun getStringArray(context: Context, id: Int): Array<String?>? = context.resources.getStringArray(id)
 
-    /**
-     * 从 dimens 中获得尺寸
-     * @param context
-     * @param id
-     * @return
-     */
-    fun getDimens(context: Context, id: Int): Int {
-        return getResources(context).getDimension(id).toInt()
-    }
+    @Deprecated("Use Context.getDimenRes()", ReplaceWith("context.getDimenRes(id)", "com.swallow.fly.ext.getDimenRes"))
+    fun getDimens(context: Context, id: Int): Int = context.resources.getDimension(id).toInt()
 
-    /**
-     * 从 dimens 中获得尺寸
-     * @param context
-     * @param dimenName
-     * @return
-     */
+    @Deprecated("Use Context.getDimenByName()", ReplaceWith("context.getDimenByName(dimenName)", "com.swallow.fly.ext.getDimenByName"))
     fun getDimens(context: Context, dimenName: String?): Float {
-        return getResources(context).getDimension(
-            getResources(context).getIdentifier(
-                dimenName,
-                "dimen",
-                context.packageName
-            )
-        )
+        val id = context.resources.getIdentifier(dimenName, "dimen", context.packageName)
+        return context.resources.getDimension(id)
     }
 
-    /**
-     * 从String 中获得字符
-     *
-     * @return
-     */
-    fun getString(context: Context, stringID: Int): String? {
-        return getResources(context).getString(stringID)
-    }
+    @Deprecated("Use Context.getString()", ReplaceWith("context.getString(stringID)"))
+    fun getString(context: Context, stringID: Int): String? = context.getString(stringID)
 
-    /**
-     * 从String 中获得字符
-     *
-     * @return
-     */
+    @Deprecated("Use Context.getStringByName()", ReplaceWith("context.getStringByName(strName)", "com.swallow.fly.ext.getStringByName"))
     fun getString(context: Context, strName: String?): String? {
-        return getString(
-            context,
-            getResources(context).getIdentifier(strName, "string", context.packageName)
-        )
+        val id = context.resources.getIdentifier(strName, "string", context.packageName)
+        return if (id == 0) null else context.getString(id)
     }
 
-    /**
-     * findview
-     *
-     * @param view
-     * @param viewName
-     * @param <T>
-     * @return
-    </T> */
-    fun <T : View?> findViewByName(
-        context: Context,
-        view: View,
-        viewName: String?
-    ): T {
-        val id = getResources(context).getIdentifier(viewName, "id", context.packageName)
+    @Deprecated("Use View.findViewByName()", ReplaceWith("view.findViewByName(context, viewName)", "com.swallow.fly.ext.findViewByName"))
+    fun <T : View?> findViewByName(context: Context, view: View, viewName: String?): T {
+        val id = context.resources.getIdentifier(viewName, "id", context.packageName)
+        @Suppress("UNCHECKED_CAST")
         return view.findViewById<View>(id) as T
     }
 
-    /**
-     * findview
-     *
-     * @param activity
-     * @param viewName
-     * @param <T>
-     * @return
-    </T> */
-    fun <T : View?> findViewByName(
-        context: Context,
-        activity: Activity,
-        viewName: String?
-    ): T {
-        val id = getResources(context).getIdentifier(viewName, "id", context.packageName)
+    @Deprecated("Use Activity.findViewByName()", ReplaceWith("activity.findViewByName(viewName)", "com.swallow.fly.ext.findViewByName"))
+    fun <T : View?> findViewByName(context: Context, activity: Activity, viewName: String?): T {
+        val id = context.resources.getIdentifier(viewName, "id", context.packageName)
+        @Suppress("UNCHECKED_CAST")
         return activity.findViewById<View>(id) as T
     }
 
-    /**
-     * 根据 layout 名字获得 id
-     *
-     * @param layoutName
-     * @return
-     */
-    fun findLayout(context: Context, layoutName: String?): Int {
-        return getResources(context).getIdentifier(layoutName, "layout", context.packageName)
-    }
+    @Deprecated("Use Context.findLayoutId()", ReplaceWith("context.findLayoutId(layoutName)", "com.swallow.fly.ext.findLayoutId"))
+    fun findLayout(context: Context, layoutName: String?): Int =
+        context.resources.getIdentifier(layoutName, "layout", context.packageName)
 
-    /**
-     * 填充view
-     *
-     * @param detailScreen
-     * @return
-     */
-    fun inflate(context: Context?, detailScreen: Int): View? {
-        return View.inflate(context, detailScreen, null)
-    }
+    @Deprecated("Use View.inflate()")
+    fun inflate(context: Context?, detailScreen: Int): View? = View.inflate(context, detailScreen, null)
 
-    /**
-     * 单例 toast
-     *
-     * @param string
-     */
     @SuppressLint("ShowToast")
+    @Deprecated("Use Context.showToast() from ToastExt")
     fun makeText(context: Context?, string: String?) {
         if (mToast == null) {
             mToast = Toast.makeText(context, string, Toast.LENGTH_SHORT)
@@ -238,174 +125,63 @@ object FastUtils {
         mToast?.show()
     }
 
-    /**
-     * 通过资源id获得drawable
-     *
-     * @param rID
-     * @return
-     */
-    @SuppressLint("UseCompatLoadingForDrawables")
-    fun getDrawablebyResource(context: Context, rID: Int): Drawable? {
-        return getResources(context).getDrawable(rID)
-    }
+    @Deprecated("Use Context.getDrawableRes()", ReplaceWith("context.getDrawableRes(rID)", "com.swallow.fly.ext.getDrawableRes"))
+    fun getDrawablebyResource(context: Context, rID: Int): Drawable? = context.getDrawableRes(rID)
 
-    /**
-     * 跳转界面 3
-     *
-     * @param activity
-     * @param homeActivityClass
-     */
-    fun startActivity(
-        activity: Activity,
-        homeActivityClass: Class<*>?
-    ) {
+    @Deprecated("Use Activity.startActivity(clazz)", ReplaceWith("activity.startActivity(homeActivityClass)", "com.swallow.fly.ext.startActivity"))
+    fun startActivity(activity: Activity, homeActivityClass: Class<*>?) {
         val intent = Intent(activity.applicationContext, homeActivityClass)
         activity.startActivity(intent)
     }
 
-    /**
-     * 跳转界面 4
-     *
-     * @param
-     */
+    @Deprecated("Use Activity.startActivity(intent)")
     fun startActivity(activity: Activity, intent: Intent?) {
         activity.startActivity(intent)
     }
 
-    /**
-     * 获得屏幕的宽度
-     *
-     * @return
-     */
-    fun getScreenWidth(context: Context): Int {
-        return getResources(context).displayMetrics.widthPixels
-    }
+    @Deprecated("Use Context.getScreenWidth()", ReplaceWith("context.resources.displayMetrics.widthPixels"))
+    fun getScreenWidth(context: Context): Int = context.resources.displayMetrics.widthPixels
 
-    /**
-     * 获得屏幕的高度
-     *
-     * @return
-     */
-    fun getScreenHeight(context: Context): Int {
-        return getResources(context).displayMetrics.heightPixels
-    }
+    @Deprecated("Use Context.getScreenHeight()", ReplaceWith("context.resources.displayMetrics.heightPixels"))
+    fun getScreenHeight(context: Context): Int = context.resources.displayMetrics.heightPixels
 
-    /**
-     * 获得颜色
-     */
-    fun getColor(context: Context, rid: Int): Int {
-        return getResources(context).getColor(rid)
-    }
+    @Deprecated("Use Context.getColorRes()", ReplaceWith("context.getColorRes(rid)", "com.swallow.fly.ext.getColorRes"))
+    fun getColor(context: Context, rid: Int): Int = context.getColorRes(rid)
 
-    /**
-     * 获得颜色
-     */
+    @Deprecated("Use Context.getColorByName()", ReplaceWith("context.getColorByName(colorName)", "com.swallow.fly.ext.getColorByName"))
     fun getColor(context: Context, colorName: String?): Int {
-        return getColor(
-            context,
-            getResources(context).getIdentifier(colorName, "color", context.packageName)
-        )
+        val id = context.resources.getIdentifier(colorName, "color", context.packageName)
+        return context.getColorRes(id)
     }
 
-    /**
-     * 移除孩子
-     *
-     * @param view
-     */
+    @Deprecated("Use View.removeFromParent()", ReplaceWith("view.removeFromParent()", "com.swallow.fly.ext.removeFromParent"))
     fun removeChild(view: View) {
         val parent = view.parent
-        if (parent is ViewGroup) {
-            parent.removeView(view)
-        }
+        if (parent is ViewGroup) parent.removeView(view)
     }
 
-    fun isEmpty(obj: Any?): Boolean {
-        return obj == null
+    @Deprecated("Use obj == null directly")
+    fun isEmpty(obj: Any?): Boolean = obj == null
+
+    @Deprecated("Use String.toMD5()", ReplaceWith("string.toMD5()", "com.swallow.fly.ext.toMD5"))
+    fun encodeToMD5(string: String): String? = string.toMD5()
+
+    @Suppress("DEPRECATION")
+    @Deprecated("Use Activity.enterImmersiveFullscreen()", ReplaceWith("activity.enterImmersiveFullscreen()", "com.swallow.fly.ext.enterImmersiveFullscreen"))
+    fun statusInScreen(activity: Activity) = activity.enterImmersiveFullscreen()
+
+    @Deprecated("Use RecyclerView.setup()", ReplaceWith("recyclerView.setup(layoutManager)", "com.swallow.fly.ext.setup"))
+    fun configRecycleView(recyclerView: RecyclerView, layoutManager: RecyclerView.LayoutManager?) {
+        recyclerView.setup(layoutManager)
     }
 
-    /**
-     * MD5
-     *
-     * @param string
-     * @return
-     * @throws Exception
-     */
-    fun encodeToMD5(string: String): String? {
-        var hash = ByteArray(0)
-        try {
-            hash = MessageDigest.getInstance("MD5").digest(
-                string.toByteArray(charset("UTF-8"))
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        val hex = StringBuilder(hash.size * 2)
-        for (b in hash) {
-            if (b and 0xFF < 0x10) {
-                hex.append("0")
-            }
-            hex.append(Integer.toHexString(b and 0xFF))
-        }
-        return hex.toString()
+    @Deprecated("Use RecyclerView.setup()", ReplaceWith("recyclerView.setup(layoutManager)", "com.swallow.fly.ext.setup"))
+    fun configRecyclerView(recyclerView: RecyclerView, layoutManager: RecyclerView.LayoutManager?) {
+        recyclerView.setup(layoutManager)
     }
 
-    /**
-     * 全屏,并且沉侵式状态栏
-     *
-     * @param activity
-     */
-    fun statusInScreen(activity: Activity) {
-        val attrs = activity.window.attributes
-        attrs.flags = attrs.flags and WindowManager.LayoutParams.FLAG_FULLSCREEN.inv()
-        activity.window.attributes = attrs
-        activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
-        activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-    }
-
-    /**
-     * 配置 RecyclerView
-     *
-     * @param recyclerView
-     * @param layoutManager
-     */
-    @Deprecated("Use {@link #configRecyclerView(RecyclerView, RecyclerView.LayoutManager)} instead")
-    fun configRecycleView(
-        recyclerView: RecyclerView
-        , layoutManager: RecyclerView.LayoutManager?
-    ) {
-        recyclerView.layoutManager = layoutManager
-        //如果可以确定每个item的高度是固定的，设置这个选项可以提高性能
-        recyclerView.setHasFixedSize(true)
-        recyclerView.itemAnimator = DefaultItemAnimator()
-    }
-
-    /**
-     * 配置 RecyclerView
-     *
-     * @param recyclerView
-     * @param layoutManager
-     */
-    fun configRecyclerView(
-        recyclerView: RecyclerView
-        , layoutManager: RecyclerView.LayoutManager?
-    ) {
-        recyclerView.setLayoutManager(layoutManager)
-        //如果可以确定每个item的高度是固定的，设置这个选项可以提高性能
-        recyclerView.setHasFixedSize(true)
-        recyclerView.itemAnimator = DefaultItemAnimator()
-    }
-
-    /**
-     * 收起软键盘
-     */
-    fun collapseSoftInputMethod(
-        context: Context,
-        v: View?
-    ) {
-        if (v != null) {
-            val imm =
-                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(v.windowToken, 0)
-        }
+    @Deprecated("Use View.hideKeyboard()", ReplaceWith("v?.hideKeyboard()", "com.swallow.fly.ext.hideKeyboard"))
+    fun collapseSoftInputMethod(context: Context, v: View?) {
+        v?.hideKeyboard()
     }
 }

@@ -5,6 +5,37 @@
 
 [![Jitpack](https://jitpack.io/v/hpuhsp/gyps.svg)](https://jitpack.io/#hpuhsp/gyps)
 
+## 环境要求
+
+### 必需环境
+- **JDK**: 17 或更高版本
+- **Gradle**: 8.7+ (项目已配置)
+- **Android Studio**: Arctic Fox (2020.3.1) 或更高版本
+- **Kotlin**: 2.0.21 (项目已配置)
+
+### JDK 配置说明
+
+项目使用 Gradle Toolchain 自动管理 JDK 版本，有以下两种方式：
+
+#### 方式 1：自动检测（推荐）
+Gradle 会自动检测系统中已安装的 JDK 17。如果本地没有，Gradle 会自动下载。
+
+#### 方式 2：手动指定（可选）
+如果需要指定特定的 JDK 路径，在 `gradle.properties` 中配置：
+```properties
+org.gradle.java.home=/path/to/your/jdk-17
+```
+
+**注意**: 
+- `gradle.properties` 中的 `org.gradle.java.home` 配置已被注释，默认使用自动检测
+- 团队成员无需修改此配置，Gradle 会自动处理
+- 如果构建失败提示 JDK 版本问题，请确保本地安装了 JDK 17+
+
+### SDK 版本
+- **compileSdk**: 35
+- **targetSdk**: 35
+- **minSdk**: 24
+
 ### 主要技术实现
 
 * Retrofit 网络请求

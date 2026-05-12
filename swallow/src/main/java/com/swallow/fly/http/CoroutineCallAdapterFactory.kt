@@ -8,12 +8,29 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 /**
- * @Description:
+ * @Description: Retrofit 协程适配器工厂（已废弃）
  * @Author:   Hsp
  * @Email:    1101121039@qq.com
  * @CreateTime:     2020/9/14 14:43
- * @UpdateRemark:   更新说明：
+ * @UpdateRemark:   2026/03/13 - 已废弃，Retrofit 2.6.0+ 原生支持 suspend 函数
+ * 
+ * @deprecated Retrofit 2.6.0+ 已原生支持 suspend 函数，不再需要此适配器
+ *             请将 Service 接口中的 Deferred<T> 改为 suspend fun
+ *             
+ *             迁移示例：
+ *             // 修改前
+ *             @GET("users/{id}")
+ *             fun getUser(@Path("id") id: String): Deferred<User>
+ *             
+ *             // 修改后
+ *             @GET("users/{id}")
+ *             suspend fun getUser(@Path("id") id: String): User
  */
+@Deprecated(
+    message = "Retrofit 2.6.0+ 原生支持 suspend 函数，不再需要此适配器",
+    replaceWith = ReplaceWith("suspend fun"),
+    level = DeprecationLevel.WARNING
+)
 class CoroutineCallAdapterFactory private constructor() : CallAdapter.Factory() {
     companion object {
         @JvmStatic

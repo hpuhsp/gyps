@@ -17,6 +17,8 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.*
 import java.nio.channels.FileChannel
 import java.util.*
@@ -24,10 +26,15 @@ import kotlin.collections.ArrayList
 
 
 /**
+ * 文件工具类
+ * 
+ * 提供文件操作、路径转换等功能
+ * 
  * @Description:
  * @Author:   Hsp
  * @Email:    1101121039@qq.com
  * @CreateTime:     2020/9/28 19:42
+ * @UpdateRemark:   2026-03-13 新增协程扩展函数，提供异步文件操作
  * @UpdateRemark:   更新说明：
  */
 object FileUtils {
@@ -688,13 +695,10 @@ object FileUtils {
      * @return
      */
     fun isDamage(path: String): Int {
-        var options: BitmapFactory.Options? = null
-        if (options == null) options = BitmapFactory.Options()
+        val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
         BitmapFactory.decodeFile(path, options) //filePath代表图片路径
-        if (options.mCancel || options.outWidth == -1
-            || options.outHeight == -1
-        ) {
+        if (options.outWidth == -1 || options.outHeight == -1) {
             //表示图片已损毁
             return -1
         }
@@ -710,7 +714,7 @@ object FileUtils {
         val scanner5Directory = File(dir)
         val list = ArrayList<String>()
         if (scanner5Directory.isDirectory) {
-            for (file in scanner5Directory.listFiles()) {
+            scanner5Directory.listFiles()?.forEach { file ->
                 val path = file.absolutePath
                 if (path.endsWith(".jpg") || path.endsWith(".jpeg")
                     || path.endsWith(".png") || path.endsWith(".gif")
@@ -746,31 +750,19 @@ object FileUtils {
         val cutDir = mContext.cacheDir
         val compressDir = File(mContext.cacheDir.toString() + "/picture_cache")
         val lubanDir = File(mContext.cacheDir.toString() + "/luban_disk_cache")
-        if (cutDir != null) {
-            val files = cutDir.listFiles()
-            for (file in files) {
-                if (file.isFile)
-                    file.delete()
-            }
+        
+        cutDir.listFiles()?.forEach { file ->
+            if (file.isFile) file.delete()
         }
 
-        if (compressDir != null) {
-            val files = compressDir.listFiles()
-            if (files != null)
-                for (file in files) {
-                    if (file.isFile)
-                        file.delete()
-                }
+        compressDir.listFiles()?.forEach { file ->
+            if (file.isFile) file.delete()
         }
 
-        if (lubanDir != null) {
-            val files = lubanDir.listFiles()
-            if (files != null)
-                for (file in files) {
-                    if (file.isFile)
-                        file.delete()
-                }
+        lubanDir.listFiles()?.forEach { file ->
+            if (file.isFile) file.delete()
         }
+        
         Log.i(TAG, "Cache delete success!")
     }
 
@@ -799,55 +791,24 @@ object FileUtils {
      * @param type    image、video、audio ...
      */
     fun deleteAllCacheDirFile(context: Context) {
-        val dirPictures =
-            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        if (dirPictures != null) {
-            val files = dirPictures.listFiles()
-            if (files != null) {
-                for (file in files) {
-                    if (file.isFile) {
-                        file.delete()
-                    }
-                }
-            }
+        val dirPictures = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        dirPictures?.listFiles()?.forEach { file ->
+            if (file.isFile) file.delete()
         }
 
-        val dirDic =
-            context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
-        if (dirDic != null) {
-            val files = dirDic.listFiles()
-            if (files != null) {
-                for (file in files) {
-                    if (file.isFile) {
-                        file.delete()
-                    }
-                }
-            }
+        val dirDic = context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
+        dirDic?.listFiles()?.forEach { file ->
+            if (file.isFile) file.delete()
         }
 
-        val dirMovies =
-            context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)
-        if (dirMovies != null) {
-            val files = dirMovies.listFiles()
-            if (files != null) {
-                for (file in files) {
-                    if (file.isFile) {
-                        file.delete()
-                    }
-                }
-            }
+        val dirMovies = context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)
+        dirMovies?.listFiles()?.forEach { file ->
+            if (file.isFile) file.delete()
         }
-        val dirMusic =
-            context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
-        if (dirMusic != null) {
-            val files = dirMusic.listFiles()
-            if (files != null) {
-                for (file in files) {
-                    if (file.isFile) {
-                        file.delete()
-                    }
-                }
-            }
+
+        val dirMusic = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
+        dirMusic?.listFiles()?.forEach { file ->
+            if (file.isFile) file.delete()
         }
     }
 
@@ -902,18 +863,205 @@ object FileUtils {
      */
     fun deleteCompressCache(context: Context) {
         val cacheDir = File(
-            context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath,
+            context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath ?: return,
             "CompressCache"
         )
-        if (cacheDir != null) {
-            val files = cacheDir.listFiles()
-            if (files != null) {
-                for (file in files) {
-                    if (file.isFile) {
-                        file.delete()
-                    }
-                }
-            }
+        cacheDir.listFiles()?.forEach { file ->
+            if (file.isFile) file.delete()
+        }
+    }
+
+    // ========== 新增协程扩展函数（推荐使用） ==========
+
+    /**
+     * 复制文件（协程版本）
+     * 
+     * 在 IO 线程中执行文件复制操作
+     * 
+     * @param target 目标文件
+     * @param overwrite 是否覆盖已存在的文件，默认 false
+     * @return Result<File> 成功返回目标文件，失败返回异常
+     * 
+     * 示例：
+     * ```kotlin
+     * viewModelScope.launch {
+     *     sourceFile.copyToSuspend(targetFile).onSuccess {
+     *         // 复制成功
+     *     }.onFailure { error ->
+     *         // 复制失败
+     *     }
+     * }
+     * ```
+     */
+    suspend fun File.copyToSuspend(
+        target: File,
+        overwrite: Boolean = false
+    ): Result<File> = withContext(Dispatchers.IO) {
+        try {
+            this@copyToSuspend.copyTo(target, overwrite)
+            Result.success(target)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 读取文件内容（协程版本）
+     * 
+     * 在 IO 线程中读取文件内容
+     * 
+     * @return Result<String> 成功返回文件内容，失败返回异常
+     * 
+     * 示例：
+     * ```kotlin
+     * viewModelScope.launch {
+     *     file.readTextSuspend().onSuccess { content ->
+     *         // 读取成功
+     *     }.onFailure { error ->
+     *         // 读取失败
+     *     }
+     * }
+     * ```
+     */
+    suspend fun File.readTextSuspend(): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            Result.success(readText())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 写入文件内容（协程版本）
+     * 
+     * 在 IO 线程中写入文件内容
+     * 
+     * @param text 要写入的内容
+     * @return Result<File> 成功返回文件，失败返回异常
+     * 
+     * 示例：
+     * ```kotlin
+     * viewModelScope.launch {
+     *     file.writeTextSuspend("Hello World").onSuccess {
+     *         // 写入成功
+     *     }.onFailure { error ->
+     *         // 写入失败
+     *     }
+     * }
+     * ```
+     */
+    suspend fun File.writeTextSuspend(text: String): Result<File> = withContext(Dispatchers.IO) {
+        try {
+            writeText(text)
+            Result.success(this@writeTextSuspend)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 追加文件内容（协程版本）
+     * 
+     * 在 IO 线程中追加文件内容
+     * 
+     * @param text 要追加的内容
+     * @return Result<File> 成功返回文件，失败返回异常
+     * 
+     * 示例：
+     * ```kotlin
+     * viewModelScope.launch {
+     *     file.appendTextSuspend("New line\n").onSuccess {
+     *         // 追加成功
+     *     }.onFailure { error ->
+     *         // 追加失败
+     *     }
+     * }
+     * ```
+     */
+    suspend fun File.appendTextSuspend(text: String): Result<File> = withContext(Dispatchers.IO) {
+        try {
+            appendText(text)
+            Result.success(this@appendTextSuspend)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 删除文件（协程版本）
+     * 
+     * 在 IO 线程中删除文件
+     * 
+     * @return Result<Boolean> 成功返回 true，失败返回异常
+     * 
+     * 示例：
+     * ```kotlin
+     * viewModelScope.launch {
+     *     file.deleteSuspend().onSuccess {
+     *         // 删除成功
+     *     }.onFailure { error ->
+     *         // 删除失败
+     *     }
+     * }
+     * ```
+     */
+    suspend fun File.deleteSuspend(): Result<Boolean> = withContext(Dispatchers.IO) {
+        try {
+            Result.success(delete())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 递归删除目录（协程版本）
+     * 
+     * 在 IO 线程中递归删除目录及其所有内容
+     * 
+     * @return Result<Boolean> 成功返回 true，失败返回异常
+     * 
+     * 示例：
+     * ```kotlin
+     * viewModelScope.launch {
+     *     directory.deleteRecursivelySuspend().onSuccess {
+     *         // 删除成功
+     *     }.onFailure { error ->
+     *         // 删除失败
+     *     }
+     * }
+     * ```
+     */
+    suspend fun File.deleteRecursivelySuspend(): Result<Boolean> = withContext(Dispatchers.IO) {
+        try {
+            Result.success(deleteRecursively())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 创建目录（协程版本）
+     * 
+     * 在 IO 线程中创建目录（包括必要的父目录）
+     * 
+     * @return Result<Boolean> 成功返回 true，失败返回异常
+     * 
+     * 示例：
+     * ```kotlin
+     * viewModelScope.launch {
+     *     directory.mkdirsSuspend().onSuccess {
+     *         // 创建成功
+     *     }.onFailure { error ->
+     *         // 创建失败
+     *     }
+     * }
+     * ```
+     */
+    suspend fun File.mkdirsSuspend(): Result<Boolean> = withContext(Dispatchers.IO) {
+        try {
+            Result.success(mkdirs())
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }
